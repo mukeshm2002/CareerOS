@@ -1,0 +1,38 @@
+{
+  "name": "careeros-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareerOS Backend REST API",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js",
+    "prisma:generate": "prisma generate --schema=../prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=../prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema=../prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema=../prisma/schema.prisma",
+    "prisma:seed": "node ../prisma/seed.js",
+    "verify:production": "node scripts/verify-production.js",
+    "test:phase1b": "node tests/phase1b.verify.js"
+  },
+  "prisma": {
+    "seed": "node ../prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "embedded-postgres": "^18.4.0-beta.17",
+    "nodemon": "^3.1.9",
+    "prisma": "^5.22.0"
+  }
+}

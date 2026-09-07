@@ -1,0 +1,1309 @@
+// Prisma Schema for CareerOS - Personal Career Operating System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// -------------------------------------------------------------
+// ENUMS
+// -------------------------------------------------------------
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum CareerStage {
+  STUDENT
+  FRESHER
+  WORKING_PROFESSIONAL
+  FREELANCER
+  CAREER_BREAK
+  CAREER_SWITCHER
+  ENTREPRENEUR
+  OTHER
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  ENTRY_LEVEL
+  JUNIOR
+  MID_LEVEL
+  SENIOR
+  LEAD
+  MANAGER
+  OTHER
+}
+
+enum GoalType {
+  FIRST_JOB
+  JOB_SWITCH
+  SALARY_GROWTH
+  PROMOTION
+  FREELANCING
+  CAREER_CHANGE
+  SKILL_MASTERY
+  CERTIFICATION
+  PORTFOLIO
+  BUSINESS
+  CUSTOM
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+  URGENT
+}
+
+enum ItemStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+enum MilestoneStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+  SKIPPED
+}
+
+enum AssessmentType {
+  SELF_ASSESSMENT
+  PROJECT_EVIDENCE
+  CERTIFICATION
+  INTERVIEW_FEEDBACK
+  QUIZ
+  OTHER
+}
+
+enum RecurrenceType {
+  NONE
+  DAILY
+  WEEKDAYS
+  WEEKLY
+  CUSTOM
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+  SKIPPED
+}
+
+enum TaskType {
+  LEARNING
+  PROJECT
+  JOB_SEARCH
+  FREELANCE
+  INTERVIEW
+  PORTFOLIO
+  NETWORKING
+  CERTIFICATION
+  CAREER_ADMIN
+  OTHER
+  CAREER_GOAL
+  ROADMAP_ACTION
+  SKILL_PRACTICE
+  APPLICATION
+  PROJECT_WORK
+  ROUTINE
+  GENERAL
+}
+
+enum SkillCategory {
+  TECHNICAL
+  PROFESSIONAL
+  COMMUNICATION
+  DOMAIN
+  TOOLS
+  OTHER
+}
+
+enum ScheduleCategory {
+  WORK
+  STUDY
+  PERSONAL
+  CAREEROS
+  LEARNING
+  PROJECT
+  FREELANCE
+  INTERVIEW
+  OTHER
+}
+
+enum WorkMode {
+  ONSITE
+  HYBRID
+  REMOTE
+  UNKNOWN
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+  OTHER
+}
+
+enum OpportunityType {
+  JOB
+  FREELANCE
+  INTERNSHIP
+}
+
+enum OpportunityActivityType {
+  CREATED
+  STATUS_CHANGED
+  APPLICATION_SENT
+  FOLLOW_UP
+  CALL
+  EMAIL
+  ASSESSMENT
+  INTERVIEW
+  PROPOSAL_SENT
+  MEETING
+  OFFER_RECEIVED
+  OFFER_ACCEPTED
+  REJECTED
+  WON
+  LOST
+  NOTE
+  OTHER
+}
+
+enum JobStage {
+  SAVED
+  PREPARING
+  APPLIED
+  SCREENING
+  ASSESSMENT
+  INTERVIEW
+  FINAL_INTERVIEW
+  OFFER
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  ARCHIVED
+}
+
+enum FreelanceStage {
+  LEAD
+  RESEARCHING
+  CONTACTED
+  DISCOVERY
+  MEETING
+  PROPOSAL_PREPARATION
+  PROPOSAL_SENT
+  FOLLOW_UP
+  NEGOTIATION
+  WON
+  IN_PROGRESS
+  COMPLETED
+  LOST
+  ARCHIVED
+}
+
+enum InternshipStage {
+  SAVED
+  PREPARING
+  APPLIED
+  SCREENING
+  ASSESSMENT
+  INTERVIEW
+  OFFER
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  ARCHIVED
+}
+
+enum ProjectStatus {
+  IDEA
+  PLANNING
+  BUILDING
+  TESTING
+  COMPLETED
+  ARCHIVED
+  PLANNED
+  IN_PROGRESS
+  BLOCKED
+}
+
+enum ProjectType {
+  PERSONAL
+  LEARNING
+  PORTFOLIO
+  FREELANCE
+  INTERNSHIP
+  WORK
+  OPEN_SOURCE
+  ACADEMIC
+  CASE_STUDY
+  OTHER
+}
+
+enum ProjectMilestoneStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+enum EvidenceType {
+  GITHUB_REPOSITORY
+  LIVE_DEMO
+  SCREENSHOT
+  DESIGN_FILE
+  CAD_FILE
+  DOCUMENT
+  CERTIFICATE
+  ARTICLE
+  PRESENTATION
+  VIDEO
+  ASSESSMENT
+  CUSTOMER_FEEDBACK
+  WORK_SAMPLE
+  OTHER
+}
+
+enum LearningModuleType {
+  READ
+  WATCH
+  PRACTICE
+  BUILD
+  ASSESSMENT
+  PROJECT
+  OTHER
+}
+
+enum LearningModuleStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+enum LearningPathStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  PAUSED
+  ARCHIVED
+}
+
+enum ReminderType {
+  DAILY_CAREEROS_REVIEW
+  DAILY_CAREER_REVIEW
+  DAILY_SHUTDOWN
+  WEEKLY_CAREER_REVIEW
+  WEEKLY_REVIEW
+  TASK_DUE
+  OPPORTUNITY_FOLLOW_UP
+  INTERVIEW
+  FREELANCE_FOLLOW_UP
+  CUSTOM
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+enum DailyPlanStatus {
+  DRAFT
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+enum FocusSessionStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum EnergyLevel {
+  VERY_LOW
+  LOW
+  OKAY
+  GOOD
+  HIGH
+}
+
+enum WeeklyReviewStatus {
+  DRAFT
+  COMPLETED
+}
+
+// -------------------------------------------------------------
+// USER & AUTHENTICATION
+// -------------------------------------------------------------
+
+model User {
+  id                  String                 @id @default(uuid())
+  email               String                 @unique
+  passwordHash        String
+  fullName            String
+  role                UserRole               @default(USER)
+  onboardingCompleted Boolean                @default(false)
+  lastLoginAt         DateTime?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+
+  profile             UserProfile?
+  refreshTokens       RefreshToken[]
+  goals               Goal[]
+  roadmaps            Roadmap[]
+  milestones          RoadmapMilestone[]
+  skills              UserSkill[]
+  tasks               Task[]
+  scheduleBlocks      ScheduleBlock[]
+  jobOpportunities    JobOpportunity[]
+  freelanceOpportunities FreelanceOpportunity[]
+  internshipOpportunities InternshipOpportunity[]
+  opportunityActivities OpportunityActivity[]
+  projects            Project[]
+  projectMilestones   ProjectMilestone[]
+  evidence            Evidence[]
+  evidenceSkills      EvidenceSkill[]
+  learningPaths       LearningPath[]
+  learningModules     LearningModule[]
+  weeklyReviews       WeeklyReview[]
+  dailyReviews        DailyReview[]
+  dailyPlans          DailyPlan[]
+  reminders           Reminder[]
+  preferences         UserPreference?
+  notifications       Notification[]
+  focusSessions       FocusSession[]
+  skillAssessmentHistory UserSkillAssessmentHistory[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model UserProfile {
+  id                     String           @id @default(uuid())
+  userId                 String           @unique
+  user                   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName              String?
+  lastName               String?
+  displayName            String?
+  avatarUrl              String?
+  currentSituation       CareerStage?     @default(STUDENT)
+  currentRole            String?
+  targetRole             String?
+  targetSalary           String?
+  experienceLevel        ExperienceLevel? @default(MID_LEVEL)
+  timezone               String?          @default("UTC")
+  country                String?
+  wakeTime               String?          // e.g. "06:00"
+  workStartTime          String?          // e.g. "09:00"
+  workEndTime            String?          // e.g. "18:00"
+  personalStartTime      String?          // e.g. "19:00"
+  personalEndTime        String?          // e.g. "20:00"
+  sleepTime              String?          // e.g. "23:00"
+  availableCareerMinutes Int?             @default(120) // e.g. 140 min (2h 20m)
+  onboardingStep         Int              @default(1)
+  onboardingDraft        Json?
+  careerMission          String?          @db.Text
+  bio                    String?          @db.Text
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  @@map("user_profiles")
+}
+
+// -------------------------------------------------------------
+// GOALS & ROADMAPS
+// -------------------------------------------------------------
+
+model Goal {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?       @db.Text
+  type           GoalType      @default(JOB_SWITCH)
+  priority       Priority      @default(HIGH)
+  status         ItemStatus    @default(ACTIVE)
+  progress       Int           @default(0) // 0-100%
+  startDate      DateTime?     @default(now())
+  targetDate     DateTime?
+  targetRole     String?
+  targetSalary   String?
+  salaryCurrency String?       @default("USD")
+  notes          String?       @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  roadmaps                Roadmap[]
+  tasks                   Task[]
+  scheduleBlocks          ScheduleBlock[]
+  jobOpportunities        JobOpportunity[]
+  freelanceOpportunities  FreelanceOpportunity[]
+  internshipOpportunities InternshipOpportunity[]
+  projects                Project[]
+  learningPaths           LearningPath[]
+  reminders               Reminder[]
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model Roadmap {
+  id          String             @id @default(uuid())
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId      String
+  goal        Goal               @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title       String
+  description String?            @db.Text
+  status      ItemStatus         @default(ACTIVE)
+  progress    Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  milestones  RoadmapMilestone[]
+
+  @@index([userId])
+  @@index([goalId])
+  @@map("roadmaps")
+}
+
+model RoadmapMilestone {
+  id                    String          @id @default(uuid())
+  roadmapId             String
+  roadmap               Roadmap         @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  userId                String
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title                 String
+  description           String?         @db.Text
+  sequence              Int             @default(1)
+  status                MilestoneStatus @default(NOT_STARTED)
+  progress              Int             @default(0)
+  targetDate            DateTime?
+  startedAt             DateTime?
+  completedAt           DateTime?
+  dependencyMilestoneId String?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  tasks                 Task[]
+
+  @@index([roadmapId])
+  @@index([userId])
+  @@map("roadmap_milestones")
+}
+
+// -------------------------------------------------------------
+// SKILLS & GAP ASSESSMENT
+// -------------------------------------------------------------
+
+model Skill {
+  id             String         @id @default(uuid())
+  name           String         @unique
+  normalizedName String         @unique
+  category       SkillCategory  @default(TECHNICAL)
+  description    String?        @db.Text
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  userSkills        UserSkill[]
+  projectSkills     ProjectSkill[]
+  evidenceSkills    EvidenceSkill[]
+  learningPaths     LearningPath[]
+  tasks             Task[]
+  assessmentHistory UserSkillAssessmentHistory[]
+
+  @@map("skills")
+}
+
+model UserSkill {
+  id                String                       @id @default(uuid())
+  userId            String
+  user              User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId           String
+  skill             Skill                        @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  currentLevel      Int                          @default(1) // 1-5 rating (Self Assessment)
+  targetLevel       Int                          @default(4) // 1-5 target
+  assessmentType    AssessmentType               @default(SELF_ASSESSMENT)
+  evidence          String?                      @db.Text
+  notes             String?                      @db.Text
+  lastPracticed     DateTime?
+  lastPracticedAt   DateTime?
+  status            ItemStatus                   @default(ACTIVE)
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+
+  tasks             Task[]
+  learningPaths     LearningPath[]
+  assessmentHistory UserSkillAssessmentHistory[]
+
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@map("user_skills")
+}
+
+model UserSkillAssessmentHistory {
+  id             String         @id @default(uuid())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userSkillId    String
+  userSkill      UserSkill      @relation(fields: [userSkillId], references: [id], onDelete: Cascade)
+  skillId        String
+  skill          Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  previousLevel  Int
+  newLevel       Int
+  targetLevel    Int
+  assessmentType AssessmentType @default(SELF_ASSESSMENT)
+  evidence       String?        @db.Text
+  notes          String?        @db.Text
+  changedAt      DateTime       @default(now())
+  createdAt      DateTime       @default(now())
+
+  @@index([userId])
+  @@index([userSkillId])
+  @@index([skillId])
+  @@map("user_skill_assessment_history")
+}
+
+// -------------------------------------------------------------
+// TASKS & SCHEDULE
+// -------------------------------------------------------------
+
+model Task {
+  id               String            @id @default(uuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?           @db.Text
+  priority         Priority          @default(MEDIUM)
+  status           TaskStatus        @default(TODO)
+  taskType         TaskType          @default(GENERAL)
+  dueDate          DateTime?
+  estimatedMinutes Int?              @default(30)
+  actualMinutes    Int?              @default(0)
+  completedAt      DateTime?
+  isMainDailyFocus Boolean           @default(false)
+  
+  goalId           String?
+  goal             Goal?             @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  milestoneId      String?
+  milestone        RoadmapMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  skillId          String?
+  skill            Skill?            @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  userSkillId      String?
+  userSkill        UserSkill?        @relation(fields: [userSkillId], references: [id], onDelete: SetNull)
+  projectId               String?
+  project                 Project?               @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectMilestoneId      String?
+  projectMilestone        ProjectMilestone?      @relation(fields: [projectMilestoneId], references: [id], onDelete: SetNull)
+  learningModuleId        String?
+  learningModule          LearningModule?        @relation(fields: [learningModuleId], references: [id], onDelete: SetNull)
+  jobOpportunityId        String?
+  jobOpportunity          JobOpportunity?        @relation(fields: [jobOpportunityId], references: [id], onDelete: SetNull)
+  freelanceOpportunityId  String?
+  freelanceOpportunity    FreelanceOpportunity?  @relation(fields: [freelanceOpportunityId], references: [id], onDelete: SetNull)
+  internshipOpportunityId String?
+  internshipOpportunity   InternshipOpportunity? @relation(fields: [internshipOpportunityId], references: [id], onDelete: SetNull)
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  scheduleBlocks          ScheduleBlock[]
+  focusSessions           FocusSession[]
+  dailyPlansAsMain        DailyPlan[]               @relation("MainDailyPlanTask")
+  dailyPlanSecondaryTasks DailyPlanSecondaryTask[]
+  dailyReviewsTomorrow    DailyReview[]             @relation("TomorrowDailyReviewTask")
+  reminders               Reminder[]
+
+  @@index([userId])
+  @@index([dueDate])
+  @@index([projectId])
+  @@index([projectMilestoneId])
+  @@index([learningModuleId])
+  @@index([jobOpportunityId])
+  @@index([freelanceOpportunityId])
+  @@index([internshipOpportunityId])
+  @@map("tasks")
+}
+
+model ScheduleBlock {
+  id           String           @id @default(uuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?          @db.Text
+  date         DateTime         @db.Date
+  startTime    String           // e.g. "20:10"
+  endTime      String           // e.g. "21:30"
+  category     ScheduleCategory @default(CAREEROS)
+  recurrence   String?          @default("NONE") // e.g. "NONE", "DAILY", "WEEKDAYS", "WEEKLY", "CUSTOM"
+  notes        String?          @db.Text
+
+  taskId       String?
+  task         Task?            @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  goalId       String?
+  goal         Goal?            @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  linkedTaskId String?
+  linkedGoalId String?
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([userId, date])
+  @@map("schedule_blocks")
+}
+
+// -------------------------------------------------------------
+// OPPORTUNITIES (JOBS, FREELANCE, INTERNSHIPS)
+// -------------------------------------------------------------
+
+model JobOpportunity {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId          String?
+  goal            Goal?             @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  company         String
+  role            String
+  jobUrl          String?
+  source          String?
+  sourceLabel     String?
+  location        String?
+  workMode        WorkMode          @default(UNKNOWN)
+  employmentType  EmploymentType    @default(FULL_TIME)
+  salaryMin       Int?
+  salaryMax       Int?
+  salaryCurrency  String?           @default("USD")
+  salaryRange     String?
+  status          JobStage          @default(SAVED)
+  priority        Priority          @default(MEDIUM)
+  savedDate       DateTime?
+  appliedDate     DateTime?
+  nextAction      String?
+  nextActionDate  DateTime?
+  notes           String?           @db.Text
+  rejectionReason String?
+  offerSalary     Int?
+  offerCurrency   String?
+  offerNotes      String?           @db.Text
+  acceptedAt      DateTime?
+  archivedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tasks           Task[]
+  activities      OpportunityActivity[]
+  reminders       Reminder[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, nextActionDate])
+  @@map("job_opportunities")
+}
+
+model FreelanceOpportunity {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId            String?
+  goal              Goal?             @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  clientName        String
+  projectName       String
+  source            String?           // e.g. "Upwork", "Twitter/X", "Referral", "LinkedIn"
+  sourceLabel       String?
+  projectType       String?
+  estimatedValue    String?
+  estimatedAmount   Float?
+  currency          String?           @default("USD")
+  status            FreelanceStage    @default(LEAD)
+  priority          Priority          @default(MEDIUM)
+  firstContactDate  DateTime?
+  proposalDate      DateTime?
+  nextFollowUp      DateTime?
+  nextAction        String?
+  nextActionDate    DateTime?
+  expectedStartDate DateTime?
+  actualStartDate   DateTime?
+  actualEndDate     DateTime?
+  agreedValue       Float?
+  notes             String?           @db.Text
+  lostReason        String?
+  archivedAt        DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tasks             Task[]
+  activities        OpportunityActivity[]
+  reminders         Reminder[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, nextActionDate])
+  @@map("freelance_opportunities")
+}
+
+model InternshipOpportunity {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId          String?
+  goal            Goal?             @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  company         String
+  role            String
+  internshipUrl   String?
+  jobUrl          String?
+  source          String?
+  sourceLabel     String?
+  location        String?
+  workMode        WorkMode          @default(UNKNOWN)
+  stipend         String?
+  stipendMin      Int?
+  stipendMax      Int?
+  stipendCurrency String?           @default("USD")
+  status          InternshipStage   @default(SAVED)
+  priority        Priority          @default(MEDIUM)
+  appliedDate     DateTime?
+  nextAction      String?
+  nextActionDate  DateTime?
+  notes           String?           @db.Text
+  rejectionReason String?
+  offerStipend    Int?
+  acceptedAt      DateTime?
+  archivedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tasks           Task[]
+  activities      OpportunityActivity[]
+  reminders       Reminder[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, nextActionDate])
+  @@map("internship_opportunities")
+}
+
+model OpportunityActivity {
+  id                      String                  @id @default(uuid())
+  userId                  String
+  user                    User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunityType         OpportunityType
+  opportunityId           String
+  activityType            OpportunityActivityType
+  fromStatus              String?
+  toStatus                String?
+  title                   String
+  description             String?                 @db.Text
+  occurredAt              DateTime                @default(now())
+  createdAt               DateTime                @default(now())
+
+  jobOpportunityId        String?
+  jobOpportunity          JobOpportunity?         @relation(fields: [jobOpportunityId], references: [id], onDelete: Cascade)
+  freelanceOpportunityId  String?
+  freelanceOpportunity    FreelanceOpportunity?   @relation(fields: [freelanceOpportunityId], references: [id], onDelete: Cascade)
+  internshipOpportunityId String?
+  internshipOpportunity   InternshipOpportunity?  @relation(fields: [internshipOpportunityId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([opportunityType, opportunityId])
+  @@index([userId, occurredAt])
+  @@map("opportunity_activities")
+}
+
+// -------------------------------------------------------------
+// PROJECTS & LEARNING
+// -------------------------------------------------------------
+
+model Project {
+  id                 String             @id @default(uuid())
+  userId             String
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId             String?
+  goal               Goal?              @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  title              String
+  description        String?            @db.Text
+  projectType        ProjectType        @default(PERSONAL)
+  status             ProjectStatus      @default(IDEA)
+  priority           Priority           @default(MEDIUM)
+
+  problemStatement   String?            @db.Text
+  objective          String?            @db.Text
+
+  startDate          DateTime?          @default(now())
+  targetDate         DateTime?
+  completedAt        DateTime?
+
+  repositoryUrl      String?
+  liveUrl            String?
+  demoUrl            String?
+  caseStudyUrl       String?
+
+  githubUrl          String?            // legacy backwards compatibility
+  portfolioReady     Boolean            @default(false) // legacy backwards compatibility
+  isPortfolioVisible Boolean            @default(false)
+  nextAction         String?
+
+  progress           Int                @default(0) // 0-100%
+
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  archivedAt         DateTime?
+
+  demonstratedSkills ProjectSkill[]
+  milestones         ProjectMilestone[]
+  tasks              Task[]
+  evidence           Evidence[]
+
+  @@index([userId])
+  @@index([goalId])
+  @@map("projects")
+}
+
+model ProjectSkill {
+  id         String   @id @default(uuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skillId    String
+  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  usageLevel String?  // e.g. "PRIMARY", "SECONDARY"
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([projectId, skillId])
+  @@index([projectId])
+  @@index([skillId])
+  @@map("project_skills")
+}
+
+model ProjectMilestone {
+  id          String                 @id @default(uuid())
+  userId      String
+  user        User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String
+  project     Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?                @db.Text
+  status      ProjectMilestoneStatus @default(TODO)
+
+  targetDate  DateTime?
+  completedAt DateTime?
+
+  order       Int                    @default(1)
+
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  tasks       Task[]
+  evidence    Evidence[]
+
+  @@index([userId])
+  @@index([projectId])
+  @@map("project_milestones")
+}
+
+model Evidence {
+  id                 String            @id @default(uuid())
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title              String
+  description        String?           @db.Text
+  evidenceType       EvidenceType      @default(OTHER)
+
+  url                String?
+  fileName           String?
+  externalReference  String?
+
+  projectId          String?
+  project            Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  projectMilestoneId String?
+  projectMilestone   ProjectMilestone? @relation(fields: [projectMilestoneId], references: [id], onDelete: SetNull)
+
+  learningModuleId   String?
+  learningModule     LearningModule?   @relation(fields: [learningModuleId], references: [id], onDelete: SetNull)
+
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  skills             EvidenceSkill[]
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([projectMilestoneId])
+  @@index([learningModuleId])
+  @@map("evidence")
+}
+
+model EvidenceSkill {
+  id         String   @id @default(uuid())
+  evidenceId String
+  evidence   Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  skillId    String
+  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes      String?
+
+  createdAt  DateTime @default(now())
+
+  @@unique([evidenceId, skillId])
+  @@index([userId])
+  @@index([evidenceId])
+  @@index([skillId])
+  @@map("evidence_skills")
+}
+
+model LearningPath {
+  id             String             @id @default(uuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId         String?
+  goal           Goal?              @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  skillId        String?
+  skill          Skill?             @relation(fields: [skillId], references: [id], onDelete: SetNull)
+
+  title          String
+  description    String?            @db.Text
+
+  provider       String?            // e.g. "Coursera", "YouTube", "Docs", "Udemy"
+  category       String?
+  progress       Int                @default(0) // 0-100%
+  estimatedHours Float?             @default(10.0)
+  completedHours Float?             @default(0.0)
+
+  status         LearningPathStatus @default(NOT_STARTED)
+
+  startedAt      DateTime?
+  targetDate     DateTime?
+  completedAt    DateTime?
+  archivedAt     DateTime?
+
+  userSkillId    String?
+  userSkill      UserSkill?         @relation(fields: [userSkillId], references: [id], onDelete: SetNull)
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  modules        LearningModule[]
+
+  @@index([userId])
+  @@index([goalId])
+  @@index([skillId])
+  @@map("learning_paths")
+}
+
+model LearningModule {
+  id               String               @id @default(uuid())
+  userId           String
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPathId   String
+  learningPath     LearningPath         @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+
+  title            String
+  description      String?              @db.Text
+
+  moduleType       LearningModuleType   @default(READ)
+  status           LearningModuleStatus @default(NOT_STARTED)
+
+  estimatedMinutes Int?                 @default(30)
+  order            Int                  @default(1)
+  sequence         Int                  @default(1) // preserve sequence for compatibility
+
+  resourceUrl      String?
+  notes            String?              @db.Text
+
+  isCompleted      Boolean              @default(false)
+  startedAt        DateTime?
+  completedAt      DateTime?
+
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  tasks            Task[]
+  evidence         Evidence[]
+
+  @@index([userId])
+  @@index([learningPathId])
+  @@map("learning_modules")
+}
+
+// -------------------------------------------------------------
+// REVIEWS & PROGRESS
+// -------------------------------------------------------------
+
+model DailyPlan {
+  id                    String                    @id @default(uuid())
+  userId                String
+  user                  User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date                  DateTime                  @db.Date
+  mainTaskId            String?
+  mainTask              Task?                     @relation("MainDailyPlanTask", fields: [mainTaskId], references: [id], onDelete: SetNull)
+  status                DailyPlanStatus           @default(DRAFT)
+  recommendationReason  String?                   @db.Text
+  plannedMinutes        Int?
+  generatedAt           DateTime                  @default(now())
+  confirmedAt           DateTime?
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+
+  secondaryTasks        DailyPlanSecondaryTask[]
+  focusSessions         FocusSession[]
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("daily_plans")
+}
+
+model DailyPlanSecondaryTask {
+  id          String    @id @default(uuid())
+  dailyPlanId String
+  dailyPlan   DailyPlan @relation(fields: [dailyPlanId], references: [id], onDelete: Cascade)
+  taskId      String
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  position    Int       @default(0) // 0, 1, 2 (max 3)
+  createdAt   DateTime  @default(now())
+
+  @@unique([dailyPlanId, taskId])
+  @@index([dailyPlanId])
+  @@map("daily_plan_secondary_tasks")
+}
+
+model DailyReview {
+  id                  String       @id @default(uuid())
+  userId              String
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date                DateTime     @db.Date
+  energyLevel         EnergyLevel?
+  mood                String?      // e.g. "Focused", "Tired", "Excited"
+  completedSummary    String?      @db.Text
+  learnedSummary      String?      @db.Text
+  learnings           String?      @db.Text
+  blockerSummary      String?      @db.Text
+  blockers            String?      @db.Text
+  tomorrowMainTaskId  String?
+  tomorrowMainTaskRel Task?        @relation("TomorrowDailyReviewTask", fields: [tomorrowMainTaskId], references: [id], onDelete: SetNull)
+  tomorrowMainTask    String?      @db.Text
+  notes               String?      @db.Text
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("daily_reviews")
+}
+
+model WeeklyReview {
+  id                     String             @id @default(uuid())
+  userId                 String
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStartDate          DateTime           @db.Date
+  weekEndDate            DateTime           @db.Date
+  status                 WeeklyReviewStatus @default(DRAFT)
+
+  // Phase 1E Reflection
+  wins                   String?            @db.Text
+  challenges             String?            @db.Text
+  learnings              String?            @db.Text
+
+  // Phase 1E Adaptation
+  continueDoing          String?            @db.Text
+  stopDoing              String?            @db.Text
+  startDoing             String?            @db.Text
+
+  // Phase 1E Next Week Direction
+  nextWeekMainGoalId     String?
+  nextWeekMainTaskId     String?
+  plannedCareerMinutes   Int?
+  notes                  String?            @db.Text
+
+  // Phase 1E Factual Snapshot
+  metricsSnapshot        Json?
+
+  // Preserved fields
+  deepWorkMinutes        Int                @default(0)
+  tasksCompletedCount    Int                @default(0)
+  learningHours          Float              @default(0.0)
+  applicationsSentCount  Int                @default(0)
+  freelanceOutreachCount Int                @default(0)
+  goalsProgressSummary   String?            @db.Text
+  whatWentWell           String?            @db.Text
+  whatBlocked            String?            @db.Text
+  changesNextWeek        String?            @db.Text
+  nextWeekMainGoal       String?            @db.Text
+  nextWeekPrimaryOutcome String?            @db.Text
+
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  @@unique([userId, weekStartDate])
+  @@index([userId])
+  @@map("weekly_reviews")
+}
+
+// -------------------------------------------------------------
+// REMINDERS & FOCUS SESSIONS
+// -------------------------------------------------------------
+
+model Reminder {
+  id                            String                @id @default(uuid())
+  userId                        String
+  user                          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title                         String
+  message                       String?               @db.Text
+  type                          ReminderType          @default(DAILY_CAREEROS_REVIEW)
+  time                          String                // e.g. "20:00"
+  dayOfWeek                     Int?                  // 0 (Sun) - 6 (Sat), null if daily
+  scheduledFor                  DateTime?
+  timezone                      String?               @default("UTC")
+  recurrence                    String?               @default("DAILY") // DAILY, WEEKLY, ONCE, CUSTOM
+  enabled                       Boolean               @default(true)
+  notificationChannel           NotificationChannel   @default(IN_APP)
+  channel                       NotificationChannel   @default(IN_APP)
+
+  linkedTaskId                  String?
+  linkedTask                    Task?                 @relation(fields: [linkedTaskId], references: [id], onDelete: SetNull)
+  linkedGoalId                  String?
+  linkedGoal                    Goal?                 @relation(fields: [linkedGoalId], references: [id], onDelete: SetNull)
+  linkedJobOpportunityId        String?
+  linkedJobOpportunity          JobOpportunity?       @relation(fields: [linkedJobOpportunityId], references: [id], onDelete: SetNull)
+  linkedFreelanceOpportunityId  String?
+  linkedFreelanceOpportunity    FreelanceOpportunity? @relation(fields: [linkedFreelanceOpportunityId], references: [id], onDelete: SetNull)
+  linkedInternshipOpportunityId String?
+  linkedInternshipOpportunity   InternshipOpportunity? @relation(fields: [linkedInternshipOpportunityId], references: [id], onDelete: SetNull)
+
+  lastTriggeredAt               DateTime?
+  nextTriggerAt                 DateTime?
+
+  createdAt                     DateTime              @default(now())
+  updatedAt                     DateTime              @updatedAt
+
+  @@index([userId])
+  @@index([userId, enabled, nextTriggerAt])
+  @@map("reminders")
+}
+
+model UserPreference {
+  id                                 String   @id @default(uuid())
+  userId                             String   @unique
+  user                               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  defaultFocusMinutes                Int      @default(25)
+  weeklyCareerMinutesTarget          Int      @default(600) // 10h
+
+  preferredDays                      String?  @default("MON,TUE,WED,THU,FRI")
+  preferredStartTime                 String?  @default("09:00")
+  preferredEndTime                   String?  @default("18:00")
+
+  defaultCurrency                    String?  @default("USD")
+  defaultOpportunityPriority         String?  @default("MEDIUM")
+
+  emailNotificationsEnabled          Boolean  @default(true)
+  inAppNotificationsEnabled          Boolean  @default(true)
+
+  dailyReviewReminderEnabled         Boolean  @default(true)
+  dailyReviewReminderTime            String?  @default("20:00")
+
+  careerReviewReminderEnabled        Boolean  @default(true)
+  careerReviewReminderTime           String?  @default("08:00")
+
+  weeklyReviewReminderEnabled        Boolean  @default(true)
+  weeklyReviewDay                    Int?     @default(0) // 0 = Sunday
+  weeklyReviewTime                   String?  @default("20:00")
+
+  opportunityFollowUpReminderEnabled Boolean  @default(true)
+  taskDueReminderEnabled             Boolean  @default(true)
+
+  theme                              String?  @default("SYSTEM") // LIGHT, DARK, SYSTEM
+
+  createdAt                          DateTime @default(now())
+  updatedAt                          DateTime @updatedAt
+
+  @@map("user_preferences")
+}
+
+model Notification {
+  id             String              @id @default(uuid())
+  userId         String
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type           String              // DAILY_REVIEW, WEEKLY_REVIEW, TASK_DUE, OPPORTUNITY_FOLLOW_UP, CUSTOM
+  title          String
+  message        String              @db.Text
+
+  readAt         DateTime?
+
+  entityType     String?             // "TASK", "GOAL", "OPPORTUNITY", "PROJECT", "REVIEW"
+  entityId       String?
+
+  channel        NotificationChannel @default(IN_APP)
+  deliveryStatus String?             @default("SENT") // SENT, FAILED, SKIPPED
+  failureReason  String?
+
+  createdAt      DateTime            @default(now())
+
+  @@index([userId])
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+model FocusSession {
+  id                  String             @id @default(uuid())
+  userId              String
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId              String?
+  task                Task?              @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  dailyPlanId         String?
+  dailyPlan           DailyPlan?         @relation(fields: [dailyPlanId], references: [id], onDelete: SetNull)
+  status              FocusSessionStatus @default(COMPLETED)
+  plannedMinutes      Int                @default(25)
+  actualMinutes       Int                @default(0)
+  durationMinutes     Int                @default(25)
+  completed           Boolean            @default(true)
+  startedAt           DateTime           @default(now())
+  endedAt             DateTime?
+  pausedAt            DateTime?
+  totalPausedSeconds  Int                @default(0)
+  interruptionCount   Int                @default(0)
+  notes               String?            @db.Text
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([userId, status])
+  @@map("focus_sessions")
+}

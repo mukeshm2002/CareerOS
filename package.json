@@ -1,0 +1,35 @@
+{
+  "name": "careeros-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareerOS - Personal Career Operating System",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "dev:all": "npm --prefix server run dev & npm --prefix client run dev",
+    "server": "npm --prefix server run start",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:client",
+    "prisma:generate": "npm --prefix server run prisma:generate",
+    "prisma:migrate": "npm --prefix server run prisma:migrate",
+    "prisma:migrate:deploy": "npm --prefix server run prisma:migrate:deploy",
+    "prisma:studio": "npm --prefix server run prisma:studio",
+    "db:start": "node server/scripts/start-db.js",
+    "verify:production": "node server/scripts/verify-production.js",
+    "test:e2e": "node server/tests/phase1b-e2e.test.js"
+  },
+  "keywords": [
+    "careeros",
+    "career",
+    "operating-system",
+    "productivity",
+    "saas"
+  ],
+  "author": "CareerOS Team",
+  "license": "ISC"
+}
