@@ -162,11 +162,11 @@ export const SchedulePage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <CalendarIcon className="text-brand-600" size={22} />
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">SCHEDULE</h1>
+            <CalendarIcon className="text-[#6C5CE7] dark:text-[#8B7CF6]" size={22} />
+            <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">SCHEDULE</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Plan career growth around your real life. Timezone: <span className="font-semibold text-slate-700">{timezone}</span>
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
+            Plan career growth around your real life. Timezone: <span className="font-semibold text-slate-700 dark:text-[#CBD5E1]">{timezone}</span>
           </p>
         </div>
 
@@ -175,7 +175,7 @@ export const SchedulePage = () => {
             resetForm();
             setShowAddModal(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-brand-600/30 cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#6C5CE7] hover:bg-[#5B4CE0] dark:bg-[#8B7CF6] dark:hover:bg-[#A294FF] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-brand-600/30 cursor-pointer self-start sm:self-auto"
         >
           <Plus size={15} />
           <span>Add Block</span>
@@ -183,20 +183,20 @@ export const SchedulePage = () => {
       </div>
 
       {/* Day Selector & Navigation (Section 27) */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-3.5 shadow-card flex items-center justify-between">
+      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#243044] p-3.5 shadow-card flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrevDay}
-            className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-600 cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#172033] text-slate-600 dark:text-[#CBD5E1] cursor-pointer"
           >
             <ChevronLeft size={18} />
           </button>
-          <span className="text-xs font-bold text-slate-800">
-            {formattedDateHeader} {isCurrentDay && <span className="text-brand-600 font-extrabold ml-1">(Today)</span>}
+          <span className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">
+            {formattedDateHeader} {isCurrentDay && <span className="text-[#6C5CE7] dark:text-[#8B7CF6] font-extrabold ml-1">(Today)</span>}
           </span>
           <button
             onClick={handleNextDay}
-            className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-600 cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#172033] text-slate-600 dark:text-[#CBD5E1] cursor-pointer"
           >
             <ChevronRight size={18} />
           </button>
@@ -204,7 +204,7 @@ export const SchedulePage = () => {
 
         <button
           onClick={handleToday}
-          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+          className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#172033] hover:bg-slate-200 dark:hover:bg-[#243044] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold transition-colors cursor-pointer"
         >
           Today
         </button>
@@ -212,20 +212,20 @@ export const SchedulePage = () => {
 
       {/* Overlap Warning Banner (Section 25) */}
       {overlapWarning && (
-        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
-          <AlertTriangle size={16} className="text-amber-600 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-[#F59E0B]/10 border border-amber-200 dark:border-[#F59E0B]/30 text-xs text-amber-800 dark:text-[#FBBF24] flex items-center gap-2">
+          <AlertTriangle size={16} className="text-[#F59E0B] dark:text-[#FBBF24] shrink-0" />
           <span>{overlapWarning}</span>
         </div>
       )}
 
       {/* Daily Timeline View (Section 27) */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-card space-y-4">
+      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#243044] p-6 md:p-8 shadow-card space-y-4">
         {blocks.length > 0 ? (
           <div className="space-y-3">
             {blocks.map((b) => (
               <div
                 key={b.id}
-                className="flex items-start gap-4 p-4 rounded-xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/70 hover:border-slate-300 transition-all"
+                className="flex items-start gap-4 p-4 rounded-xl bg-slate-50/80 dark:bg-[#172033] hover:bg-slate-50 dark:hover:bg-[#172033]/80 border border-slate-200/70 dark:border-[#243044] hover:border-slate-300 dark:hover:border-slate-700 transition-all"
               >
                 {/* Time range column */}
                 <div className="w-28 shrink-0 font-mono text-xs font-bold text-slate-700 pt-0.5">

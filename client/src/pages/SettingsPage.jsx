@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { settingsService } from '../services/settingsService';
 import { useAuthStore } from '../store/authStore';
+import { applyTheme } from '../utils/theme';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -127,6 +128,9 @@ export const SettingsPage = () => {
           ...prev,
           ...data.preferences,
         }));
+        if (data.preferences.theme) {
+          applyTheme(data.preferences.theme);
+        }
       }
       if (data.security) {
         setSecurityData(data.security);
@@ -244,24 +248,24 @@ export const SettingsPage = () => {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2">
-          <Settings className="text-brand-600" size={22} />
-          <h1 className="text-xl font-bold text-slate-900">Workspace Settings</h1>
+          <Settings className="text-[#6C5CE7] dark:text-[#8B7CF6]" size={22} />
+          <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC]">Workspace Settings</h1>
         </div>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
           Configure personal profile, career preferences, notification reminders, and security credentials.
         </p>
       </div>
 
       {/* Notifications banner */}
       {saveSuccess && (
-        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-4 py-3 rounded-xl">
-          <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+        <div className="flex items-center gap-2 bg-emerald-50 dark:bg-[#22C55E]/10 border border-emerald-200 dark:border-[#22C55E]/30 text-emerald-800 dark:text-[#22C55E] text-xs px-4 py-3 rounded-xl">
+          <CheckCircle2 size={16} className="shrink-0 text-[#16A34A] dark:text-[#22C55E]" />
           <span>{saveSuccess}</span>
         </div>
       )}
       {saveError && (
-        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-800 text-xs px-4 py-3 rounded-xl">
-          <AlertCircle size={16} className="shrink-0 text-red-600" />
+        <div className="flex items-center gap-2 bg-red-50 dark:bg-[#EF4444]/10 border border-red-200 dark:border-[#EF4444]/30 text-red-800 dark:text-[#F87171] text-xs px-4 py-3 rounded-xl">
+          <AlertCircle size={16} className="shrink-0 text-[#EF4444] dark:text-[#F87171]" />
           <span>{saveError}</span>
         </div>
       )}
@@ -279,11 +283,11 @@ export const SettingsPage = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   isActive
-                    ? 'bg-brand-50 text-brand-700 border border-brand-200/80 shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-[#F0EEFF] dark:bg-[#211D3A] text-[#6C5CE7] dark:text-[#8B7CF6] border border-[#6C5CE7]/30 dark:border-[#8B7CF6]/30 shadow-xs'
+                    : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#172033] hover:text-slate-900 dark:hover:text-[#F8FAFC]'
                 }`}
               >
-                <Icon size={16} className={isActive ? 'text-brand-600' : 'text-slate-400'} />
+                <Icon size={16} className={isActive ? 'text-[#6C5CE7] dark:text-[#8B7CF6]' : 'text-slate-400 dark:text-[#64748B]'} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -291,11 +295,11 @@ export const SettingsPage = () => {
         </div>
 
         {/* Tab Content Panes */}
-        <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-card">
+        <div className="flex-1 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#243044] p-6 shadow-card">
           {/* TAB 1: PROFILE */}
           {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-4">
-              <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC] border-b border-slate-100 dark:border-[#243044] pb-2">
                 Personal & Career Identity
               </h2>
 
@@ -754,18 +758,20 @@ export const SettingsPage = () => {
                     key={themeName}
                     type="button"
                     onClick={async () => {
+                      applyTheme(themeName);
+                      localStorage.setItem('careeros_theme', themeName);
                       setPreferences({ ...preferences, theme: themeName });
                       await settingsService.updatePreferences({ theme: themeName });
                       showNotification(`Theme set to ${themeName}`);
                     }}
                     className={`p-4 rounded-xl border text-left transition-all ${
                       preferences.theme === themeName
-                        ? 'border-brand-500 bg-brand-50/50 ring-1 ring-brand-500 text-brand-900'
-                        : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                        ? 'border-[#6C5CE7] dark:border-[#8B7CF6] bg-[#F0EEFF] dark:bg-[#211D3A] ring-1 ring-[#6C5CE7] dark:ring-[#8B7CF6] text-[#6C5CE7] dark:text-[#8B7CF6]'
+                        : 'border-slate-200 dark:border-[#243044] hover:bg-slate-50 dark:hover:bg-[#172033] text-slate-700 dark:text-[#CBD5E1]'
                     }`}
                   >
                     <p className="text-xs font-bold">{themeName}</p>
-                    <p className="text-[11px] text-slate-500 mt-1">
+                    <p className="text-[11px] text-slate-500 dark:text-[#94A3B8] mt-1">
                       {themeName === 'SYSTEM'
                         ? 'Follow operating system theme'
                         : `${themeName.charAt(0) + themeName.slice(1).toLowerCase()} color scheme`}

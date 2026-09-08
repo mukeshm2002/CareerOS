@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { executionService } from '../services/executionService';
 import { planningService } from '../features/planning/services/planningService';
+import { useAuthStore } from '../store/authStore';
 import {
   SunMedium,
   Play,
   Pause,
-  RotateCcw,
   CheckCircle2,
   Clock,
-  BatteryCharging,
   Calendar,
   AlertCircle,
   Sparkles,
   ArrowRight,
-  ChevronDown,
   X,
   Check,
-  AlertTriangle,
-  Flame,
+  RotateCcw,
+  Target,
+  ListTodo,
+  TrendingUp,
+  Moon,
+  ChevronRight,
   ShieldCheck,
-  Compass,
 } from 'lucide-react';
 
 const ENERGY_OPTIONS = [
@@ -41,11 +42,28 @@ function formatMinutes(min) {
   return `${m}m`;
 }
 
+function formatTimerDigits(totalSec) {
+  const hrs = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  if (hrs > 0) {
+    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
 export const MyDayPage = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   // Queries
-  const { data: todayData, isLoading, isError, refetch } = useQuery({
+  const {
+    data: todayData,
+    isLoading: isTodayLoading,
+    isError: isTodayError,
+    refetch: refetchToday,
+  } = useQuery({
     queryKey: ['todayContext'],
     queryFn: () => executionService.getToday(),
   });
@@ -53,7 +71,12 @@ export const MyDayPage = () => {
   const { data: activeFocusData } = useQuery({
     queryKey: ['activeFocusSession'],
     queryFn: () => executionService.getActiveFocusSession(),
-    refetchInterval: 5000,
+    refetchInterval: 4000,
+  });
+
+  const { data: dashboardData } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: () => executionService.getDashboard(),
   });
 
   const { data: tasksData } = useQuery({
@@ -66,10 +89,10 @@ export const MyDayPage = () => {
     queryFn: () => executionService.getDailyReview(),
   });
 
-  // Local UI States
+  // Modals & UI States
   const [showChooseModal, setShowChooseModal] = useState(false);
-  const [showSecondaryModal, setShowSecondaryModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [taskOutcome, setTaskOutcome] = useState('NOT_YET');
   const [sessionNotes, setSessionNotes] = useState('');
 
@@ -93,7 +116,7 @@ export const MyDayPage = () => {
     }
   }, [reviewData]);
 
-  // Timer Local State derived from server timestamps
+  // Derived Active Session and Timer
   const activeSession = activeFocusData?.data || todayData?.data?.activeFocusSession;
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [isTimerPaused, setIsTimerPaused] = useState(false);
@@ -139,7 +162,6 @@ export const MyDayPage = () => {
       queryClient.invalidateQueries({ queryKey: ['todayContext'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setShowChooseModal(false);
-      setShowSecondaryModal(false);
     },
   });
 
@@ -195,35 +217,43 @@ export const MyDayPage = () => {
       queryClient.invalidateQueries({ queryKey: ['todayContext'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setReviewSavedSuccess(true);
-      setTimeout(() => setReviewSavedSuccess(false), 3000);
+      setTimeout(() => {
+        setReviewSavedSuccess(false);
+        setShowReviewModal(false);
+      }, 1200);
     },
   });
 
-  if (isLoading) {
+  // Mobile Loading Skeletons
+  if (isTodayLoading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-10 w-64 bg-slate-200 rounded-lg" />
-        <div className="h-20 bg-slate-100 rounded-2xl" />
-        <div className="h-64 bg-slate-100 rounded-2xl" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-48 bg-slate-100 rounded-2xl" />
-          <div className="h-48 bg-slate-100 rounded-2xl" />
+      <div className="space-y-6 max-w-2xl mx-auto animate-pulse">
+        <div className="space-y-2">
+          <div className="h-7 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+          <div className="h-4 w-36 bg-slate-100 dark:bg-slate-800/60 rounded-md" />
         </div>
+        <div className="h-56 bg-slate-200/70 dark:bg-slate-800/70 rounded-2xl" />
+        <div className="h-32 bg-slate-100 dark:bg-slate-800/50 rounded-2xl" />
+        <div className="h-40 bg-slate-100 dark:bg-slate-800/50 rounded-2xl" />
+        <div className="h-24 bg-slate-100 dark:bg-slate-800/50 rounded-2xl" />
       </div>
     );
   }
 
-  if (isError || !todayData?.data) {
+  // Mobile Error State
+  if (isTodayError || !todayData?.data) {
     return (
-      <div className="p-8 bg-rose-50 border border-rose-200 rounded-2xl text-center space-y-4">
-        <AlertCircle size={36} className="text-rose-600 mx-auto" />
-        <h2 className="text-lg font-bold text-slate-900">We couldn't load today's execution plan.</h2>
-        <p className="text-xs text-slate-600 max-w-md mx-auto">
-          Please check your connection or try again.
+      <div className="max-w-md mx-auto py-12 px-4 text-center space-y-4">
+        <div className="h-14 w-14 rounded-2xl bg-rose-50 dark:bg-[#EF4444]/10 border border-rose-200 dark:border-[#EF4444]/30 text-rose-600 dark:text-[#F87171] flex items-center justify-center mx-auto shadow-xs">
+          <AlertCircle size={28} />
+        </div>
+        <h2 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">We couldn't load today.</h2>
+        <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-xs mx-auto">
+          Please check your connection and try loading your day again.
         </p>
         <button
-          onClick={() => refetch()}
-          className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold"
+          onClick={() => refetchToday()}
+          className="h-11 px-6 bg-[#6C5CE7] hover:bg-[#5B4CE0] dark:bg-[#8B7CF6] dark:hover:bg-[#A294FF] active:scale-95 text-white rounded-xl text-xs font-semibold shadow-sm transition"
         >
           Try Again
         </button>
@@ -235,9 +265,49 @@ export const MyDayPage = () => {
   const plan = context.todayPlan;
   const recommendation = context.recommendation;
   const currentMainTask = plan?.mainTask || recommendation?.recommendedTask;
-  const isPlanConfirmed = plan?.status === 'CONFIRMED' || plan?.status === 'IN_PROGRESS' || plan?.status === 'COMPLETED' || plan?.status === 'CLOSED';
   const secondaryTasks = plan?.secondaryTasks || [];
   const incompleteTasks = tasksData?.data || [];
+  const weekly = dashboardData?.data?.weeklyExecution;
+
+  // Up Next candidates: secondary tasks first, then fallback to other incomplete tasks
+  const upNextList = [];
+  if (secondaryTasks.length > 0) {
+    secondaryTasks.forEach((st) => {
+      if (st.task && st.task.id !== currentMainTask?.id) {
+        upNextList.push(st.task);
+      }
+    });
+  }
+  if (upNextList.length < 3 && incompleteTasks.length > 0) {
+    incompleteTasks.forEach((t) => {
+      if (
+        t.id !== currentMainTask?.id &&
+        !upNextList.some((existing) => existing.id === t.id) &&
+        upNextList.length < 3
+      ) {
+        upNextList.push(t);
+      }
+    });
+  }
+
+  // Schedule list
+  const scheduleItems = (context.todaySchedule || []).slice(0, 4);
+
+  // Time & Greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const todayDateFormatted = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date());
+
+  const firstName = user?.fullName?.split(' ')[0] || 'there';
 
   const handleStartFocus = () => {
     if (!currentMainTask) return;
@@ -245,14 +315,6 @@ export const MyDayPage = () => {
       taskId: currentMainTask.id,
       dailyPlanId: plan?.id,
       plannedMinutes: currentMainTask.estimatedMinutes || 25,
-    });
-  };
-
-  const handleAcceptRecommendation = () => {
-    if (!recommendation?.recommendedTask) return;
-    confirmPlanMutation.mutate({
-      mainTaskId: recommendation.recommendedTask.id,
-      date: context.date,
     });
   };
 
@@ -264,509 +326,356 @@ export const MyDayPage = () => {
     });
   };
 
-  const formatTimerDigits = (totalSec) => {
-    const hrs = Math.floor(totalSec / 3600);
-    const mins = Math.floor((totalSec % 3600) / 60);
-    const secs = totalSec % 60;
-    if (hrs > 0) {
-      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
-
   return (
-    <div className="space-y-7 pb-16">
-      {/* Header (Section 12) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/60 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <SunMedium className="text-amber-500" size={22} />
-            <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">MY DAY</h1>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            One focused session moves your career forward.
-          </p>
-        </div>
-        <div className="text-right">
-          <span className="text-xs font-semibold text-slate-700 block">
-            {context.date}
-          </span>
-          <span className="text-[11px] text-slate-400">
-            Timezone: {context.timezone}
-          </span>
-        </div>
+    <div className="space-y-5 sm:space-y-6 max-w-xl lg:max-w-4xl mx-auto">
+      {/* 1. Greeting & Date Header (Section 10) */}
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-[26px] font-semibold text-slate-900 dark:text-[#F8FAFC] tracking-tight leading-tight">
+          {getGreeting()}, {firstName}
+        </h1>
+        <p className="text-[13px] sm:text-sm text-slate-500 dark:text-[#94A3B8] font-normal">
+          {todayDateFormatted}
+        </p>
+        <p className="text-sm text-slate-600 dark:text-[#CBD5E1] pt-0.5">
+          Focus on one meaningful career action.
+        </p>
       </div>
 
-      {/* Daily Status Strip (Section 13) */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-card grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div>
-          <span className="text-[11px] font-semibold text-slate-400 block uppercase tracking-wider">
-            Career Time Available
-          </span>
-          <span className="text-lg font-bold text-slate-800">
-            {formatMinutes(context.availableCareerMinutes)}
-          </span>
-        </div>
-        <div>
-          <span className="text-[11px] font-semibold text-slate-400 block uppercase tracking-wider">
-            Planned Time
-          </span>
-          <span className="text-lg font-bold text-slate-800">
-            {formatMinutes(context.plannedMinutes)}
-          </span>
-        </div>
-        <div>
-          <span className="text-[11px] font-semibold text-slate-400 block uppercase tracking-wider">
-            Completed Today
-          </span>
-          <span className="text-lg font-bold text-emerald-600">
-            {formatMinutes(context.completedMinutes)}
-          </span>
-        </div>
-        <div>
-          <span className="text-[11px] font-semibold text-slate-400 block uppercase tracking-wider">
-            Day Status
-          </span>
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold mt-1 ${
-              context.dayStatus === 'CLOSED'
-                ? 'bg-slate-200 text-slate-700'
-                : context.dayStatus === 'IN_PROGRESS'
-                ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
-                : context.dayStatus === 'PLANNED'
-                ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-            }`}
-          >
-            {context.dayStatus}
-          </span>
-        </div>
-      </div>
-
-      {/* Active Focus Session Widget (Section 18, 19) */}
-      {activeSession && (
-        <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-xl border border-indigo-700/50 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isTimerPaused ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${isTimerPaused ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+      {/* 2. Today's Main Focus Card — Hero Component (Section 11, 12, 13) */}
+      <div className="bg-white dark:bg-[#121829] rounded-[18px] border border-[#6C5CE7]/30 dark:border-[#8B7CF6]/40 p-5 sm:p-6 shadow-xs transition-all">
+        {/* State A: Active Focus In Progress (Section 14) */}
+        {activeSession ? (
+          <div className="space-y-5 text-center py-2">
+            <div className="flex items-center justify-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    isTimerPaused ? 'bg-amber-400' : 'bg-emerald-400'
+                  }`}
+                />
+                <span
+                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                    isTimerPaused ? 'bg-[#F59E0B]' : 'bg-[#22C55E]'
+                  }`}
+                />
               </span>
-              <span className="text-xs font-bold uppercase tracking-widest text-indigo-200">
-                {isTimerPaused ? 'Focus Session Paused' : 'Focus Session Active'}
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-[#CBD5E1]">
+                {isTimerPaused ? 'Focus Paused' : 'Focused'}
               </span>
             </div>
-            <span className="text-xs text-indigo-300 font-mono">
-              Started at {new Date(activeSession.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-white mb-1">
-                {activeSession.task?.title || 'Focused Deep Work'}
+            <div className="space-y-1">
+              <h2 className="text-xl sm:text-[22px] font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug max-w-md mx-auto">
+                {activeSession.task?.title || 'Deep Focus Session'}
               </h2>
-              <p className="text-xs text-indigo-200">
-                Planned: {activeSession.plannedMinutes || 25} minutes • Paused: {Math.round((activeSession.totalPausedSeconds || 0) / 60)}m
-              </p>
-            </div>
-
-            <div className="text-3xl md:text-4xl font-mono font-extrabold text-emerald-300 tracking-wider">
-              {formatTimerDigits(secondsLeft)}
-              <span className="text-xs text-indigo-200 block font-sans font-normal text-right">
-                {secondsLeft === 0 ? 'Target time reached' : 'remaining'}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 pt-3 border-t border-indigo-800">
-            {isTimerPaused ? (
-              <button
-                onClick={() => resumeFocusMutation.mutate(activeSession.id)}
-                disabled={resumeFocusMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition"
-              >
-                <Play size={14} />
-                <span>Resume Session</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => pauseFocusMutation.mutate(activeSession.id)}
-                disabled={pauseFocusMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs transition"
-              >
-                <Pause size={14} />
-                <span>Pause</span>
-              </button>
-            )}
-
-            <button
-              onClick={() => setShowFinishModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-sm"
-            >
-              <CheckCircle2 size={14} />
-              <span>Finish Session</span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (window.confirm('Are you sure you want to cancel this focus session?')) {
-                  cancelFocusMutation.mutate(activeSession.id);
-                }
-              }}
-              className="ml-auto text-xs text-indigo-300 hover:text-rose-300 font-medium transition"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Main Focus Card (Section 14) */}
-      <div className="bg-white rounded-2xl border-2 border-brand-500/80 p-6 md:p-7 shadow-card space-y-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full uppercase tracking-wider border border-brand-200">
-              Today's Main Focus
-            </span>
-            {isPlanConfirmed && (
-              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                Confirmed
-              </span>
-            )}
-          </div>
-          <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
-            Estimated: {currentMainTask?.estimatedMinutes || 30} mins
-          </span>
-        </div>
-
-        {currentMainTask ? (
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
-              {currentMainTask.title}
-            </h2>
-
-            {/* Goal & Milestone context badges */}
-            <div className="flex flex-wrap items-center gap-2 mb-4 text-xs">
-              {currentMainTask.goal && (
-                <span className="font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md">
-                  Goal: {currentMainTask.goal.title}
-                </span>
+              {activeSession.task?.goal && (
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">
+                  {activeSession.task.goal.title}
+                </p>
               )}
-              {currentMainTask.milestone && (
-                <span className="font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
-                  Milestone: {currentMainTask.milestone.title}
-                </span>
-              )}
-              <span className="text-brand-600 font-bold px-2 py-0.5 rounded bg-brand-50 text-[11px]">
-                {currentMainTask.priority} PRIORITY
+            </div>
+
+            {/* Large Center-Aligned Timer (44-52px tabular numbers) */}
+            <div className="py-2">
+              <div className="text-[46px] sm:text-[52px] font-medium font-mono tracking-tight tabular-nums text-slate-900 dark:text-[#F8FAFC] leading-none">
+                {formatTimerDigits(secondsLeft)}
+              </div>
+              <span className="text-xs text-slate-400 dark:text-[#94A3B8] mt-2 block">
+                Planned: {activeSession.plannedMinutes || 25} min
               </span>
             </div>
 
-            {/* Why This Matters (Section 8, 14) */}
-            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-2">
-              <h4 className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wide">
-                <Sparkles size={14} className="text-brand-600" />
-                Why this matters today
-              </h4>
-              <ul className="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
-                {recommendation?.explanation?.map((bullet, idx) => (
-                  <li key={idx}>{bullet}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ) : (
-          /* Empty State (Section 9) */
-          <div className="text-center py-8 space-y-3">
-            <ShieldCheck size={40} className="text-emerald-500 mx-auto" />
-            <h3 className="text-base font-bold text-slate-800">You're clear for today.</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              There are no active career tasks that need your attention.
-            </p>
-            <div className="flex justify-center gap-3 pt-2">
-              <Link
-                to="/app/roadmap"
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl"
-              >
-                Review Roadmap
-              </Link>
-              <Link
-                to="/app/tasks"
-                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl"
-              >
-                Add Task
-              </Link>
-            </div>
-          </div>
-        )}
+            {/* Controls */}
+            <div className="flex items-center justify-center gap-2 pt-2">
+              {isTimerPaused ? (
+                <button
+                  onClick={() => resumeFocusMutation.mutate(activeSession.id)}
+                  disabled={resumeFocusMutation.isPending}
+                  className="h-[48px] px-6 rounded-xl bg-[#16A34A] hover:bg-[#15803d] dark:bg-[#22C55E] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition"
+                >
+                  <Play size={16} strokeWidth={2} />
+                  <span>Resume</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => pauseFocusMutation.mutate(activeSession.id)}
+                  disabled={pauseFocusMutation.isPending}
+                  className="h-[48px] px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#181F34] dark:hover:bg-[#1D2540] active:scale-95 text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs flex items-center gap-2 border border-slate-200 dark:border-[#28324A] transition"
+                >
+                  <Pause size={16} strokeWidth={2} />
+                  <span>Pause</span>
+                </button>
+              )}
 
-        {/* Action Buttons (Section 10 & 14) */}
-        {currentMainTask && (
-          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100">
-            {!activeSession ? (
+              <button
+                onClick={() => setShowFinishModal(true)}
+                className="h-[48px] px-6 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition"
+              >
+                <CheckCircle2 size={16} strokeWidth={2} />
+                <span>Finish Session</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (window.confirm('Cancel this focus session?')) {
+                    cancelFocusMutation.mutate(activeSession.id);
+                  }
+                }}
+                className="h-[48px] px-4 rounded-xl text-slate-400 hover:text-[#EF4444] dark:hover:text-[#F87171] text-xs font-medium transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : currentMainTask ? (
+          /* State B: Ready to Focus */
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] uppercase tracking-wider bg-[#EFEDFF] dark:bg-[#272344] px-3 py-1 rounded-full border border-[#6C5CE7]/20 dark:border-[#8B7CF6]/30">
+                <Target size={14} strokeWidth={2} />
+                TODAY'S FOCUS
+              </span>
+              <button
+                onClick={() => setShowChooseModal(true)}
+                className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-medium py-1 px-2 rounded-lg hover:bg-brand-50 dark:hover:bg-[#272344] transition-colors"
+              >
+                Change focus
+              </button>
+            </div>
+
+            <div className="space-y-2.5">
+              <h2 className="text-xl sm:text-[22px] font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug">
+                {currentMainTask.title}
+              </h2>
+
+              {/* Maximum 3 metadata chips: Goal, Duration, Priority/Due */}
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                {currentMainTask.goal && (
+                  <span className="font-medium text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#181F34] px-2.5 py-1 rounded-lg">
+                    {currentMainTask.goal.title}
+                  </span>
+                )}
+                <span className="font-medium text-slate-600 dark:text-[#CBD5E1] bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                  <Clock size={12} className="text-slate-400 dark:text-[#94A3B8]" />
+                  {currentMainTask.estimatedMinutes || 30} min
+                </span>
+                <span className="font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] bg-[#EFEDFF] dark:bg-[#272344] px-2.5 py-1 rounded-lg">
+                  {currentMainTask.priority || 'HIGH'} PRIORITY
+                </span>
+              </div>
+            </div>
+
+            {/* Primary Action Button (50-52px height, full width on mobile) */}
+            <div className="pt-2">
               <button
                 onClick={handleStartFocus}
                 disabled={startFocusMutation.isPending}
-                className="flex items-center gap-2 py-2.5 px-6 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm shadow-brand-600/30 transition"
+                className="w-full h-[52px] rounded-[14px] bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-xs transition duration-200"
               >
-                <Play size={14} />
+                <Play size={17} strokeWidth={2} />
                 <span>Start Focus</span>
               </button>
-            ) : (
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-200">
-                Focus Session Running Above
-              </span>
-            )}
-
-            {!isPlanConfirmed && (
+            </div>
+          </div>
+        ) : (
+          /* State C: No Focus Selected (Empty State) */
+          <div className="text-center py-6 space-y-3">
+            <ShieldCheck size={36} className="text-[#22C55E] dark:text-[#34D399] mx-auto" />
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-[#F8FAFC]">You're clear for today.</h3>
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-xs mx-auto">
+                Choose one meaningful task for today.
+              </p>
+            </div>
+            <div className="flex justify-center gap-3 pt-2">
               <button
-                onClick={handleAcceptRecommendation}
-                disabled={confirmPlanMutation.isPending}
-                className="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition"
+                onClick={() => setShowChooseModal(true)}
+                className="h-11 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] text-white text-xs font-semibold shadow-xs transition"
               >
-                Accept Focus
+                Choose Focus
               </button>
-            )}
-
-            <button
-              onClick={() => setShowChooseModal(true)}
-              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition"
-            >
-              Choose Another
-            </button>
-
-            <Link
-              to="/app/schedule"
-              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition ml-auto"
-            >
-              View Schedule
-            </Link>
+              <Link
+                to="/app/goals"
+                className="h-11 px-4 rounded-xl bg-slate-100 dark:bg-[#181F34] hover:bg-slate-200 dark:hover:bg-[#1D2540] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold flex items-center transition"
+              >
+                View Plan
+              </Link>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Secondary Tasks & Schedule Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Secondary Tasks (Section 15: Max 3) */}
-        <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-card space-y-4">
+      {/* 3. Up Next (Section 15) & Schedule Grid on Desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Up Next Card */}
+        <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-4 sm:p-5 space-y-3.5 shadow-xs">
           <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">IF YOU HAVE MORE TIME</h3>
-              <p className="text-xs text-slate-500">Secondary tasks (Maximum 3)</p>
-            </div>
-            <button
-              onClick={() => setShowSecondaryModal(true)}
-              className="text-xs text-brand-600 hover:text-brand-700 font-semibold"
+            <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
+              UP NEXT
+            </h3>
+            <Link
+              to="/app/tasks"
+              className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-semibold flex items-center gap-0.5 hover:underline"
             >
-              Manage ({secondaryTasks.length}/3)
-            </button>
+              View all tasks
+              <ChevronRight size={14} strokeWidth={2} />
+            </Link>
           </div>
 
-          {secondaryTasks.length > 0 ? (
-            <div className="space-y-2.5">
-              {secondaryTasks.map((sec, idx) => (
+          {upNextList.length > 0 ? (
+            <div className="divide-y divide-slate-100 dark:divide-[#28324A]">
+              {upNextList.map((t) => (
                 <div
-                  key={sec.id || idx}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/70"
+                  key={t.id}
+                  onClick={() => handleSelectDifferentTask(t.id)}
+                  className="flex items-center justify-between py-3 first:pt-0 last:pb-0 cursor-pointer group transition-colors"
                 >
-                  <div className="flex items-center gap-3 text-xs">
-                    <span className="font-semibold text-slate-800">
-                      {sec.task?.title || 'Secondary task'}
-                    </span>
+                  <div className="flex items-center gap-3 min-w-0 pr-3">
+                    <span className="h-3.5 w-3.5 rounded-full border border-slate-300 dark:border-slate-600 group-hover:border-[#6C5CE7] dark:group-hover:border-[#8B7CF6] shrink-0 transition-colors" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#6C5CE7] dark:group-hover:text-[#8B7CF6] transition-colors">{t.title}</p>
+                      <p className="text-xs text-slate-400 dark:text-[#94A3B8] truncate mt-0.5">
+                        {t.goal?.title || 'Career Task'} · {t.estimatedMinutes || 30} min
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">
-                    {sec.task?.estimatedMinutes || 30} min
+                  <span className="text-xs font-medium text-slate-400 dark:text-[#94A3B8] shrink-0">
+                    {t.estimatedMinutes || 30}m
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-5 border border-dashed border-slate-200 rounded-xl text-center space-y-2">
-              <p className="text-xs text-slate-500">No secondary tasks selected for today.</p>
-              <button
-                onClick={() => setShowSecondaryModal(true)}
-                className="text-xs text-brand-600 font-semibold hover:underline"
-              >
-                + Add Secondary Task
-              </button>
-            </div>
+            <p className="text-xs text-slate-400 dark:text-[#64748B] italic py-2">No upcoming tasks queued.</p>
           )}
         </div>
 
-        {/* Today Timeline (Section 16) */}
-        <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-card space-y-4">
+        {/* 4. Today's Schedule (Section 16) */}
+        <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-4 sm:p-5 space-y-3.5 shadow-xs">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Calendar size={16} className="text-slate-500" />
-              <span>TODAY'S SCHEDULE</span>
+            <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
+              TODAY'S SCHEDULE
             </h3>
-            <Link to="/app/schedule" className="text-xs text-brand-600 hover:text-brand-700 font-medium">
-              Open Schedule →
+            <Link
+              to="/app/schedule"
+              className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-semibold flex items-center gap-0.5 hover:underline"
+            >
+              Schedule
+              <ChevronRight size={14} strokeWidth={2} />
             </Link>
           </div>
 
-          <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-            {context.todaySchedule && context.todaySchedule.length > 0 ? (
-              context.todaySchedule.map((block, i) => (
-                <div key={block.id || i} className="flex items-start gap-3 text-xs">
-                  <span className="font-mono text-[11px] text-slate-400 w-12 pt-0.5">
+          {scheduleItems.length > 0 ? (
+            <div className="divide-y divide-slate-100 dark:divide-[#28324A]">
+              {scheduleItems.map((block, idx) => (
+                <div
+                  key={block.id}
+                  className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
+                >
+                  <span className="font-mono text-xs font-medium text-slate-500 dark:text-[#94A3B8] w-16 shrink-0">
                     {block.startTime}
                   </span>
-                  <div className={`flex-1 pl-3 border-l-2 ${block.taskId === currentMainTask?.id ? 'border-brand-500 bg-brand-50/50 rounded-r-lg' : 'border-slate-300'} py-1`}>
-                    <p className="font-semibold text-slate-800">{block.title}</p>
-                    <p className="text-[10px] text-slate-400">
-                      {block.startTime} – {block.endTime} • {block.category}
-                    </p>
+                  <span className={`h-2 w-2 rounded-full shrink-0 ${idx === 0 ? 'bg-[#6C5CE7] dark:bg-[#8B7CF6]' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate">{block.title}</p>
                   </div>
+                  <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium shrink-0">
+                    {block.category || 'Career'}
+                  </span>
                 </div>
-              ))
-            ) : (
-              <p className="text-xs text-slate-500 italic py-4 text-center">
-                No schedule blocks created for today yet.
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Daily Review Section (Section 23, 24, 25) */}
-      <div id="review" className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-7 shadow-card space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div>
-            <h3 className="text-base font-bold text-slate-900">END YOUR DAY</h3>
-            <p className="text-xs text-slate-500">Reflect, capture blockers, and align tomorrow's priority.</p>
-          </div>
-          {reviewSavedSuccess && (
-            <span className="text-xs text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-medium flex items-center gap-1">
-              <Check size={13} /> Review Saved
-            </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 dark:text-[#64748B] italic py-2">No scheduled time blocks today.</p>
           )}
         </div>
+      </div>
 
-        <div className="space-y-4 text-xs">
-          <div>
-            <label className="font-semibold text-slate-700 block mb-1">What did you complete today?</label>
-            <input
-              type="text"
-              value={completedSummary}
-              onChange={(e) => setCompletedSummary(e.target.value)}
-              placeholder="e.g. Completed JWT Authentication endpoint tests"
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            />
-          </div>
-
-          <div>
-            <label className="font-semibold text-slate-700 block mb-1">What did you learn?</label>
-            <input
-              type="text"
-              value={learnedSummary}
-              onChange={(e) => setLearnedSummary(e.target.value)}
-              placeholder="e.g. Refresh token rotation prevents replay attacks"
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            />
-          </div>
-
-          <div>
-            <label className="font-semibold text-slate-700 block mb-1">Anything blocking you?</label>
-            <input
-              type="text"
-              value={blockerSummary}
-              onChange={(e) => setBlockerSummary(e.target.value)}
-              placeholder="e.g. Need to configure CORS header for cross-origin cookie cookies"
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="font-semibold text-slate-700 block mb-1">Tomorrow's ONE Main Task (Section 26)</label>
-              <select
-                value={tomorrowTaskId}
-                onChange={(e) => setTomorrowTaskId(e.target.value)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
-              >
-                <option value="">-- Select Tomorrow's Priority --</option>
-                {incompleteTasks.map((task) => (
-                  <option key={task.id} value={task.id}>
-                    {task.title} ({task.estimatedMinutes || 30}m)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="font-semibold text-slate-700 block mb-1">Energy Today</label>
-              <div className="flex items-center gap-1.5 pt-1">
-                {ENERGY_OPTIONS.map((opt) => (
-                  <button
-                    type="button"
-                    key={opt.value}
-                    onClick={() => setEnergyLevel(opt.value)}
-                    className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition ${
-                      energyLevel === opt.value
-                        ? 'bg-slate-900 text-white shadow-sm'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+      {/* 5. Quick Weekly Progress (Section 17) */}
+      <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-4 sm:p-5 space-y-3.5 shadow-xs">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
+            THIS WEEK
+          </h3>
+          <Link
+            to="/app/progress"
+            className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-semibold flex items-center gap-0.5 hover:underline"
+          >
+            View progress
+            <ChevronRight size={14} strokeWidth={2} />
+          </Link>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-          <button
-            onClick={() =>
-              saveReviewMutation.mutate({
-                completedSummary,
-                learnedSummary,
-                blockerSummary,
-                tomorrowMainTaskId: tomorrowTaskId || null,
-                energyLevel,
-                closeDay: false,
-              })
-            }
-            disabled={saveReviewMutation.isPending}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
-          >
-            Save Draft
-          </button>
+        <div className="grid grid-cols-3 gap-3 text-center pt-1">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181F34] border border-slate-100 dark:border-[#28324A]">
+            <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
+              {formatMinutes(weekly?.totalFocusMinutes || 0)}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium mt-0.5 block">
+              Focused
+            </span>
+          </div>
 
-          <button
-            onClick={() =>
-              saveReviewMutation.mutate({
-                completedSummary,
-                learnedSummary,
-                blockerSummary,
-                tomorrowMainTaskId: tomorrowTaskId || null,
-                energyLevel,
-                closeDay: true,
-              })
-            }
-            disabled={saveReviewMutation.isPending}
-            className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition shadow-sm"
-          >
-            Close Day
-          </button>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181F34] border border-slate-100 dark:border-[#28324A]">
+            <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
+              {weekly?.tasksCompleted || 0}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium mt-0.5 block">
+              Tasks
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181F34] border border-slate-100 dark:border-[#28324A]">
+            <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
+              {weekly?.activeDays || 0}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium mt-0.5 block">
+              Active days
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* MODAL: Choose Another Main Task */}
+      {/* 6. Daily Review / End Day Card (Section 18 — Calm feel) */}
+      <div className="bg-[#F4F2FF] dark:bg-[#181F34] border border-slate-200/80 dark:border-[#28324A] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Moon size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6]">
+              END YOUR DAY
+            </h3>
+          </div>
+          <p className="text-xs text-slate-600 dark:text-[#CBD5E1]">
+            Review what you accomplished and choose tomorrow's main focus.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowReviewModal(true)}
+          className="h-11 px-5 rounded-xl bg-white dark:bg-[#121829] border border-slate-200 dark:border-[#28324A] text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs hover:bg-slate-50 dark:hover:bg-[#1D2540] active:scale-95 transition shrink-0 shadow-xs"
+        >
+          Daily Review
+        </button>
+      </div>
+
+      {/* MODAL: Choose Main Focus Task */}
       {showChooseModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">Choose Today's Main Focus</h3>
-              <button onClick={() => setShowChooseModal(false)} className="text-slate-400 hover:text-slate-600">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-white dark:bg-[#121829] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#28324A] p-5 shadow-2xl space-y-4 max-h-[80vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+            {/* Sheet Handle */}
+            <div className="w-12 h-1 bg-slate-200 dark:bg-[#28324A] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A] pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Choose Today's Main Focus</h3>
+              <button
+                onClick={() => setShowChooseModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg"
+              >
                 <X size={18} />
               </button>
             </div>
 
-            <p className="text-xs text-slate-500">
-              Select any active task to establish as today's confirmed focus priority.
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+              Select any active task to establish as today's anchor priority.
             </p>
 
             <div className="space-y-2 overflow-y-auto flex-1 pr-1">
@@ -774,21 +683,19 @@ export const MyDayPage = () => {
                 <div
                   key={t.id}
                   onClick={() => handleSelectDifferentTask(t.id)}
-                  className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between ${
+                  className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between min-h-[48px] ${
                     t.id === currentMainTask?.id
-                      ? 'border-brand-500 bg-brand-50/60'
-                      : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                      ? 'border-[#6C5CE7] bg-[#EFEDFF] dark:border-[#8B7CF6] dark:bg-[#272344]'
+                      : 'border-slate-200 dark:border-[#28324A] hover:border-slate-300 dark:hover:border-[#37435E] bg-slate-50/50 dark:bg-[#181F34]/50'
                   }`}
                 >
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-slate-800">{t.title}</p>
-                    <p className="text-[11px] text-slate-400">
+                  <div className="space-y-0.5 min-w-0 pr-2">
+                    <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC] truncate">{t.title}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-[#94A3B8]">
                       {t.priority} • {t.estimatedMinutes || 30} mins
                     </p>
                   </div>
-                  {t.id === currentMainTask?.id && (
-                    <Check size={16} className="text-brand-600" />
-                  )}
+                  {t.id === currentMainTask?.id && <Check size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />}
                 </div>
               ))}
             </div>
@@ -796,162 +703,76 @@ export const MyDayPage = () => {
         </div>
       )}
 
-      {/* MODAL: Manage Secondary Tasks (Max 3) */}
-      {showSecondaryModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">Manage Secondary Tasks (Max 3)</h3>
-              <button onClick={() => setShowSecondaryModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={18} />
-              </button>
-            </div>
-
-            <p className="text-xs text-slate-500">
-              Pick up to 3 support tasks. CareerOS limits secondary tasks to prevent daily burnout.
-            </p>
-
-            <div className="space-y-2 overflow-y-auto flex-1 pr-1">
-              {incompleteTasks
-                .filter((t) => t.id !== currentMainTask?.id)
-                .map((t) => {
-                  const isSelected = secondaryTasks.some((st) => st.taskId === t.id);
-                  return (
-                    <div
-                      key={t.id}
-                      onClick={() => {
-                        let newIds = secondaryTasks.map((st) => st.taskId);
-                        if (isSelected) {
-                          newIds = newIds.filter((id) => id !== t.id);
-                        } else {
-                          if (newIds.length >= 3) {
-                            alert('Maximum 3 secondary tasks allowed.');
-                            return;
-                          }
-                          newIds.push(t.id);
-                        }
-                        savePlanMutation.mutate({
-                          mainTaskId: currentMainTask?.id,
-                          secondaryTaskIds: newIds,
-                          date: context.date,
-                        });
-                      }}
-                      className={`p-3 rounded-xl border cursor-pointer transition flex items-center justify-between ${
-                        isSelected
-                          ? 'border-brand-500 bg-brand-50/60'
-                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
-                      }`}
-                    >
-                      <div>
-                        <p className="text-xs font-semibold text-slate-800">{t.title}</p>
-                        <p className="text-[11px] text-slate-400">{t.estimatedMinutes || 30} mins</p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        className="rounded text-brand-600 focus:ring-brand-500"
-                      />
-                    </div>
-                  );
-                })}
-            </div>
-
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
-              <button
-                onClick={() => setShowSecondaryModal(false)}
-                className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: Finish Focus Session (Section 21) */}
+      {/* MODAL: Finish Focus Session */}
       {showFinishModal && activeSession && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">FOCUS COMPLETE</h3>
-              <button onClick={() => setShowFinishModal(false)} className="text-slate-400 hover:text-slate-600">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-white dark:bg-[#121829] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#28324A] p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+            {/* Sheet Handle */}
+            <div className="w-12 h-1 bg-slate-200 dark:bg-[#28324A] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A] pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Finish Focus Session</h3>
+              <button
+                onClick={() => setShowFinishModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg"
+              >
                 <X size={18} />
               </button>
             </div>
 
-            <div>
-              <h4 className="text-sm font-bold text-slate-800">{activeSession.task?.title || 'Focus Session'}</h4>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Planned: {activeSession.plannedMinutes} min
-              </p>
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">{activeSession.task?.title}</h4>
+              <p className="text-xs text-slate-400 dark:text-[#94A3B8]">Did you finish this task?</p>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 block">Did you finish the task?</label>
-              <div className="space-y-2 text-xs">
-                <label className="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
-                  <input
-                    type="radio"
-                    name="taskOutcome"
-                    value="COMPLETED"
-                    checked={taskOutcome === 'COMPLETED'}
-                    onChange={(e) => setTaskOutcome(e.target.value)}
-                    className="text-brand-600 focus:ring-brand-500"
-                  />
-                  <div>
-                    <span className="font-semibold text-slate-800">Yes, completed</span>
-                    <p className="text-[11px] text-slate-400">Marks task as completed in your roadmap</p>
-                  </div>
-                </label>
+            <div className="space-y-2 text-xs">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-[#28324A] cursor-pointer hover:bg-slate-50 dark:hover:bg-[#181F34] transition min-h-[48px]">
+                <input
+                  type="radio"
+                  name="taskOutcome"
+                  value="COMPLETED"
+                  checked={taskOutcome === 'COMPLETED'}
+                  onChange={(e) => setTaskOutcome(e.target.value)}
+                  className="text-[#6C5CE7] dark:text-[#8B7CF6] focus:ring-[#6C5CE7]"
+                />
+                <div>
+                  <span className="font-semibold text-slate-800 dark:text-[#F8FAFC] block">Yes, completed</span>
+                  <span className="text-[11px] text-slate-400 dark:text-[#94A3B8]">Marks task as completed</span>
+                </div>
+              </label>
 
-                <label className="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
-                  <input
-                    type="radio"
-                    name="taskOutcome"
-                    value="NOT_YET"
-                    checked={taskOutcome === 'NOT_YET'}
-                    onChange={(e) => setTaskOutcome(e.target.value)}
-                    className="text-brand-600 focus:ring-brand-500"
-                  />
-                  <div>
-                    <span className="font-semibold text-slate-800">Not yet</span>
-                    <p className="text-[11px] text-slate-400">Logs session time, task remains incomplete</p>
-                  </div>
-                </label>
-
-                <label className="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
-                  <input
-                    type="radio"
-                    name="taskOutcome"
-                    value="BLOCKED"
-                    checked={taskOutcome === 'BLOCKED'}
-                    onChange={(e) => setTaskOutcome(e.target.value)}
-                    className="text-brand-600 focus:ring-brand-500"
-                  />
-                  <div>
-                    <span className="font-semibold text-slate-800">Blocked</span>
-                    <p className="text-[11px] text-slate-400">Mark task as blocked</p>
-                  </div>
-                </label>
-              </div>
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-[#28324A] cursor-pointer hover:bg-slate-50 dark:hover:bg-[#181F34] transition min-h-[48px]">
+                <input
+                  type="radio"
+                  name="taskOutcome"
+                  value="NOT_YET"
+                  checked={taskOutcome === 'NOT_YET'}
+                  onChange={(e) => setTaskOutcome(e.target.value)}
+                  className="text-[#6C5CE7] dark:text-[#8B7CF6] focus:ring-[#6C5CE7]"
+                />
+                <div>
+                  <span className="font-semibold text-slate-800 dark:text-[#F8FAFC] block">Not yet</span>
+                  <span className="text-[11px] text-slate-400 dark:text-[#94A3B8]">Logs session, task stays open</span>
+                </div>
+              </label>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Optional session note</label>
+              <label className="text-[11px] font-semibold text-slate-600 dark:text-[#CBD5E1] block mb-1">
+                Optional note
+              </label>
               <input
                 type="text"
                 value={sessionNotes}
                 onChange={(e) => setSessionNotes(e.target.value)}
-                placeholder="What did you achieve or where did you stop?"
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                placeholder="What did you get done?"
+                className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
               />
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-[#28324A]">
               <button
                 onClick={() => setShowFinishModal(false)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold"
+                className="h-11 px-4 rounded-xl text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#181F34] text-xs font-semibold"
               >
                 Back
               </button>
@@ -959,16 +780,157 @@ export const MyDayPage = () => {
                 onClick={() =>
                   finishFocusMutation.mutate({
                     sessionId: activeSession.id,
-                    data: {
-                      taskOutcome,
-                      notes: sessionNotes,
-                    },
+                    data: { taskOutcome, notes: sessionNotes },
                   })
                 }
                 disabled={finishFocusMutation.isPending}
-                className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-sm transition"
+                className="h-11 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] text-white text-xs font-semibold shadow-xs transition"
               >
                 Save Session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Daily Review */}
+      {showReviewModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg bg-white dark:bg-[#121829] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#28324A] p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+            {/* Sheet Handle */}
+            <div className="w-12 h-1 bg-slate-200 dark:bg-[#28324A] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A] pb-3">
+              <div className="flex items-center gap-2">
+                <Moon size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Daily Review</h3>
+              </div>
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {reviewSavedSuccess && (
+              <div className="p-3 bg-emerald-50 dark:bg-[#22C55E]/10 border border-emerald-200 dark:border-[#22C55E]/30 rounded-xl text-xs font-semibold text-emerald-700 dark:text-[#22C55E] flex items-center gap-2">
+                <Check size={16} />
+                <span>Daily review saved successfully!</span>
+              </div>
+            )}
+
+            <div className="space-y-3.5 overflow-y-auto flex-1 pr-1 text-xs">
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">
+                  What did you complete today?
+                </label>
+                <input
+                  type="text"
+                  value={completedSummary}
+                  onChange={(e) => setCompletedSummary(e.target.value)}
+                  placeholder="e.g. Finished JWT authentication tests"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">
+                  What did you learn?
+                </label>
+                <input
+                  type="text"
+                  value={learnedSummary}
+                  onChange={(e) => setLearnedSummary(e.target.value)}
+                  placeholder="e.g. Refresh token rotation prevents replay attacks"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">
+                  Anything blocking you?
+                </label>
+                <input
+                  type="text"
+                  value={blockerSummary}
+                  onChange={(e) => setBlockerSummary(e.target.value)}
+                  placeholder="e.g. Need CORS headers configured"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">
+                  Tomorrow's ONE Main Task
+                </label>
+                <select
+                  value={tomorrowTaskId}
+                  onChange={(e) => setTomorrowTaskId(e.target.value)}
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                >
+                  <option value="">-- Select Priority --</option>
+                  {incompleteTasks.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.title} ({t.estimatedMinutes || 30}m)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">Energy Today</label>
+                <div className="grid grid-cols-5 gap-1.5 pt-0.5">
+                  {ENERGY_OPTIONS.map((opt) => (
+                    <button
+                      type="button"
+                      key={opt.value}
+                      onClick={() => setEnergyLevel(opt.value)}
+                      className={`h-10 px-1 rounded-xl text-[11px] font-semibold transition ${
+                        energyLevel === opt.value
+                          ? 'bg-[#6C5CE7] dark:bg-[#8B7CF6] text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-[#181F34] hover:bg-slate-200 dark:hover:bg-[#28324A] text-slate-600 dark:text-[#CBD5E1]'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#28324A]">
+              <button
+                onClick={() =>
+                  saveReviewMutation.mutate({
+                    completedSummary,
+                    learnedSummary,
+                    blockerSummary,
+                    tomorrowMainTaskId: tomorrowTaskId || null,
+                    energyLevel,
+                    closeDay: false,
+                  })
+                }
+                disabled={saveReviewMutation.isPending}
+                className="h-11 px-4 rounded-xl text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#181F34] hover:bg-slate-200 dark:hover:bg-[#28324A] text-xs font-semibold"
+              >
+                Save Draft
+              </button>
+
+              <button
+                onClick={() =>
+                  saveReviewMutation.mutate({
+                    completedSummary,
+                    learnedSummary,
+                    blockerSummary,
+                    tomorrowMainTaskId: tomorrowTaskId || null,
+                    energyLevel,
+                    closeDay: true,
+                  })
+                }
+                disabled={saveReviewMutation.isPending}
+                className="h-11 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] text-white text-xs font-semibold shadow-xs transition"
+              >
+                Close Day
               </button>
             </div>
           </div>

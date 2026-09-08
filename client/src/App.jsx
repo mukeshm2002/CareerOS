@@ -11,6 +11,7 @@ import { OnboardingPage } from './pages/OnboardingPage';
 // Main App Pages
 import { OverviewPage } from './pages/OverviewPage';
 import { MyDayPage } from './pages/MyDayPage';
+import { MorePage } from './pages/MorePage';
 import { TasksPage } from './pages/TasksPage';
 import { SchedulePage } from './pages/SchedulePage';
 import { GoalsPage } from './pages/GoalsPage';
@@ -53,8 +54,10 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<OverviewPage />} />
+        <Route index element={<Navigate to="/app/today" replace />} />
         <Route path="today" element={<MyDayPage />} />
+        <Route path="overview" element={<OverviewPage />} />
+        <Route path="more" element={<MorePage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="schedule" element={<SchedulePage />} />
         <Route path="goals" element={<GoalsPage />} />
