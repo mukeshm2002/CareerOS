@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Briefcase,
@@ -9,12 +9,24 @@ import {
   Settings,
   Compass,
   ChevronRight,
+  BookOpen,
+  Download,
+  Check,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { pwaService } from '../services/pwaService';
 
 export const MorePage = () => {
   const { user } = useAuthStore();
   const displayName = user?.fullName || 'Professional';
+  const [canInstall, setCanInstall] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    setIsStandalone(pwaService.isStandalone());
+    const unsub = pwaService.onInstallChange(setCanInstall);
+    return () => unsub();
+  }, []);
 
   const menuSections = [
     {
@@ -43,6 +55,12 @@ export const MorePage = () => {
     {
       title: 'REFLECTION',
       items: [
+        {
+          name: 'Career Journal',
+          path: '/app/work-log',
+          icon: BookOpen,
+          desc: 'Daily work logs, learnings, blockers & next steps',
+        },
         {
           name: 'Reviews',
           path: '/app/reviews',
@@ -85,6 +103,41 @@ export const MorePage = () => {
           Explore secondary career tools, pipelines, reflections, and settings.
         </p>
       </div>
+
+      {/* PWA Install Card (Section 5) */}
+      {(canInstall || isStandalone) && (
+        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] p-4 shadow-xs flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-10 w-10 rounded-xl bg-[rgba(124,108,242,0.12)] border border-[rgba(124,108,242,0.24)] text-[#7C6CF2] dark:text-[#8B7CF6] flex items-center justify-center shrink-0">
+              <Download size={18} strokeWidth={2} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
+                {isStandalone ? 'CareerOS is installed' : 'Install CareerOS'}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8] truncate">
+                {isStandalone
+                  ? 'Running as standalone app on your home screen'
+                  : 'Add CareerOS to your home screen for faster access.'}
+              </p>
+            </div>
+          </div>
+
+          {isStandalone ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 shrink-0">
+              <Check size={12} strokeWidth={2.5} />
+              <span>Installed</span>
+            </span>
+          ) : (
+            <button
+              onClick={() => pwaService.promptInstall()}
+              className="h-9 px-4 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white font-semibold text-xs transition active:scale-95 shrink-0 shadow-xs"
+            >
+              Install
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Menu Groups */}
       <div className="space-y-6">

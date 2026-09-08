@@ -389,11 +389,13 @@ model User {
   weeklyReviews       WeeklyReview[]
   dailyReviews        DailyReview[]
   dailyPlans          DailyPlan[]
+  dailyWorkLogs       DailyWorkLog[]
   reminders           Reminder[]
   preferences         UserPreference?
   notifications       Notification[]
   focusSessions       FocusSession[]
   skillAssessmentHistory UserSkillAssessmentHistory[]
+  pushSubscriptions   PushSubscription[]
 
   @@map("users")
 }
@@ -1127,6 +1129,24 @@ model DailyReview {
   @@map("daily_reviews")
 }
 
+model DailyWorkLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logDate   DateTime @db.Date
+  workedOn  String?  @db.Text
+  learned   String?  @db.Text
+  blockers  String?  @db.Text
+  nextStep  String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, logDate])
+  @@index([userId])
+  @@index([userId, logDate])
+  @@map("daily_work_logs")
+}
+
 model WeeklyReview {
   id                     String             @id @default(uuid())
   userId                 String
@@ -1234,6 +1254,7 @@ model UserPreference {
 
   emailNotificationsEnabled          Boolean  @default(true)
   inAppNotificationsEnabled          Boolean  @default(true)
+  pushNotificationsEnabled          Boolean  @default(true)
 
   dailyReviewReminderEnabled         Boolean  @default(true)
   dailyReviewReminderTime            String?  @default("20:00")
@@ -1306,4 +1327,20 @@ model FocusSession {
   @@index([userId])
   @@index([userId, status])
   @@map("focus_sessions")
+}
+
+model PushSubscription {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint   String    @unique
+  p256dh     String    @db.Text
+  auth       String    @db.Text
+  userAgent  String?   @db.Text
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastUsedAt DateTime?
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }

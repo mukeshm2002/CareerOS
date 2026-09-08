@@ -15,11 +15,21 @@ import {
   Clock,
   Globe,
   Loader2,
+  Smartphone,
+  Laptop,
+  Download,
+  Trash2,
+  Send,
+  Info,
+  Check,
 } from 'lucide-react';
 import { settingsService } from '../services/settingsService';
+import { pushNotificationService } from '../services/pushNotificationService';
+import { pwaService } from '../services/pwaService';
 import { useAuthStore } from '../store/authStore';
 import { applyTheme } from '../utils/theme';
-import { TIMEZONE_OPTIONS, getTimePreview, detectBrowserTimezone } from '../utils/timezones';
+import { formatFriendlyTimezone, detectBrowserTimezone } from '../utils/timezones';
+import { TimezonePickerModal } from '../components/common/TimezonePickerModal';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -37,6 +47,7 @@ export const SettingsPage = () => {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState('');
   const [saveError, setSaveError] = useState('');
+  const [showTzPicker, setShowTzPicker] = useState(false);
 
   const { user, updateUser, clearAuth } = useAuthStore();
 
@@ -65,6 +76,7 @@ export const SettingsPage = () => {
     defaultOpportunityPriority: 'HIGH',
     emailNotificationsEnabled: true,
     inAppNotificationsEnabled: true,
+    pushNotificationsEnabled: true,
     dailyReviewReminderEnabled: true,
     dailyReviewReminderTime: '20:00',
     careerReviewReminderEnabled: true,
@@ -82,6 +94,18 @@ export const SettingsPage = () => {
     lastLoginAt: null,
   });
 
+  // Push & PWA state (Phase 2B Step 2)
+  const [pushStatus, setPushStatus] = useState({
+    supported: false,
+    permission: 'default',
+    isSubscribedLocally: false,
+    subscriptionCount: 0,
+  });
+  const [pushDevices, setPushDevices] = useState([]);
+  const [pushLoading, setPushLoading] = useState(false);
+  const [canInstallPwa, setCanInstallPwa] = useState(false);
+  const [isPwaInstalled, setIsPwaInstalled] = useState(false);
+
   // Password form state
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -91,7 +115,108 @@ export const SettingsPage = () => {
 
   useEffect(() => {
     loadSettings();
+    loadPushData();
+
+    setIsPwaInstalled(pwaService.isStandalone());
+    const unsubInstall = pwaService.onInstallChange((can) => {
+      setCanInstallPwa(can);
+    });
+
+    return () => {
+      unsubInstall();
+    };
   }, []);
+
+  const loadPushData = async () => {
+    try {
+      const supported = pushNotificationService.isSupported();
+      const permission = pushNotificationService.getPermission();
+      const isSubscribedLocally = await pushNotificationService.isSubscribedOnThisDevice();
+      let statusRes = null;
+      let devicesRes = null;
+
+      if (supported) {
+        statusRes = await pushNotificationService.getStatus().catch(() => null);
+        devicesRes = await pushNotificationService.listSubscriptions().catch(() => null);
+      }
+
+      setPushStatus({
+        supported,
+        permission,
+        isSubscribedLocally,
+        subscriptionCount: statusRes?.data?.subscriptionCount || 0,
+      });
+
+      if (devicesRes?.data) {
+        setPushDevices(devicesRes.data);
+      }
+    } catch (err) {
+      console.warn('[PUSH] Failed loading push data:', err);
+    }
+  };
+
+  const handleEnablePush = async () => {
+    try {
+      setPushLoading(true);
+      await pushNotificationService.subscribe();
+      showNotification('Push notifications enabled on this device');
+      await loadPushData();
+    } catch (err) {
+      if (err.code === 'PERMISSION_DENIED') {
+        showNotification('Notifications blocked in browser settings. Enable them in site settings.', true);
+      } else {
+        showNotification(err.message || 'Failed to enable push notifications', true);
+      }
+      await loadPushData();
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleDisablePush = async () => {
+    try {
+      setPushLoading(true);
+      await pushNotificationService.unsubscribe();
+      showNotification('Push notifications disabled on this device');
+      await loadPushData();
+    } catch (err) {
+      showNotification('Failed to disable push notifications', true);
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleSendTestPush = async () => {
+    try {
+      setPushLoading(true);
+      await pushNotificationService.sendTestNotification();
+      showNotification('Test notification sent! Check your notification center.');
+    } catch (err) {
+      showNotification('Failed to send test push notification', true);
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleRemoveDevice = async (deviceId) => {
+    try {
+      setPushLoading(true);
+      await pushNotificationService.deleteSubscription(deviceId);
+      showNotification('Device removed');
+      await loadPushData();
+    } catch (err) {
+      showNotification('Failed to remove device', true);
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleInstallPwa = async () => {
+    const result = await pwaService.promptInstall();
+    if (result.outcome === 'accepted') {
+      showNotification('CareerOS added to home screen!');
+    }
+  };
 
   const loadSettings = async () => {
     try {
@@ -149,6 +274,7 @@ export const SettingsPage = () => {
         fullName: profile.displayName || `${profile.firstName} ${profile.lastName}`.trim() || user.fullName,
         profile: updated.profile || profile,
       });
+      localStorage.setItem('careeros_tz_explicit', 'true');
       showNotification('Profile updated successfully');
     } catch (err) {
       showNotification(err.response?.data?.message || 'Failed to update profile', true);
@@ -357,41 +483,25 @@ export const SettingsPage = () => {
                   />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
-                      Timezone (IANA)
-                    </label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                    Timezone
+                  </label>
+                  <div className="p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                        {formatFriendlyTimezone(profile.timezone || 'Asia/Kolkata')}
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-[#94A3B8] mt-0.5">
+                        Used for reminders, schedules and daily planning.
+                      </p>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => {
-                        const detected = detectBrowserTimezone();
-                        setProfile({ ...profile, timezone: detected });
-                      }}
-                      className="text-[11px] text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium flex items-center gap-1"
+                      onClick={() => setShowTzPicker(true)}
+                      className="px-3 py-1.5 bg-[#7C6CF2]/10 hover:bg-[#7C6CF2]/15 text-[#7C6CF2] dark:text-[#A99CFF] rounded-lg text-xs font-semibold transition shrink-0"
                     >
-                      <Globe size={12} />
-                      <span>Detect from Browser</span>
+                      Change timezone
                     </button>
-                  </div>
-                  <select
-                    value={profile.timezone || 'Asia/Kolkata'}
-                    onChange={(e) => setProfile({ ...profile, timezone: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:bg-white focus:ring-1 focus:ring-brand-500"
-                  >
-                    {!TIMEZONE_OPTIONS.some((tz) => tz.value === profile.timezone) && profile.timezone && (
-                      <option value={profile.timezone}>{profile.timezone} (Custom / Current)</option>
-                    )}
-                    {TIMEZONE_OPTIONS.map((tz) => (
-                      <option key={tz.value} value={tz.value}>{tz.label}</option>
-                    ))}
-                  </select>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                    <span>Used for scheduling reminders, daily reviews, and routine check-ins.</span>
-                    {profile.timezone && (
-                      <span className="font-mono text-[10px] text-slate-600 dark:text-slate-300">
-                        Local: {getTimePreview(profile.timezone)}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
@@ -592,6 +702,19 @@ export const SettingsPage = () => {
                   />
                 </div>
 
+                <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">Push Notifications</p>
+                    <p className="text-[11px] text-slate-500">Receive browser alerts for focus check-ins and due tasks</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={preferences.pushNotificationsEnabled}
+                    onChange={(e) => setPreferences({ ...preferences, pushNotificationsEnabled: e.target.checked })}
+                    className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                  />
+                </div>
+
                 <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -671,6 +794,155 @@ export const SettingsPage = () => {
                   <Save size={15} />
                   <span>{saving ? 'Saving...' : 'Save Notification Settings'}</span>
                 </button>
+              </div>
+
+              {/* Push Device Management & Testing (Phase 2B Step 2) */}
+              <div className="pt-5 border-t border-slate-200 dark:border-[#28324A] space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Smartphone size={16} className="text-[#7C6CF2] dark:text-[#8B7CF6]" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Push Notifications on This Device</h3>
+                  </div>
+                  <span className={`self-start sm:self-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    !pushStatus.supported
+                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
+                      : pushStatus.permission === 'denied'
+                      ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300'
+                      : pushStatus.isSubscribedLocally
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
+                      : 'bg-slate-100 text-slate-600 dark:bg-[#181F34] dark:text-[#94A3B8]'
+                  }`}>
+                    {!pushStatus.supported
+                      ? 'Not Supported'
+                      : pushStatus.permission === 'denied'
+                      ? 'Blocked in Browser'
+                      : pushStatus.isSubscribedLocally
+                      ? 'Enabled on this device'
+                      : 'Not enabled'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8] leading-relaxed">
+                  Push notifications depend on OS/browser notification permissions and delivery policies.
+                  They provide timely check-in prompts even when CareerOS is inactive.
+                </p>
+
+                {pushStatus.permission === 'denied' && (
+                  <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs text-rose-700 dark:text-rose-400 flex items-start gap-2">
+                    <AlertCircle size={15} className="shrink-0 mt-0.5" />
+                    <span>Notifications blocked in browser settings. Please click the site settings or padlock icon in your browser address bar to allow notifications for CareerOS.</span>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                  {pushStatus.isSubscribedLocally ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleSendTestPush}
+                        disabled={pushLoading}
+                        className="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#181F34] dark:hover:bg-[#28324A] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
+                      >
+                        <Send size={13} />
+                        <span>{pushLoading ? 'Sending...' : 'Send Test Notification'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleDisablePush}
+                        disabled={pushLoading}
+                        className="h-9 px-3.5 rounded-xl bg-white dark:bg-[#121829] border border-slate-200 dark:border-[#28324A] hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-600 dark:text-[#94A3B8] text-xs font-semibold transition disabled:opacity-50"
+                      >
+                        <span>Disable on this device</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleEnablePush}
+                      disabled={pushLoading || !pushStatus.supported || pushStatus.permission === 'denied'}
+                      className="h-9 px-4 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50 shadow-xs"
+                    >
+                      <Bell size={13} />
+                      <span>{pushLoading ? 'Enabling...' : 'Enable Push Notifications'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Registered Devices List */}
+                {pushDevices.length > 0 && (
+                  <div className="pt-3 space-y-2">
+                    <h4 className="text-xs font-bold text-slate-700 dark:text-[#CBD5E1] uppercase tracking-wider">
+                      Notification Devices ({pushDevices.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {pushDevices.map((device) => (
+                        <div key={device.id} className="p-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl flex items-center justify-between gap-3 text-xs">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Laptop size={15} className="text-slate-500 dark:text-[#94A3B8] shrink-0" />
+                            <div className="min-w-0">
+                              <p className="font-semibold text-slate-800 dark:text-[#F8FAFC] truncate">{device.deviceLabel}</p>
+                              <p className="text-[10px] text-slate-400 dark:text-[#64748B]">
+                                Registered {new Date(device.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveDevice(device.id)}
+                            className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold p-1 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* PWA Home Screen Installation (Phase 2B Step 2) */}
+              <div className="pt-5 border-t border-slate-200 dark:border-[#28324A] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Download size={16} className="text-[#7C6CF2] dark:text-[#8B7CF6]" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">App Installation</h3>
+                  </div>
+                  {isPwaInstalled ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                      <Check size={11} />
+                      <span>CareerOS is installed</span>
+                    </span>
+                  ) : null}
+                </div>
+
+                {isPwaInstalled ? (
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                    CareerOS is installed on your device. You are running in standalone app mode.
+                  </p>
+                ) : (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl">
+                    <div>
+                      <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Install CareerOS</p>
+                      <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
+                        Add CareerOS to your home screen for faster access and standalone app experience.
+                      </p>
+                    </div>
+                    {canInstallPwa ? (
+                      <button
+                        type="button"
+                        onClick={handleInstallPwa}
+                        className="h-9 px-4 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white text-xs font-semibold shrink-0 transition"
+                      >
+                        Install
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium">
+                        Use your browser's "Add to Home Screen" option
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           )}
@@ -830,6 +1102,17 @@ export const SettingsPage = () => {
           )}
         </div>
       </div>
+
+      {/* Timezone Searchable Picker */}
+      <TimezonePickerModal
+        isOpen={showTzPicker}
+        onClose={() => setShowTzPicker(false)}
+        selectedTimezone={profile.timezone}
+        onSelect={(newTz) => {
+          setProfile((prev) => ({ ...prev, timezone: newTz }));
+          localStorage.setItem('careeros_tz_explicit', 'true');
+        }}
+      />
     </div>
   );
 };

@@ -2,6 +2,7 @@ const prisma = require('../../config/db');
 const notificationService = require('./notification.service');
 const emailNotificationService = require('./emailNotification.service');
 const reminderService = require('./reminder.service');
+const pushService = require('../push/push.service');
 
 class ReminderSchedulerService {
   constructor() {
@@ -73,6 +74,7 @@ class ReminderSchedulerService {
       skippedDuplicates: 0,
       notificationsCreated: 0,
       emailsDispatched: 0,
+      pushDispatched: 0,
     };
 
     // Dedup threshold: do not re-trigger within 60 seconds
@@ -195,6 +197,29 @@ class ReminderSchedulerService {
               },
             }).catch(() => {});
           }
+        }
+      }
+
+      // 6. Send Browser Push Notification (Phase 2B Step 2)
+      const pushAllowed =
+        reminder.user.preferences?.pushNotificationsEnabled !== false &&
+        (reminder.channel === 'PUSH' || reminder.notificationChannel === 'PUSH');
+
+      if (pushAllowed) {
+        try {
+          const pushResult = await pushService.sendPushToUser(reminder.userId, {
+            title: reminderTitle,
+            body: reminderMessage,
+            url: '/app/today',
+            type: reminder.type,
+            notificationId: notifRecord?.id || null,
+          });
+
+          if (pushResult && pushResult.sent > 0) {
+            results.pushDispatched += pushResult.sent;
+          }
+        } catch (pushErr) {
+          console.error(`[PUSH DELIVERY FAILURE for reminder ${reminder.id}]:`, pushErr.message);
         }
       }
     }

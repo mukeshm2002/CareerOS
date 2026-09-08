@@ -38,10 +38,15 @@ const reminderRoutes = require('./routes/reminder.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const accountRoutes = require('./routes/account.routes');
+const workLogRoutes = require('./routes/workLog.routes');
+const pushRoutes = require('./routes/push.routes');
 
 const reminderSchedulerService = require('./services/reminders/reminderScheduler.service');
 
 const app = express();
+
+// Configure trust proxy for Render reverse proxy layer (Section 30)
+app.set('trust proxy', 1);
 
 // 1. Security Headers (Section 36)
 app.use(
@@ -159,6 +164,8 @@ app.use('/api/evidence', evidenceRoutes);
 app.use('/api/learning', learningRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/work-logs', workLogRoutes);
+app.use('/api/push', pushRoutes);
 
 // 8. 404 & Error Handlers
 app.use(notFoundHandler);

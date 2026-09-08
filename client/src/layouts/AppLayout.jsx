@@ -31,6 +31,9 @@ import {
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
 import { notificationService } from '../services/notificationService';
+import { settingsService } from '../services/settingsService';
+import { detectBrowserTimezone } from '../utils/timezones';
+import { pwaService } from '../services/pwaService';
 import { BottomNav } from '../components/layout/BottomNav';
 import { MobileHeader } from '../components/layout/MobileHeader';
 
@@ -82,6 +85,12 @@ export const AppLayout = () => {
   const { user, refreshToken, clearAuth } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
+  const [hasUpdate, setHasUpdate] = useState(false);
+
+  useEffect(() => {
+    const unsub = pwaService.onUpdateChange(setHasUpdate);
+    return () => unsub();
+  }, []);
 
   // Notification Queries
   const { data: unreadData } = useQuery({
@@ -123,6 +132,33 @@ export const AppLayout = () => {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [notificationOpen]);
+
+  // Automatic timezone detection on first authenticated use if unconfigured or default UTC
+  useEffect(() => {
+    const syncBrowserTimezone = async () => {
+      if (!user) return;
+      // If user has explicitly chosen a timezone before, respect their choice
+      const explicitChoice = localStorage.getItem('careeros_tz_explicit');
+      if (explicitChoice) return;
+
+      const currentTz = user.profile?.timezone;
+      if (!currentTz || currentTz === 'UTC') {
+        const detected = detectBrowserTimezone();
+        if (detected && detected !== 'UTC' && detected !== currentTz) {
+          try {
+            await settingsService.updateProfile({ timezone: detected });
+            useAuthStore.getState().updateUser({
+              ...user,
+              profile: { ...(user.profile || {}), timezone: detected },
+            });
+          } catch {
+            // Silently ignore network errors
+          }
+        }
+      }
+    };
+    syncBrowserTimezone();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -465,6 +501,22 @@ export const AppLayout = () => {
             <Outlet />
           </div>
         </main>
+
+        {/* Subtle PWA Update Banner (Section 28) */}
+        {hasUpdate && (
+          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#121829] border border-[#7C6CF2]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#7C6CF2] animate-pulse" />
+              <span className="text-xs font-semibold text-slate-200">CareerOS update available</span>
+            </div>
+            <button
+              onClick={() => pwaService.updateApp()}
+              className="h-8 px-3 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white text-xs font-bold transition shadow-xs"
+            >
+              Update
+            </button>
+          </div>
+        )}
 
         {/* Mobile Fixed Bottom Navigation (md:hidden) */}
         <BottomNav />

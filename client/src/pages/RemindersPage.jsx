@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Bell,
   Plus,
@@ -15,8 +16,15 @@ import {
   Globe,
 } from 'lucide-react';
 import { reminderService } from '../services/reminderService';
+import { pushNotificationService } from '../services/pushNotificationService';
 import { useAuthStore } from '../store/authStore';
-import { TIMEZONE_OPTIONS } from '../utils/timezones';
+import {
+  formatFriendlyTimezone,
+  getCityOrShortTz,
+  formatReminderTime,
+  detectBrowserTimezone,
+} from '../utils/timezones';
+import { TimezonePickerModal } from '../components/common/TimezonePickerModal';
 
 const CATEGORIES = [
   { id: 'ALL', label: 'All Reminders' },
@@ -28,15 +36,21 @@ const CATEGORIES = [
 
 export const RemindersPage = () => {
   const { user } = useAuthStore();
-  const userTimezone = user?.profile?.timezone || 'Asia/Kolkata';
+  const userTimezone = user?.profile?.timezone || detectBrowserTimezone() || 'Asia/Kolkata';
 
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [modalOpen, setModalOpen] = useState(false);
+  const [showTzPicker, setShowTzPicker] = useState(false);
   const [editingReminder, setEditingReminder] = useState(null);
   const [actionError, setActionError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
+  const [isPushSubscribed, setIsPushSubscribed] = useState(false);
+
+  useEffect(() => {
+    pushNotificationService.isSubscribedOnThisDevice().then(setIsPushSubscribed);
+  }, []);
 
   // New/Edit form state
   const [formData, setFormData] = useState({
@@ -111,7 +125,7 @@ export const RemindersPage = () => {
       dayOfWeek: null,
       recurrence: 'DAILY',
       channel: 'IN_APP',
-      timezone: user?.profile?.timezone || 'Asia/Kolkata',
+      timezone: user?.profile?.timezone || detectBrowserTimezone() || 'Asia/Kolkata',
       enabled: true,
     });
     setModalOpen(true);
@@ -127,7 +141,7 @@ export const RemindersPage = () => {
       dayOfWeek: reminder.dayOfWeek,
       recurrence: reminder.recurrence || 'DAILY',
       channel: reminder.channel || reminder.notificationChannel || 'IN_APP',
-      timezone: reminder.timezone || user?.profile?.timezone || 'Asia/Kolkata',
+      timezone: reminder.timezone || user?.profile?.timezone || 'UTC',
       enabled: reminder.enabled,
     });
     setModalOpen(true);
@@ -324,16 +338,19 @@ export const RemindersPage = () => {
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-[#64748B] pt-0.5">
                     <span className="inline-flex items-center gap-1 text-[#7C6CF2] dark:text-[#8B7CF6]/90 font-medium">
                       <Clock size={12} />
-                      <span>{rem.time}</span>
+                      <span>{formatReminderTime(rem.time)}</span>
                     </span>
                     {rem.dayOfWeek !== null && rem.dayOfWeek !== undefined && (
                       <span>({getDayName(rem.dayOfWeek)})</span>
                     )}
-                    <span className="text-slate-300 dark:text-slate-700">•</span>
-                    <span className="inline-flex items-center gap-1">
-                      <Globe size={11} className="text-slate-400 dark:text-[#64748B]" />
-                      <span>{rem.timezone || 'UTC'}</span>
-                    </span>
+                    {rem.timezone && rem.timezone !== userTimezone && (
+                      <>
+                        <span className="text-slate-300 dark:text-slate-700">•</span>
+                        <span className="text-slate-600 dark:text-[#CBD5E1] font-medium">
+                          {getCityOrShortTz(rem.timezone)}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -437,7 +454,12 @@ export const RemindersPage = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">Time (24h format)</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">Time</label>
+                    <span className="text-[11px] text-slate-500 dark:text-[#94A3B8] font-medium">
+                      {formatReminderTime(formData.time)}
+                    </span>
+                  </div>
                   <input
                     type="text"
                     required
@@ -471,27 +493,38 @@ export const RemindersPage = () => {
                   >
                     <option value="IN_APP">In App Only</option>
                     <option value="EMAIL">In App + Email</option>
+                    <option value="PUSH" disabled={!isPushSubscribed}>
+                      {isPushSubscribed ? 'In App + Browser Push' : 'Push (Not enabled on device)'}
+                    </option>
                   </select>
+                  {!isPushSubscribed && (
+                    <p className="text-[11px] text-slate-400 dark:text-[#94A3B8] mt-1">
+                      Push not enabled on this device.{' '}
+                      <Link to="/app/settings" className="text-[#7C6CF2] dark:text-[#8B7CF6] font-semibold hover:underline">
+                        Enable in Settings
+                      </Link>
+                    </p>
+                  )}
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">Reminder Timezone</label>
-                <select
-                  value={formData.timezone}
-                  onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+              {/* Simplified Timezone display with custom searchable picker */}
+              <div className="p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl flex items-center justify-between gap-2">
+                <div>
+                  <span className="block text-[11px] font-medium text-slate-500 dark:text-[#94A3B8]">
+                    Timezone
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                    {formatFriendlyTimezone(formData.timezone)}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTzPicker(true)}
+                  className="text-xs font-semibold text-[#7C6CF2] dark:text-[#8B7CF6] hover:underline px-2 py-1 rounded-lg hover:bg-[#7C6CF2]/10 transition shrink-0"
                 >
-                  {!TIMEZONE_OPTIONS.some((tz) => tz.value === formData.timezone) && formData.timezone && (
-                    <option value={formData.timezone}>{formData.timezone} (Custom)</option>
-                  )}
-                  {TIMEZONE_OPTIONS.map((tz) => (
-                    <option key={tz.value} value={tz.value}>{tz.label}</option>
-                  ))}
-                </select>
-                <p className="text-[11px] text-slate-400 dark:text-[#64748B] mt-1">
-                  Defaults to your profile timezone (<span className="font-semibold text-slate-600 dark:text-[#CBD5E1]">{user?.profile?.timezone || 'Asia/Kolkata'}</span>).
-                </p>
+                  Change timezone
+                </button>
               </div>
 
               {formData.recurrence === 'WEEKLY' && (
@@ -532,6 +565,14 @@ export const RemindersPage = () => {
           </div>
         </div>
       )}
+
+      {/* Timezone Searchable Picker */}
+      <TimezonePickerModal
+        isOpen={showTzPicker}
+        onClose={() => setShowTzPicker(false)}
+        selectedTimezone={formData.timezone}
+        onSelect={(newTz) => setFormData({ ...formData, timezone: newTz })}
+      />
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { progressReviewService } from '../services/progressReviewService';
+import { workLogService } from '../services/workLogService';
 import {
   TrendingUp,
   Clock,
@@ -63,6 +65,12 @@ export const ProgressPage = () => {
     queryFn: () => progressReviewService.getTrends(8),
   });
 
+  // Fetch factual Work Log / Career Journal stats (Phase 2B Step 1)
+  const { data: workLogStatsData } = useQuery({
+    queryKey: ['workLog', 'stats'],
+    queryFn: () => workLogService.getStats(),
+  });
+
   if (isLoading) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -104,6 +112,7 @@ export const ProgressPage = () => {
   const categoryBreakdown = p.categoryBreakdown || [];
   const completedTasks = p.completedTasks || [];
   const trends = trendsData?.data?.trend || [];
+  const workLogStats = workLogStatsData?.data || { daysLoggedThisWeek: 0, daysLoggedThisMonth: 0 };
 
   // Planned vs actual calculation
   const plannedMinutes = metrics.plannedMinutes || 0;
@@ -243,6 +252,53 @@ export const ProgressPage = () => {
           <p className="text-[11px] text-slate-400">
             Longest record: {consistency.longestStreak || 0} active days
           </p>
+        </div>
+      </div>
+
+      {/* Daily Work Notes / Career Journal Metrics (Phase 2B Step 1) */}
+      <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-5 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-xl bg-violet-50 dark:bg-[#7C6CF2]/15 text-[#6C5CE7] dark:text-[#8B7CF6]">
+              <BookOpen size={16} />
+            </div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
+              Career Journal Activity
+            </h3>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+            Factual daily note logging tracking accomplishments, learnings, and blockers.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-5 sm:gap-6 shrink-0">
+          <div className="text-right">
+            <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-[#F8FAFC] block leading-tight">
+              {workLogStats.daysLoggedThisWeek ?? 0}
+            </span>
+            <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium block">
+              Days logged this week
+            </span>
+          </div>
+
+          <div className="h-8 w-px bg-slate-200 dark:bg-[#28324A]" />
+
+          <div className="text-right">
+            <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-[#F8FAFC] block leading-tight">
+              {workLogStats.daysLoggedThisMonth ?? 0}
+            </span>
+            <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium block">
+              Days logged this month
+            </span>
+          </div>
+
+          <Link
+            to="/app/work-log"
+            className="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#181F34] dark:hover:bg-[#28324A] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold flex items-center gap-1.5 transition"
+          >
+            <span>View Notes</span>
+            <ArrowUpRight size={14} />
+          </Link>
         </div>
       </div>
 

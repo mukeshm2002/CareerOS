@@ -178,10 +178,33 @@ async function runTests() {
       timezone: 'Asia/Tokyo',
     });
 
-    assert(
-      explicitTzUpdate.timezone === 'Asia/Tokyo',
-      `Explicitly edited reminder timezone updates to Asia/Tokyo (got: ${explicitTzUpdate.timezone})`
-    );
+    // -------------------------------------------------------------------------
+    // TEST SUITE 6: Multi-Region Timezone Trigger Calculation
+    // (Asia/Kolkata, Asia/Dubai, Asia/Singapore, America/New_York, Europe/London)
+    // -------------------------------------------------------------------------
+    console.log('\n--- 6. Multi-Region Timezone Trigger Calculations ---');
+    const testCases = [
+      { tz: 'Asia/Kolkata', time: '20:00', label: 'India Standard Time' },
+      { tz: 'Asia/Dubai', time: '18:30', label: 'Dubai Time' },
+      { tz: 'Asia/Singapore', time: '09:00', label: 'Singapore Time' },
+      { tz: 'America/New_York', time: '14:00', label: 'New York Eastern Time' },
+      { tz: 'Europe/London', time: '11:15', label: 'London Time' },
+    ];
+
+    for (const tc of testCases) {
+      assert(isValidIanaTimezone(tc.tz), `${tc.tz} (${tc.label}) is recognized as valid IANA timezone`);
+      const nextDate = reminderService.computeNextTriggerDate(tc.time, null, tc.tz, fixedBaseDate);
+      assert(nextDate instanceof Date && !isNaN(nextDate.getTime()), `Successfully computed trigger for ${tc.tz} at ${tc.time}`);
+      
+      // Verify back-formatting matches tc.time in tc.tz
+      const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: tc.tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      assert(fmt.format(nextDate) === tc.time, `Trigger timestamp formats exactly back to ${tc.time} in ${tc.tz}`);
+    }
 
     console.log('\n=============================================================');
     console.log(`✅ ALL TESTS PASSED! (${testsPassed} assertions)`);

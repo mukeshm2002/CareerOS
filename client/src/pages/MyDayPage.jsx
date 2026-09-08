@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { executionService } from '../services/executionService';
 import { planningService } from '../features/planning/services/planningService';
+import { workLogService } from '../services/workLogService';
+import { QuickNoteSheet } from '../components/workLog/QuickNoteSheet';
 import { useAuthStore } from '../store/authStore';
 import {
   SunMedium,
@@ -23,6 +25,9 @@ import {
   Moon,
   ChevronRight,
   ShieldCheck,
+  FileText,
+  Edit3,
+  Plus,
 } from 'lucide-react';
 
 const ENERGY_OPTIONS = [
@@ -89,10 +94,16 @@ export const MyDayPage = () => {
     queryFn: () => executionService.getDailyReview(),
   });
 
+  const { data: workLogData } = useQuery({
+    queryKey: ['workLog', 'today'],
+    queryFn: () => workLogService.getToday(),
+  });
+
   // Modals & UI States
   const [showChooseModal, setShowChooseModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showNoteSheet, setShowNoteSheet] = useState(false);
   const [taskOutcome, setTaskOutcome] = useState('NOT_YET');
   const [sessionNotes, setSessionNotes] = useState('');
 
@@ -115,6 +126,17 @@ export const MyDayPage = () => {
       if (r.energyLevel) setEnergyLevel(r.energyLevel);
     }
   }, [reviewData]);
+
+  // Work Log (Phase 2B Step 1)
+  const currentWorkLog = workLogData?.data ?? todayData?.data?.todayWorkLog ?? null;
+  const hasWorkNote = Boolean(
+    currentWorkLog && (
+      currentWorkLog.workedOn?.trim() ||
+      currentWorkLog.learned?.trim() ||
+      currentWorkLog.blockers?.trim() ||
+      currentWorkLog.nextStep?.trim()
+    )
+  );
 
   // Derived Active Session and Timer
   const activeSession = activeFocusData?.data || todayData?.data?.activeFocusSession;
@@ -636,6 +658,96 @@ export const MyDayPage = () => {
         </div>
       </div>
 
+      {/* 5b. Today's Notes / Career Journal (Phase 2B Step 1) */}
+      <div className="bg-white dark:bg-[#121829] border border-slate-200/80 dark:border-[#28324A] rounded-2xl p-5 space-y-3.5 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FileText size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-[#CBD5E1]">
+              Today's Notes
+            </h3>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/app/work-log"
+              className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] hover:text-[#6C5CE7] dark:hover:text-[#8B7CF6] flex items-center gap-0.5 transition"
+            >
+              <span>Journal</span>
+              <ChevronRight size={13} />
+            </Link>
+            {hasWorkNote && (
+              <button
+                type="button"
+                onClick={() => setShowNoteSheet(true)}
+                className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#181F34] dark:hover:bg-[#28324A] text-slate-700 dark:text-[#F8FAFC] font-semibold text-xs transition flex items-center gap-1.5"
+              >
+                <Edit3 size={13} />
+                <span>Edit</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {!hasWorkNote ? (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <p className="text-xs text-slate-600 dark:text-[#94A3B8]">
+              What did you work on today?
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowNoteSheet(true)}
+              className="h-10 px-4 rounded-xl bg-[#6C5CE7] hover:bg-[#5A4AD1] text-white font-semibold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs shrink-0"
+            >
+              <Plus size={14} />
+              <span>+ Add today's note</span>
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3 pt-1 text-xs divide-y divide-slate-100 dark:divide-[#28324A]/40">
+            {currentWorkLog.workedOn && (
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#64748B] block">
+                  Worked on
+                </span>
+                <p className="text-slate-800 dark:text-[#F8FAFC] font-medium whitespace-pre-line">
+                  {currentWorkLog.workedOn}
+                </p>
+              </div>
+            )}
+            {currentWorkLog.learned && (
+              <div className="pt-2 space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#64748B] block">
+                  Learned
+                </span>
+                <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
+                  {currentWorkLog.learned}
+                </p>
+              </div>
+            )}
+            {currentWorkLog.blockers && (
+              <div className="pt-2 space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500/80 dark:text-rose-400/80 block">
+                  Blockers
+                </span>
+                <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
+                  {currentWorkLog.blockers}
+                </p>
+              </div>
+            )}
+            {currentWorkLog.nextStep && (
+              <div className="pt-2 space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6] block">
+                  Next
+                </span>
+                <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
+                  {currentWorkLog.nextStep}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* 6. Daily Review / End Day Card (Section 18 — Calm feel) */}
       <div className="bg-[#F4F2FF] dark:bg-[#181F34] border border-slate-200/80 dark:border-[#28324A] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div className="space-y-1">
@@ -820,6 +932,52 @@ export const MyDayPage = () => {
             )}
 
             <div className="space-y-3.5 overflow-y-auto flex-1 pr-1 text-xs">
+              {/* Contextual Daily Work Notes (Phase 2B Step 1) */}
+              {hasWorkNote && (
+                <div className="p-3.5 bg-violet-50/70 dark:bg-[#7C6CF2]/10 border border-violet-200/80 dark:border-[#7C6CF2]/30 rounded-xl space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6] flex items-center gap-1.5">
+                      <FileText size={12} />
+                      <span>TODAY'S WORK</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowReviewModal(false);
+                        setShowNoteSheet(true);
+                      }}
+                      className="text-[10px] font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] hover:underline"
+                    >
+                      Edit Note
+                    </button>
+                  </div>
+                  {currentWorkLog.workedOn && (
+                    <div className="text-slate-700 dark:text-[#CBD5E1]">
+                      <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">Worked on: </span>
+                      <span>{currentWorkLog.workedOn}</span>
+                    </div>
+                  )}
+                  {currentWorkLog.learned && (
+                    <div className="text-slate-700 dark:text-[#CBD5E1]">
+                      <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">Learned: </span>
+                      <span>{currentWorkLog.learned}</span>
+                    </div>
+                  )}
+                  {currentWorkLog.blockers && (
+                    <div className="text-slate-700 dark:text-[#CBD5E1]">
+                      <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">Blocker: </span>
+                      <span>{currentWorkLog.blockers}</span>
+                    </div>
+                  )}
+                  {currentWorkLog.nextStep && (
+                    <div className="text-slate-700 dark:text-[#CBD5E1]">
+                      <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">Next: </span>
+                      <span>{currentWorkLog.nextStep}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div>
                 <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">
                   What did you complete today?
@@ -936,6 +1094,19 @@ export const MyDayPage = () => {
           </div>
         </div>
       )}
+
+      {/* Quick Note Sheet / Modal for Work Notes (Phase 2B Step 1) */}
+      <QuickNoteSheet
+        isOpen={showNoteSheet}
+        onClose={() => setShowNoteSheet(false)}
+        initialData={currentWorkLog}
+        onSaveSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['todayContext'] });
+          queryClient.invalidateQueries({ queryKey: ['workLog', 'today'] });
+          queryClient.invalidateQueries({ queryKey: ['workLog', 'history'] });
+          queryClient.invalidateQueries({ queryKey: ['workLog', 'stats'] });
+        }}
+      />
     </div>
   );
 };

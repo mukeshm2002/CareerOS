@@ -200,6 +200,10 @@ class SettingsService {
           data.inAppNotificationsEnabled !== undefined
             ? Boolean(data.inAppNotificationsEnabled)
             : undefined,
+        pushNotificationsEnabled:
+          data.pushNotificationsEnabled !== undefined
+            ? Boolean(data.pushNotificationsEnabled)
+            : undefined,
         dailyReviewReminderEnabled:
           data.dailyReviewReminderEnabled !== undefined
             ? Boolean(data.dailyReviewReminderEnabled)

@@ -196,7 +196,7 @@ class AuthService {
 
     if (!storedToken || storedToken.expiresAt < new Date()) {
       if (storedToken) {
-        await prisma.refreshToken.delete({ where: { id: storedToken.id } });
+        await prisma.refreshToken.deleteMany({ where: { id: storedToken.id } });
       }
       const error = new Error('Refresh token revoked or expired');
       error.statusCode = 401;
@@ -216,16 +216,21 @@ class AuthService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    await prisma.$transaction([
-      prisma.refreshToken.delete({ where: { id: storedToken.id } }),
-      prisma.refreshToken.create({
-        data: {
-          token: newRefreshToken,
-          userId: storedToken.userId,
-          expiresAt,
-        },
-      }),
-    ]);
+    // Idempotent atomic consumption: avoids Prisma P2025 if already deleted concurrently
+    const deleteResult = await prisma.refreshToken.deleteMany({ where: { id: storedToken.id } });
+    if (deleteResult.count === 0) {
+      const error = new Error('Refresh token already consumed or revoked');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    await prisma.refreshToken.create({
+      data: {
+        token: newRefreshToken,
+        userId: storedToken.userId,
+        expiresAt,
+      },
+    });
 
     return {
       accessToken: newAccessToken,

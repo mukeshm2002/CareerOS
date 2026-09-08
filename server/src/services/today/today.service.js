@@ -61,6 +61,16 @@ class TodayService {
       },
     });
 
+    // Fetch today's work log (if created)
+    const todayWorkLog = await prisma.dailyWorkLog.findUnique({
+      where: {
+        userId_logDate: {
+          userId,
+          logDate: localDate,
+        },
+      },
+    });
+
     // Fetch yesterday's DailyReview and DailyPlan
     const [yesterdayReview, yesterdayPlan] = await Promise.all([
       prisma.dailyReview.findUnique({
@@ -232,6 +242,7 @@ class TodayService {
       plannedMinutes,
       completedMinutes,
       todayPlan,
+      todayWorkLog,
       recommendation,
       activeFocusSession,
       todaySchedule: todayScheduleBlocks,

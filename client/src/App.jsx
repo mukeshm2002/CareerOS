@@ -25,6 +25,7 @@ import { LearningPage } from './pages/LearningPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { ReviewsPage } from './pages/ReviewsPage';
 import { RemindersPage } from './pages/RemindersPage';
+import { WorkLogHistoryPage } from './pages/WorkLogHistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="learning/:learningPathId" element={<LearningPage />} />
         <Route path="progress" element={<ProgressPage />} />
         <Route path="reviews" element={<ReviewsPage />} />
+        <Route path="work-log" element={<WorkLogHistoryPage />} />
         <Route path="reminders" element={<RemindersPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
