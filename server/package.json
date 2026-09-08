@@ -13,7 +13,8 @@
     "prisma:studio": "prisma studio --schema=../prisma/schema.prisma",
     "prisma:seed": "node ../prisma/seed.js",
     "verify:production": "node scripts/verify-production.js",
-    "test:phase1b": "node tests/phase1b.verify.js"
+    "test:phase1b": "node tests/phase1b.verify.js",
+    "test:p2028": "node tests/onboarding-p2028.test.js"
   },
   "prisma": {
     "seed": "node ../prisma/seed.js"
