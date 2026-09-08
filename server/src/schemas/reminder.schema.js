@@ -1,4 +1,5 @@
 const { z } = require('zod');
+const { isValidIanaTimezone } = require('../utils/timezone');
 
 const ReminderTypeEnum = z.enum([
   'DAILY_CAREEROS_REVIEW',
@@ -23,7 +24,13 @@ const createReminderSchema = z.object({
   type: ReminderTypeEnum.optional().default('DAILY_CAREEROS_REVIEW'),
   time: z.string().regex(timeRegex, 'Time must be in HH:mm format (24h)').default('20:00'),
   dayOfWeek: z.number().int().min(0).max(6).optional().nullable(),
-  timezone: z.string().trim().optional().nullable(),
+  timezone: z
+    .string()
+    .trim()
+    .max(100)
+    .refine(isValidIanaTimezone, { message: 'Must be a valid IANA timezone' })
+    .optional()
+    .nullable(),
   recurrence: z.enum(['DAILY', 'WEEKLY', 'ONCE', 'CUSTOM']).optional().default('DAILY'),
   enabled: z.boolean().optional().default(true),
   channel: NotificationChannelEnum.optional().default('IN_APP'),
@@ -41,7 +48,13 @@ const updateReminderSchema = z.object({
   type: ReminderTypeEnum.optional(),
   time: z.string().regex(timeRegex, 'Time must be in HH:mm format (24h)').optional(),
   dayOfWeek: z.number().int().min(0).max(6).optional().nullable(),
-  timezone: z.string().trim().optional().nullable(),
+  timezone: z
+    .string()
+    .trim()
+    .max(100)
+    .refine(isValidIanaTimezone, { message: 'Must be a valid IANA timezone' })
+    .optional()
+    .nullable(),
   recurrence: z.enum(['DAILY', 'WEEKLY', 'ONCE', 'CUSTOM']).optional(),
   enabled: z.boolean().optional(),
   channel: NotificationChannelEnum.optional(),

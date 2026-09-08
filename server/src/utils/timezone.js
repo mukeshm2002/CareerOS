@@ -122,6 +122,63 @@ function getUserWeekRange(dateStr) {
   };
 }
 
+/**
+ * Validate whether a given string is a valid IANA timezone name
+ * @param {string} tz
+ * @returns {boolean}
+ */
+function isValidIanaTimezone(tz) {
+  if (!tz) return true;
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Convert a wall-clock local date and time in an IANA timezone to exact UTC Date
+ * @param {number} year - Local year
+ * @param {number} month - Local month (1-12)
+ * @param {number} day - Local day (1-31)
+ * @param {number} hour - Local hour (0-23)
+ * @param {number} minute - Local minute (0-59)
+ * @param {string} timezone - IANA timezone (e.g. 'Asia/Kolkata')
+ * @returns {Date}
+ */
+function localDateTimeToUtc(year, month, day, hour, minute, timezone = 'UTC') {
+  try {
+    const tz = timezone || 'UTC';
+    const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(utcGuess);
+    const m = {};
+    for (const p of parts) m[p.type] = p.value;
+    const inTzUtc = Date.UTC(
+      parseInt(m.year, 10),
+      parseInt(m.month, 10) - 1,
+      parseInt(m.day, 10),
+      parseInt(m.hour === '24' ? '0' : m.hour, 10),
+      parseInt(m.minute, 10),
+      parseInt(m.second, 10)
+    );
+    const offset = inTzUtc - utcGuess.getTime();
+    return new Date(utcGuess.getTime() - offset);
+  } catch {
+    return new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
+  }
+}
+
 module.exports = {
   getUserLocalDate,
   getUserYesterdayDate,
@@ -129,4 +186,7 @@ module.exports = {
   getUserLocalTimeInfo,
   parseLocalDateToUtcDate,
   getUserWeekRange,
+  isValidIanaTimezone,
+  localDateTimeToUtc,
 };
+

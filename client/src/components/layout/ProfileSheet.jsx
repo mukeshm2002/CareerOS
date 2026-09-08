@@ -47,16 +47,16 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
       />
 
       {/* Sheet Container */}
-      <div className="relative w-full md:max-w-sm bg-white dark:bg-[#121829] rounded-t-[24px] md:rounded-2xl border-t md:border border-slate-200 dark:border-[#28324A] shadow-2xl z-10 overflow-hidden animate-in slide-in-from-bottom-6 md:zoom-in-95 duration-200">
+      <div className="relative w-full md:max-w-sm bg-white dark:bg-[#111827] rounded-t-[24px] md:rounded-2xl border-t md:border border-slate-200 dark:border-[rgba(148,163,184,0.14)] shadow-2xl z-10 overflow-hidden animate-in slide-in-from-bottom-6 md:zoom-in-95 duration-200">
         {/* Mobile Pull Bar */}
         <div className="md:hidden pt-3 pb-1 flex justify-center">
-          <div className="w-12 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+          <div className="w-12 h-1 rounded-full bg-slate-300 dark:bg-slate-700/60" />
         </div>
 
         {/* User Card Header */}
-        <div className="p-5 border-b border-slate-100 dark:border-[#28324A] flex items-start justify-between bg-slate-50/70 dark:bg-[#181F34]">
+        <div className="p-5 border-b border-slate-100 dark:border-[rgba(148,163,184,0.14)] flex items-start justify-between bg-slate-50/70 dark:bg-[#131A2A]">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-[#6C5CE7] dark:bg-[#8B7CF6] text-white font-bold text-lg flex items-center justify-center shadow-md shadow-brand-600/20">
+            <div className="h-12 w-12 rounded-2xl bg-[#7C6CF2] text-white font-bold text-lg flex items-center justify-center shadow-md shadow-[#7C6CF2]/20">
               {initial}
             </div>
             <div>
@@ -67,7 +67,7 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#181F34] transition"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#192235] transition"
             aria-label="Close menu"
           >
             <X size={18} />
@@ -79,7 +79,7 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
           <NavLink
             to="/app/settings"
             onClick={onClose}
-            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#181F34] hover:text-slate-900 dark:hover:text-[#F8FAFC] transition"
+            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#192235] hover:text-slate-900 dark:hover:text-[#F8FAFC] transition"
           >
             <Settings size={18} className="text-slate-400 dark:text-[#94A3B8]" />
             <span>Profile & Settings</span>
@@ -88,7 +88,7 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
           <NavLink
             to="/app/overview"
             onClick={onClose}
-            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#181F34] hover:text-slate-900 dark:hover:text-[#F8FAFC] transition"
+            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#192235] hover:text-slate-900 dark:hover:text-[#F8FAFC] transition"
           >
             <Compass size={18} className="text-slate-400 dark:text-[#94A3B8]" />
             <span>Desktop Overview Dashboard</span>
@@ -97,7 +97,7 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
           <NavLink
             to="/app/reminders"
             onClick={onClose}
-            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#181F34] hover:text-slate-900 dark:hover:text-[#F8FAFC] transition"
+            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#192235] hover:text-slate-900 dark:hover:text-[#F8FAFC] transition"
           >
             <Bell size={18} className="text-slate-400 dark:text-[#94A3B8]" />
             <span>Notification & Reminders</span>
@@ -105,10 +105,10 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
         </div>
 
         {/* Logout Action */}
-        <div className="p-3 border-t border-slate-100 dark:border-[#28324A] bg-slate-50/50 dark:bg-[#121829] pb-[calc(env(safe-area-inset-bottom,0px)+12px)]">
+        <div className="p-3 border-t border-slate-100 dark:border-[rgba(148,163,184,0.14)] bg-slate-50/50 dark:bg-[#111827] pb-[calc(env(safe-area-inset-bottom,0px)+12px)]">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-rose-600 dark:text-[#F87171] hover:bg-rose-50 dark:hover:bg-[#EF4444]/10 border border-rose-200/60 dark:border-[#EF4444]/30 transition"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-rose-600 dark:text-[#FB7185] hover:bg-rose-50 dark:hover:bg-[rgba(251,113,133,0.1)] border border-rose-200/60 dark:border-[rgba(251,113,133,0.25)] transition"
           >
             <LogOut size={16} />
             <span>Log out</span>

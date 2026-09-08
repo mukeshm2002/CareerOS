@@ -79,8 +79,8 @@ export const MorePage = () => {
   return (
     <div className="space-y-6 pb-20 max-w-xl mx-auto">
       {/* Header */}
-      <div className="border-b border-slate-200/80 dark:border-[#28324A] pb-4">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">More</h1>
+      <div className="border-b border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">More</h1>
         <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
           Explore secondary career tools, pipelines, reflections, and settings.
         </p>
@@ -93,17 +93,17 @@ export const MorePage = () => {
             <h2 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider px-1">
               {section.title}
             </h2>
-            <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] divide-y divide-slate-100 dark:divide-[#28324A] shadow-xs overflow-hidden">
+            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] divide-y divide-slate-100 dark:divide-[rgba(148,163,184,0.10)] shadow-xs overflow-hidden">
               {section.items.map((item, iIdx) => {
                 const Icon = item.icon;
                 return (
                   <NavLink
                     key={iIdx}
                     to={item.path}
-                    className="flex items-center justify-between min-h-[52px] px-4 py-3 hover:bg-slate-50 dark:hover:bg-[#181F34] transition active:bg-slate-100 dark:active:bg-[#1D2540] group"
+                    className="flex items-center justify-between min-h-[52px] px-4 py-3 hover:bg-slate-50 dark:hover:bg-[#131A2A] transition active:bg-slate-100 dark:active:bg-[#192235] group"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="h-9 w-9 rounded-xl bg-slate-100 dark:bg-[#181F34] text-slate-600 dark:text-[#CBD5E1] group-hover:text-[#6C5CE7] dark:group-hover:text-[#8B7CF6] flex items-center justify-center shrink-0 transition-colors">
+                      <div className="h-9 w-9 rounded-xl bg-slate-100 dark:bg-[#131A2A] text-slate-600 dark:text-[#CBD5E1] group-hover:text-[#7C6CF2] dark:group-hover:text-[#8B7CF6] flex items-center justify-center shrink-0 transition-colors">
                         <Icon size={18} strokeWidth={1.8} />
                       </div>
                       <div className="min-w-0">

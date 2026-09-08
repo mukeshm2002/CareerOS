@@ -19,6 +19,7 @@ import {
 import { settingsService } from '../services/settingsService';
 import { useAuthStore } from '../store/authStore';
 import { applyTheme } from '../utils/theme';
+import { TIMEZONE_OPTIONS, getTimePreview, detectBrowserTimezone } from '../utils/timezones';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -28,20 +29,6 @@ const TABS = [
   { id: 'security', label: 'Security & Auth', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'account', label: 'Account', icon: Key },
-];
-
-const COMMON_TIMEZONES = [
-  'Asia/Kolkata',
-  'America/New_York',
-  'America/Los_Angeles',
-  'America/Chicago',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Asia/Tokyo',
-  'Asia/Singapore',
-  'Australia/Sydney',
-  'UTC',
 ];
 
 export const SettingsPage = () => {
@@ -370,18 +357,45 @@ export const SettingsPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">IANA Timezone</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      Timezone (IANA)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const detected = detectBrowserTimezone();
+                        setProfile({ ...profile, timezone: detected });
+                      }}
+                      className="text-[11px] text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium flex items-center gap-1"
+                    >
+                      <Globe size={12} />
+                      <span>Detect from Browser</span>
+                    </button>
+                  </div>
                   <select
-                    value={profile.timezone}
+                    value={profile.timezone || 'Asia/Kolkata'}
                     onChange={(e) => setProfile({ ...profile, timezone: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:ring-1 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:bg-white focus:ring-1 focus:ring-brand-500"
                   >
-                    {COMMON_TIMEZONES.map((tz) => (
-                      <option key={tz} value={tz}>{tz}</option>
+                    {!TIMEZONE_OPTIONS.some((tz) => tz.value === profile.timezone) && profile.timezone && (
+                      <option value={profile.timezone}>{profile.timezone} (Custom / Current)</option>
+                    )}
+                    {TIMEZONE_OPTIONS.map((tz) => (
+                      <option key={tz.value} value={tz.value}>{tz.label}</option>
                     ))}
                   </select>
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                    <span>Used for scheduling reminders, daily reviews, and routine check-ins.</span>
+                    {profile.timezone && (
+                      <span className="font-mono text-[10px] text-slate-600 dark:text-slate-300">
+                        Local: {getTimePreview(profile.timezone)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
+
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Country / Region</label>

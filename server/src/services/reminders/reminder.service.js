@@ -1,4 +1,5 @@
 const prisma = require('../../config/db');
+const { localDateTimeToUtc } = require('../../utils/timezone');
 
 class ReminderService {
   /**
@@ -70,28 +71,38 @@ class ReminderService {
     }
 
     const [targetHour, targetMinute] = timeStr.split(':').map(Number);
+    const tz = timezone || 'UTC';
 
     // Get current local date in user's timezone
-    const nowLocalParts = new Intl.DateTimeFormat('en-CA', {
-      timeZone: timezone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).formatToParts(baseDate);
+    let localYear, localMonth, localDay, localHour, localMinute;
+    try {
+      const nowLocalParts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: tz,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).formatToParts(baseDate);
 
-    const partMap = {};
-    for (const p of nowLocalParts) {
-      partMap[p.type] = p.value;
+      const partMap = {};
+      for (const p of nowLocalParts) {
+        partMap[p.type] = p.value;
+      }
+
+      localYear = parseInt(partMap.year, 10);
+      localMonth = parseInt(partMap.month, 10);
+      localDay = parseInt(partMap.day, 10);
+      localHour = parseInt(partMap.hour === '24' ? '0' : partMap.hour, 10);
+      localMinute = parseInt(partMap.minute, 10);
+    } catch {
+      localYear = baseDate.getUTCFullYear();
+      localMonth = baseDate.getUTCMonth() + 1;
+      localDay = baseDate.getUTCDate();
+      localHour = baseDate.getUTCHours();
+      localMinute = baseDate.getUTCMinutes();
     }
-
-    const localYear = parseInt(partMap.year, 10);
-    const localMonth = parseInt(partMap.month, 10);
-    const localDay = parseInt(partMap.day, 10);
-    const localHour = parseInt(partMap.hour, 10);
-    const localMinute = parseInt(partMap.minute, 10);
 
     // Construct target candidate date
     let candidateYear = localYear;
@@ -116,12 +127,8 @@ class ReminderService {
       }
     }
 
-    // Convert back to UTC ISO timestamp using Date.UTC
-    const candidateUtc = new Date(
-      Date.UTC(candidateYear, candidateMonth - 1, candidateDay, targetHour, targetMinute, 0, 0)
-    );
-
-    return candidateUtc;
+    // Convert local candidate date/time in user's timezone to exact UTC Date
+    return localDateTimeToUtc(candidateYear, candidateMonth, candidateDay, targetHour, targetMinute, tz);
   }
 
   /**
@@ -191,7 +198,11 @@ class ReminderService {
       where: { userId },
       select: { timezone: true },
     });
-    const timezone = data.timezone || profile?.timezone || 'UTC';
+    // Task 5: Default new reminders to authenticated user's UserProfile.timezone
+    // Task 6: Do not default to UTC when a user timezone exists
+    const explicitTz = typeof data.timezone === 'string' && data.timezone.trim() ? data.timezone.trim() : null;
+    const profileTz = typeof profile?.timezone === 'string' && profile.timezone.trim() ? profile.timezone.trim() : null;
+    const timezone = explicitTz || profileTz || 'UTC';
 
     const dayOfWeek = data.dayOfWeek !== undefined && data.dayOfWeek !== null ? parseInt(data.dayOfWeek, 10) : null;
     const nextTriggerAt = data.nextTriggerAt
@@ -227,21 +238,34 @@ class ReminderService {
    * Update existing reminder
    */
   async updateReminder(userId, reminderId, data) {
-    await this.getReminderById(userId, reminderId);
+    const existing = await this.getReminderById(userId, reminderId);
     await this.validateRelatedEntities(userId, data);
 
     const profile = await prisma.userProfile.findUnique({
       where: { userId },
       select: { timezone: true },
     });
-    const timezone = data.timezone || profile?.timezone || 'UTC';
+    const profileTz = typeof profile?.timezone === 'string' && profile.timezone.trim() ? profile.timezone.trim() : null;
+
+    // Task 7: Existing reminders may retain their saved timezone unless explicitly edited.
+    // If data.timezone is explicitly passed (not undefined), use it.
+    // Otherwise retain existing.timezone.
+    const explicitTz = data.timezone !== undefined
+      ? (typeof data.timezone === 'string' && data.timezone.trim() ? data.timezone.trim() : null)
+      : undefined;
+
+    const effectiveTimezone = explicitTz !== undefined
+      ? (explicitTz || profileTz || 'UTC')
+      : (existing.timezone || profileTz || 'UTC');
 
     const dayOfWeek = data.dayOfWeek !== undefined ? (data.dayOfWeek !== null ? parseInt(data.dayOfWeek, 10) : null) : undefined;
     const time = data.time;
 
     let nextTriggerAt = data.nextTriggerAt ? new Date(data.nextTriggerAt) : undefined;
-    if (time !== undefined || dayOfWeek !== undefined) {
-      nextTriggerAt = this.computeNextTriggerDate(time || '20:00', dayOfWeek, timezone);
+    if (time !== undefined || dayOfWeek !== undefined || explicitTz !== undefined) {
+      const targetTime = time !== undefined ? time : existing.time;
+      const targetDayOfWeek = dayOfWeek !== undefined ? dayOfWeek : existing.dayOfWeek;
+      nextTriggerAt = this.computeNextTriggerDate(targetTime || '20:00', targetDayOfWeek, effectiveTimezone);
     }
 
     const channel = data.channel || data.notificationChannel;
@@ -254,7 +278,7 @@ class ReminderService {
         type: data.type !== undefined ? data.type : undefined,
         time: data.time !== undefined ? data.time : undefined,
         dayOfWeek: dayOfWeek !== undefined ? dayOfWeek : undefined,
-        timezone: timezone !== undefined ? timezone : undefined,
+        timezone: explicitTz !== undefined ? explicitTz : undefined,
         recurrence: data.recurrence !== undefined ? data.recurrence : undefined,
         enabled: data.enabled !== undefined ? Boolean(data.enabled) : undefined,
         channel: channel !== undefined ? channel : undefined,
