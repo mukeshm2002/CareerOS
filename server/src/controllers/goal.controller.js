@@ -4,8 +4,8 @@ const { sendSuccess, sendError } = require('../utils/response');
 class GoalController {
   async listGoals(req, res, next) {
     try {
-      const { status } = req.query;
-      const goals = await goalService.listGoals(req.user.id, { status });
+      const { status, growthArea } = req.query;
+      const goals = await goalService.listGoals(req.user.id, { status, growthArea });
       return sendSuccess(res, { goals }, 'Goals retrieved successfully');
     } catch (error) {
       next(error);

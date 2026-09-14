@@ -9,6 +9,8 @@ import {
   Target,
   Milestone,
   BrainCircuit,
+  MessageSquare,
+  Activity,
   Briefcase,
   FolderGit2,
   Award,
@@ -48,11 +50,18 @@ const navigationGroups = [
     ],
   },
   {
-    title: 'CAREER',
+    title: 'MY GROWTH',
     items: [
       { name: 'Goals', path: '/app/goals', icon: Target },
       { name: 'Roadmap', path: '/app/roadmap', icon: Milestone },
       { name: 'Skills', path: '/app/skills', icon: BrainCircuit },
+      { name: 'Communication', path: '/app/communication', icon: MessageSquare },
+      { name: 'Health', path: '/app/health', icon: Activity },
+    ],
+  },
+  {
+    title: 'CAREER',
+    items: [
       { name: 'Opportunities', path: '/app/opportunities', icon: Briefcase },
       { name: 'Projects', path: '/app/projects', icon: FolderGit2 },
       { name: 'Portfolio', path: '/app/portfolio', icon: Award },
@@ -71,7 +80,6 @@ const navigationGroups = [
     items: [
       { name: 'Reminders', path: '/app/reminders', icon: Bell },
       { name: 'Settings', path: '/app/settings', icon: Settings },
-      { name: 'Overview', path: '/app/overview', icon: Compass },
     ],
   },
 ];
@@ -196,6 +204,8 @@ export const AppLayout = () => {
     if (path.includes('/app/goals')) return 'Goals';
     if (path.includes('/app/roadmap')) return 'Roadmap';
     if (path.includes('/app/skills')) return 'Skills';
+    if (path.includes('/app/communication')) return 'Communication';
+    if (path.includes('/app/health')) return 'Health';
     if (path.includes('/app/opportunities')) return 'Opportunities';
     if (path.includes('/app/projects')) return 'Projects';
     if (path.includes('/app/learning')) return 'Learning';
@@ -210,24 +220,19 @@ export const AppLayout = () => {
   const displayRole = user?.profile?.currentRole || user?.profile?.targetRole || 'Member';
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0D121C] border-r border-[#E5E7EB] dark:border-[#263247] select-none">
-      {/* Brand Header */}
-      <div className="p-5 border-b border-[#E5E7EB] dark:border-[#263247] flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <ValariLogo size="sm" variant="icon" />
-          <div>
-            <h1 className="font-black text-slate-900 dark:text-[#F8FAFC] text-base leading-tight tracking-tight">
-              VALARI
-            </h1>
-            <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] font-medium">
-              Personal Growth System
-            </p>
-          </div>
+    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0B0F17] border-r border-[#E5E7EB] dark:border-[#253044] select-none">
+      {/* Brand Header: Official VALARI Wordmark without redundant V icon */}
+      <div className="p-5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between">
+        <div className="flex flex-col justify-center">
+          <ValariLogo size="sm" variant="wordmark" />
+          <p className="text-[10px] text-[#64748B] dark:text-[#64748B] font-medium tracking-wide mt-1">
+            Personal Growth System
+          </p>
         </div>
         {mobileMenuOpen && (
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#161E2D]"
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#151D2B]"
           >
             <X size={18} />
           </button>
@@ -235,11 +240,11 @@ export const AppLayout = () => {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         {navigationGroups.map((group, idx) => (
           <div key={idx} className="space-y-1">
             {group.title && (
-              <p className="px-3 text-[11px] font-semibold tracking-[0.08em] text-[#64748B] uppercase mb-2">
+              <p className="px-3 text-[10px] font-bold tracking-[0.08em] text-[#64748B] uppercase mb-1.5">
                 {group.title}
               </p>
             )}
@@ -252,21 +257,21 @@ export const AppLayout = () => {
                   end={item.end}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
+                    `flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#FFF0E3] dark:bg-[rgba(255,122,0,0.14)] text-[#F56A00] font-semibold shadow-xs'
-                        : 'text-[#334155] dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-[#FFF7EF] dark:hover:bg-[rgba(255,122,0,0.08)]'
+                        ? 'bg-slate-100 dark:bg-[#151D2B] text-slate-900 dark:text-[#F8FAFC] font-semibold'
+                        : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-slate-50 dark:hover:bg-[#151D2B]/60'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
                       <Icon
-                        size={18}
+                        size={17}
                         className={`shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#F56A00]'
-                            : 'text-[#94A3B8]'
+                            ? 'text-[#FF7A00]'
+                            : 'text-[#64748B] dark:text-[#94A3B8]'
                         }`}
                       />
                       <span>{item.name}</span>
@@ -280,15 +285,15 @@ export const AppLayout = () => {
       </div>
 
       {/* Bottom User Profile Card */}
-      <div className="p-3 border-t border-[#E5E7EB] dark:border-[#263247] bg-[#F8FAFC] dark:bg-[#0D121C]">
-        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#263247] shadow-xs">
+      <div className="p-3 border-t border-[#E5E7EB] dark:border-[#253044] bg-[#F8FAFC] dark:bg-[#0B0F17]">
+        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#253044]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="h-8 w-8 rounded-lg bg-[#FF7A00] text-white font-bold text-xs flex items-center justify-center shrink-0">
+            <div className="h-7 w-7 rounded-lg bg-[#FF7A00] text-white font-bold text-xs flex items-center justify-center shrink-0">
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-slate-800 dark:text-[#F8FAFC] truncate">{displayName}</p>
-              <p className="text-[11px] text-slate-400 dark:text-[#94A3B8] truncate">{displayRole}</p>
+              <p className="text-[10px] text-slate-400 dark:text-[#94A3B8] truncate">{displayRole}</p>
             </div>
           </div>
           <button
@@ -296,7 +301,7 @@ export const AppLayout = () => {
             title="Log out"
             className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-red-600 dark:hover:text-[#F87171] hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
 
@@ -311,7 +316,7 @@ export const AppLayout = () => {
   );
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#090D16]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#0B0F17]">
       {/* Desktop Persistent Sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col shrink-0">
         {sidebarContent}
@@ -336,11 +341,11 @@ export const AppLayout = () => {
         <MobileHeader />
 
         {/* Desktop Top Header (hidden md:flex) */}
-        <header className="hidden md:flex h-16 bg-white dark:bg-[#0D121C] border-b border-[#E5E7EB] dark:border-[#263247] items-center justify-between px-6 lg:px-8 shrink-0 z-10">
+        <header className="hidden md:flex h-16 bg-white dark:bg-[#0B0F17] border-b border-[#E5E7EB] dark:border-[#253044] items-center justify-between px-6 lg:px-8 shrink-0 z-10">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]"
+              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#151D2B]"
             >
               <Menu size={20} />
             </button>
@@ -371,7 +376,7 @@ export const AppLayout = () => {
                 placeholder="Search VALARI..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#263247] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#FF7A00] focus:border-[#FF7A00] transition-all"
+                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#253044] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#FF7A00] focus:border-[#FF7A00] transition-all"
               />
             </div>
 
@@ -389,7 +394,7 @@ export const AppLayout = () => {
               >
                 <Bell size={18} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#FF7A00] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0D121C] shadow-xs">
+                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#FF7A00] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0B0F17] shadow-xs">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -397,8 +402,8 @@ export const AppLayout = () => {
 
               {/* Notification Popover */}
               {notificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#263247] shadow-2xl shadow-slate-900/15 z-50 overflow-hidden animate-in fade-in-50 duration-150">
-                  <div className="p-3.5 border-b border-[#E5E7EB] dark:border-[#263247] flex items-center justify-between bg-slate-50/50 dark:bg-[#161E2D]">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#253044] shadow-2xl shadow-slate-900/15 z-50 overflow-hidden animate-in fade-in-50 duration-150">
+                  <div className="p-3.5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between bg-slate-50/50 dark:bg-[#151D2B]">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-[#F8FAFC]">Notifications</span>
                       {unreadCount > 0 && (

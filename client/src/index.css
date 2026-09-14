@@ -76,42 +76,42 @@
 
 .dark {
   /* VALARI Semantic Tokens - Dark Mode */
-  --bg-app: #090D16;
-  --bg-sidebar: #0D121C;
+  --bg-app: #0B0F17;
+  --bg-sidebar: #0B0F17;
   --surface-1: #111827;
-  --surface-2: #161E2D;
+  --surface-2: #151D2B;
   --surface-card: #111827;
-  --surface-elevated: #1A2434;
-  --surface-hover: #161E2D;
+  --surface-elevated: #151D2B;
+  --surface-hover: #151D2B;
   --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
   --text-subtle: #64748B;
-  --border-subtle: #263247;
+  --border-subtle: #253044;
   --border-strong: #33435C;
 
   /* Brand Colors */
   --brand-orange: #FF7A00;
-  --brand-orange-hover: #FF8A1F;
+  --brand-orange-hover: #EA6700;
   --brand-yellow: #FFC400;
   --brand-amber: #FFB000;
   --brand-soft: rgba(255, 122, 0, 0.12);
 
   --accent: #FF7A00;
-  --accent-hover: #FF8A1F;
+  --accent-hover: #EA6700;
   --accent-soft: rgba(255, 122, 0, 0.12);
-  --accent-border: rgba(255, 122, 0, 0.32);
+  --accent-border: rgba(255, 122, 0, 0.28);
 
-  --success: #34D399;
-  --success-soft: rgba(52, 211, 153, 0.10);
-  --warning: #FBBF24;
-  --danger: #F87171;
-  --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --success: #22C55E;
+  --success-soft: rgba(34, 197, 94, 0.10);
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --card-shadow: none;
 
   /* Legacy & Tailwind Theme Variables */
   --color-primary: #FF7A00;
-  --color-primary-hover: #FF8A1F;
-  --color-primary-pressed: #EA6700;
+  --color-primary-hover: #EA6700;
+  --color-primary-pressed: #D95F00;
   --color-primary-soft: rgba(255, 122, 0, 0.12);
   --color-primary-soft-strong: rgba(255, 122, 0, 0.22);
   --color-accent: #FF7A00;
@@ -120,7 +120,7 @@
   --color-sidebar: var(--bg-sidebar);
   --color-surface: var(--surface-1);
   --color-card: var(--surface-2);
-  --color-surface-secondary: #161E2D;
+  --color-surface-secondary: #151D2B;
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-hover: var(--surface-hover);
   --color-text-primary: var(--text-primary);
@@ -129,9 +129,9 @@
   --color-text-subtle: var(--text-subtle);
   --color-border: var(--border-subtle);
   --color-border-strong: var(--border-strong);
-  --color-warning: #FBBF24;
-  --color-danger: #F87171;
-  --color-success: #34D399;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-success: #22C55E;
 }
 
 @layer base {

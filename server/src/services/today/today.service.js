@@ -104,11 +104,12 @@ class TodayService {
       orderBy: { startTime: 'asc' },
     });
 
-    // Fetch incomplete tasks for recommendation
+    // Fetch incomplete career tasks for recommendation
     const incompleteTasks = await prisma.task.findMany({
       where: {
         userId,
         status: { in: ['TODO', 'IN_PROGRESS', 'BLOCKED'] },
+        growthArea: { notIn: ['COMMUNICATION', 'HEALTH'] },
       },
       include: {
         goal: true,
@@ -120,6 +121,80 @@ class TodayService {
         { dueDate: 'asc' },
         { createdAt: 'asc' },
       ],
+    });
+
+    // Fetch today's communication task & active goal
+    const communicationCompletedToday = await prisma.task.findFirst({
+      where: {
+        userId,
+        growthArea: 'COMMUNICATION',
+        status: 'COMPLETED',
+        completedAt: {
+          gte: localDate,
+          lt: new Date(localDate.getTime() + 86400000),
+        },
+      },
+      include: { goal: true },
+      orderBy: { completedAt: 'desc' },
+    });
+
+    const communicationActiveTask = communicationCompletedToday || await prisma.task.findFirst({
+      where: {
+        userId,
+        growthArea: 'COMMUNICATION',
+        status: { in: ['TODO', 'IN_PROGRESS'] },
+      },
+      include: { goal: true },
+      orderBy: [
+        { dueDate: 'asc' },
+        { createdAt: 'desc' },
+      ],
+    });
+
+    const activeCommunicationGoal = await prisma.goal.findFirst({
+      where: {
+        userId,
+        growthArea: 'COMMUNICATION',
+        status: 'ACTIVE',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Fetch today's health task & active goal
+    const healthCompletedToday = await prisma.task.findFirst({
+      where: {
+        userId,
+        growthArea: 'HEALTH',
+        status: 'COMPLETED',
+        completedAt: {
+          gte: localDate,
+          lt: new Date(localDate.getTime() + 86400000),
+        },
+      },
+      include: { goal: true },
+      orderBy: { completedAt: 'desc' },
+    });
+
+    const healthActiveTask = healthCompletedToday || await prisma.task.findFirst({
+      where: {
+        userId,
+        growthArea: 'HEALTH',
+        status: { in: ['TODO', 'IN_PROGRESS'] },
+      },
+      include: { goal: true },
+      orderBy: [
+        { dueDate: 'asc' },
+        { createdAt: 'desc' },
+      ],
+    });
+
+    const activeHealthGoal = await prisma.goal.findFirst({
+      where: {
+        userId,
+        growthArea: 'HEALTH',
+        status: 'ACTIVE',
+      },
+      orderBy: { createdAt: 'desc' },
     });
 
     // Fetch completed tasks for today (for stats strip)
@@ -249,6 +324,18 @@ class TodayService {
       completedTasksToday,
       todayFocusSessions,
       previousUnfinishedPlan: yesterdayPlan && yesterdayPlan.status !== 'COMPLETED' && yesterdayPlan.status !== 'CLOSED' ? yesterdayPlan : null,
+      balance: {
+        communication: {
+          task: communicationActiveTask,
+          goal: activeCommunicationGoal,
+          isCompletedToday: communicationActiveTask?.status === 'COMPLETED',
+        },
+        health: {
+          task: healthActiveTask,
+          goal: activeHealthGoal,
+          isCompletedToday: healthActiveTask?.status === 'COMPLETED',
+        },
+      },
     };
   }
 

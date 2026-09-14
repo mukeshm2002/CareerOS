@@ -229,6 +229,10 @@ class TaskPlanningService {
       where.priority = filters.priority;
     }
 
+    if (filters.growthArea) {
+      where.growthArea = filters.growthArea;
+    }
+
     if (filters.due) {
       const now = new Date();
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -307,6 +311,7 @@ class TaskPlanningService {
       dueDate = null,
       estimatedMinutes = 30,
       actualMinutes = 0,
+      growthArea = null,
       goalId = null,
       milestoneId = null,
       skillId = null,
@@ -366,6 +371,20 @@ class TaskPlanningService {
       internshipOpportunityId,
     });
 
+    let resolvedGrowthArea = growthArea || null;
+    if (!resolvedGrowthArea && resolvedGoalId) {
+      const goal = await prisma.goal.findFirst({
+        where: { id: resolvedGoalId, userId },
+        select: { growthArea: true },
+      });
+      if (goal?.growthArea) {
+        resolvedGrowthArea = goal.growthArea;
+      }
+    }
+    if (!resolvedGrowthArea) {
+      resolvedGrowthArea = 'CAREER';
+    }
+
     const task = await prisma.$transaction(async (tx) => {
       const created = await tx.task.create({
         data: {
@@ -375,6 +394,7 @@ class TaskPlanningService {
           priority,
           status,
           taskType,
+          growthArea: resolvedGrowthArea,
           dueDate: parsedDueDate,
           estimatedMinutes: estimatedMinutes ? parseInt(estimatedMinutes, 10) : 30,
           actualMinutes: actualMinutes ? parseInt(actualMinutes, 10) : 0,
@@ -496,6 +516,7 @@ class TaskPlanningService {
           priority: data.priority !== undefined ? data.priority : existing.priority,
           status: data.status !== undefined ? data.status : existing.status,
           taskType: data.taskType !== undefined ? data.taskType : existing.taskType,
+          growthArea: data.growthArea !== undefined ? data.growthArea : existing.growthArea,
           dueDate: parsedDueDate,
           estimatedMinutes: data.estimatedMinutes !== undefined ? parseInt(data.estimatedMinutes, 10) : existing.estimatedMinutes,
           actualMinutes: data.actualMinutes !== undefined ? parseInt(data.actualMinutes, 10) : existing.actualMinutes,

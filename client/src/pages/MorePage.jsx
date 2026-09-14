@@ -12,6 +12,8 @@ import {
   BookOpen,
   Download,
   Check,
+  MessageSquare,
+  Activity,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { pwaService } from '../services/pwaService';
@@ -30,6 +32,23 @@ export const MorePage = () => {
   }, []);
 
   const menuSections = [
+    {
+      title: 'MY GROWTH',
+      items: [
+        {
+          name: 'Communication',
+          path: '/app/communication',
+          icon: MessageSquare,
+          desc: 'Speaking, writing, confidence & interview skills',
+        },
+        {
+          name: 'Health',
+          path: '/app/health',
+          icon: Activity,
+          desc: 'Movement, sleep, energy & wellbeing habits',
+        },
+      ],
+    },
     {
       title: 'CAREER',
       items: [

@@ -2,220 +2,261 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useOnboarding } from '../features/onboarding/hooks/useOnboarding';
-import { StepProgressBar } from '../features/onboarding/components/StepProgressBar';
-import { Step1Welcome } from '../features/onboarding/components/Step1Welcome';
-import { Step2Situation } from '../features/onboarding/components/Step2Situation';
-import { Step3Goals } from '../features/onboarding/components/Step3Goals';
-import { Step4GoalDetails } from '../features/onboarding/components/Step4GoalDetails';
-import { Step5Routine } from '../features/onboarding/components/Step5Routine';
-import { Step6Skills } from '../features/onboarding/components/Step6Skills';
-import { Step7Review } from '../features/onboarding/components/Step7Review';
-import { AlertCircle } from 'lucide-react';
 import { ValariLogo } from '../components/common/ValariLogo';
+import {
+  Briefcase,
+  MessageSquare,
+  Activity,
+  Check,
+  ArrowRight,
+  ArrowLeft,
+  Clock,
+  Sparkles,
+  AlertCircle,
+  ShieldCheck,
+} from 'lucide-react';
+
+const GROWTH_AREAS = [
+  {
+    id: 'CAREER',
+    title: 'Career',
+    subtitle: 'Advance in your role, build portfolio projects, and grow your income.',
+    icon: Briefcase,
+  },
+  {
+    id: 'COMMUNICATION',
+    title: 'Communication',
+    subtitle: 'English speaking confidence, clear writing, and presentation skills.',
+    icon: MessageSquare,
+  },
+  {
+    id: 'HEALTH',
+    title: 'Health',
+    subtitle: 'Daily walking, regular exercise, better sleep, and sustained energy.',
+    icon: Activity,
+  },
+];
+
+const DYNAMIC_PRIORITIES = {
+  CAREER: [
+    {
+      id: 'career_role',
+      area: 'CAREER',
+      type: 'JOB_SWITCH',
+      title: 'Advance to a better role / job switch',
+      desc: 'Target higher responsibility and compensation.',
+    },
+    {
+      id: 'career_skills',
+      area: 'CAREER',
+      type: 'SKILL_MASTERY',
+      title: 'Master core technical skills',
+      desc: 'Close capability gaps and build deep expertise.',
+    },
+    {
+      id: 'career_projects',
+      area: 'CAREER',
+      type: 'PORTFOLIO',
+      title: 'Build impactful projects & portfolio',
+      desc: 'Create tangible proof of high-quality work.',
+    },
+    {
+      id: 'career_freelance',
+      area: 'CAREER',
+      type: 'FREELANCING',
+      title: 'Start freelancing or consulting',
+      desc: 'Establish independent client revenue.',
+    },
+  ],
+  COMMUNICATION: [
+    {
+      id: 'comm_speaking',
+      area: 'COMMUNICATION',
+      type: 'IMPROVE_SPOKEN_ENGLISH',
+      title: '10-minute English speaking practice',
+      desc: 'Build fluency and reduce hesitation in daily speech.',
+    },
+    {
+      id: 'comm_confidence',
+      area: 'COMMUNICATION',
+      type: 'SPEAK_MORE_CONFIDENTLY',
+      title: 'Speak with confidence in meetings',
+      desc: 'Express ideas clearly without second-guessing.',
+    },
+    {
+      id: 'comm_writing',
+      area: 'COMMUNICATION',
+      type: 'IMPROVE_WRITING',
+      title: 'Clear professional writing',
+      desc: 'Craft concise emails, proposals, and documents.',
+    },
+    {
+      id: 'comm_interview',
+      area: 'COMMUNICATION',
+      type: 'IMPROVE_INTERVIEW_COMMUNICATION',
+      title: 'Interview & presentation prep',
+      desc: 'Articulate thoughts crisply under evaluation.',
+    },
+  ],
+  HEALTH: [
+    {
+      id: 'health_walk',
+      area: 'HEALTH',
+      type: 'WALKING_STEPS',
+      title: 'Daily 20-minute walk',
+      desc: 'Clear mental fog and maintain daily physical movement.',
+    },
+    {
+      id: 'health_exercise',
+      area: 'HEALTH',
+      type: 'BUILD_EXERCISE_HABIT',
+      title: 'Consistent exercise routine',
+      desc: 'Build strength and cardiovascular fitness.',
+    },
+    {
+      id: 'health_sleep',
+      area: 'HEALTH',
+      type: 'IMPROVE_SLEEP',
+      title: 'Consistent sleep & evening wind-down',
+      desc: 'Wake up refreshed with regular sleep timing.',
+    },
+    {
+      id: 'health_energy',
+      area: 'HEALTH',
+      type: 'RELAXATION_STRESS_ROUTINE',
+      title: 'Stress reduction & daily energy',
+      desc: 'Maintain stamina without midday exhaustion.',
+    },
+  ],
+};
+
+const COMMITMENT_OPTIONS = [
+  {
+    minutes: 30,
+    title: '30 min / day',
+    pace: '3.5 hours per week',
+    desc: 'Low friction, ideal for steady daily consistency.',
+  },
+  {
+    minutes: 45,
+    title: '45 min / day',
+    badge: 'Recommended',
+    pace: '5.25 hours per week',
+    desc: 'Balanced pace for career execution and balance.',
+  },
+  {
+    minutes: 60,
+    title: '60 min / day',
+    pace: '7 hours per week',
+    desc: 'Fast-track your skills and primary goals.',
+  },
+  {
+    minutes: 90,
+    title: '90 min / day',
+    pace: '10.5 hours per week',
+    desc: 'Deep focus immersion for rapid progress.',
+  },
+];
 
 export const OnboardingPage = () => {
   const navigate = useNavigate();
   const { user, updateUser } = useAuthStore();
-  const {
-    onboardingState,
-    isLoading: isServerLoading,
-    updateStep,
-    updateProfile,
-    completeOnboarding,
-    isCompleting,
-  } = useOnboarding();
+  const { onboardingState, completeOnboarding, isCompleting } = useOnboarding();
 
   const [step, setStep] = useState(1);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Detect local IANA timezone
+  // Step 1 State: Areas to improve (multi-select)
+  const [selectedAreas, setSelectedAreas] = useState(['CAREER', 'COMMUNICATION']);
+
+  // Step 2 State: Priorities selected
+  const [selectedPriorities, setSelectedPriorities] = useState(['career_role', 'comm_speaking']);
+
+  // Step 3 State: Daily Commitment
+  const [dailyCommitment, setDailyCommitment] = useState(45);
+
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
 
-  // Draft form data
-  const [situation, setSituation] = useState('WORKING_PROFESSIONAL');
-  const [selectedGoals, setSelectedGoals] = useState([
-    {
-      type: 'JOB_SWITCH',
-      title: 'Get a better-paying Software Developer role',
-      priority: 'HIGH',
-      targetDate: '2026-12-31',
-      targetRole: 'Full Stack Developer',
-      targetSalary: '120,000 / yr',
-      salaryCurrency: 'USD',
-      description: 'Advance to a higher tier development position.',
-    },
-    {
-      type: 'FREELANCING',
-      title: 'Start Freelancing',
-      priority: 'HIGH',
-      targetDate: '2026-12-31',
-      targetRole: 'Freelance Backend Engineer',
-      targetSalary: '3,000 / mo',
-      salaryCurrency: 'USD',
-      description: 'Acquire direct freelance tech clients.',
-    },
-  ]);
-
-  const [routine, setRoutine] = useState({
-    wakeTime: '06:00',
-    workStartTime: '08:00',
-    workEndTime: '19:00',
-    personalStartTime: '19:00',
-    personalEndTime: '20:00',
-    sleepTime: '22:30',
-    availableCareerMinutes: 140,
-  });
-
-  const [profile, setProfile] = useState({
-    currentRole: 'Software Developer',
-    targetRole: 'Full Stack Developer',
-    experienceLevel: 'MID_LEVEL',
-    timezone: detectedTimezone,
-    careerMission: 'Get a better-paying Software Developer role and start freelancing',
-  });
-
-  const [skills, setSkills] = useState([
-    { name: 'Java', category: 'TECHNICAL', selfRating: 4 },
-    { name: 'Spring Boot', category: 'TECHNICAL', selfRating: 3 },
-    { name: 'React', category: 'TECHNICAL', selfRating: 3 },
-    { name: 'SQL / PostgreSQL', category: 'TECHNICAL', selfRating: 3 },
-    { name: 'DSA', category: 'TECHNICAL', selfRating: 2 },
-  ]);
-
-  // Sync server onboarding state on initial load
   useEffect(() => {
-    if (onboardingState) {
-      if (onboardingState.onboardingCompleted) {
-        navigate('/app', { replace: true });
-        return;
-      }
-
-      if (onboardingState.currentStep && onboardingState.currentStep > 1) {
-        setStep(onboardingState.currentStep);
-      }
-
-      if (onboardingState.profile) {
-        const p = onboardingState.profile;
-        if (p.currentSituation) setSituation(p.currentSituation);
-        if (p.currentRole || p.targetRole || p.experienceLevel) {
-          setProfile((prev) => ({
-            ...prev,
-            currentRole: p.currentRole || prev.currentRole,
-            targetRole: p.targetRole || prev.targetRole,
-            experienceLevel: p.experienceLevel || prev.experienceLevel,
-            timezone: p.timezone || detectedTimezone,
-            careerMission: p.careerMission || prev.careerMission,
-          }));
-        }
-        if (p.wakeTime || p.workStartTime || p.availableCareerMinutes) {
-          setRoutine((prev) => ({
-            ...prev,
-            wakeTime: p.wakeTime || prev.wakeTime,
-            workStartTime: p.workStartTime || prev.workStartTime,
-            workEndTime: p.workEndTime || prev.workEndTime,
-            personalStartTime: p.personalStartTime || prev.personalStartTime,
-            personalEndTime: p.personalEndTime || prev.personalEndTime,
-            sleepTime: p.sleepTime || prev.sleepTime,
-            availableCareerMinutes: p.availableCareerMinutes || prev.availableCareerMinutes,
-          }));
-        }
-      }
-
-      // Recover server-persisted onboarding draft (goals, skills, etc.)
-      const draft = onboardingState.onboardingDraft || onboardingState.profile?.onboardingDraft;
-      if (draft) {
-        if (Array.isArray(draft.goals) && draft.goals.length > 0) {
-          setSelectedGoals(draft.goals);
-        }
-        if (Array.isArray(draft.skills) && draft.skills.length > 0) {
-          setSkills(draft.skills);
-        }
-        if (draft.situation) setSituation(draft.situation);
-      }
+    if (onboardingState?.onboardingCompleted) {
+      navigate('/app', { replace: true });
     }
-  }, [onboardingState, navigate, detectedTimezone]);
+  }, [onboardingState, navigate]);
 
-  // Navigate to step and persist draft to backend
-  const goToStep = async (nextStep) => {
-    setErrorMessage('');
-    setStep(nextStep);
-    try {
-      await updateStep(nextStep);
-
-      // Persist draft state to backend so closing browser resumes with all data
-      await updateProfile({
-        currentSituation: situation,
-        currentRole: profile.currentRole,
-        targetRole: profile.targetRole,
-        experienceLevel: profile.experienceLevel,
-        timezone: profile.timezone || detectedTimezone,
-        wakeTime: routine.wakeTime,
-        workStartTime: routine.workStartTime,
-        workEndTime: routine.workEndTime,
-        personalStartTime: routine.personalStartTime,
-        personalEndTime: routine.personalEndTime,
-        sleepTime: routine.sleepTime,
-        availableCareerMinutes: routine.availableCareerMinutes,
-        careerMission: profile.careerMission,
-        onboardingDraft: {
-          situation,
-          goals: selectedGoals,
-          skills,
-          routine,
-          profile,
-        },
-      });
-    } catch {
-      // Allow graceful transition even if background save lags
+  const toggleArea = (areaId) => {
+    if (selectedAreas.includes(areaId)) {
+      if (selectedAreas.length === 1) return; // Keep at least one
+      setSelectedAreas(selectedAreas.filter((a) => a !== areaId));
+      // Remove any priorities belonging to this area
+      const availablePriorities = Object.entries(DYNAMIC_PRIORITIES)
+        .filter(([key]) => key !== areaId)
+        .flatMap(([, items]) => items.map((i) => i.id));
+      setSelectedPriorities(selectedPriorities.filter((pId) => availablePriorities.includes(pId)));
+    } else {
+      setSelectedAreas([...selectedAreas, areaId]);
+      // Pre-select first priority from added area
+      const firstItem = DYNAMIC_PRIORITIES[areaId]?.[0];
+      if (firstItem && !selectedPriorities.includes(firstItem.id)) {
+        setSelectedPriorities([...selectedPriorities, firstItem.id]);
+      }
     }
   };
 
-  const handleToggleGoal = (opt) => {
-    const exists = selectedGoals.some((g) => g.type === opt.key);
-    if (exists) {
-      setSelectedGoals(selectedGoals.filter((g) => g.type !== opt.key));
+  const togglePriority = (priorityId) => {
+    if (selectedPriorities.includes(priorityId)) {
+      if (selectedPriorities.length === 1) return; // Keep at least one
+      setSelectedPriorities(selectedPriorities.filter((id) => id !== priorityId));
     } else {
-      setSelectedGoals([
-        ...selectedGoals,
-        {
-          type: opt.key,
-          title: opt.title,
+      setSelectedPriorities([...selectedPriorities, priorityId]);
+    }
+  };
+
+  // Compile active priorities for Step 2
+  const activePriorityOptions = selectedAreas.flatMap((area) => DYNAMIC_PRIORITIES[area] || []);
+
+  const handleFinish = async () => {
+    setErrorMessage('');
+    try {
+      // Build goals array conforming to onboarding validator
+      const allPriorities = Object.values(DYNAMIC_PRIORITIES).flat();
+      const chosen = allPriorities.filter((p) => selectedPriorities.includes(p.id));
+
+      const goals = chosen.map((item) => ({
+        title: item.title,
+        description: item.desc,
+        type: item.type,
+        priority: 'HIGH',
+        targetDate: '2026-12-31',
+        targetRole: 'Software Professional',
+        targetSalary: '100,000 / yr',
+        salaryCurrency: 'USD',
+      }));
+
+      // Fallback if none matched
+      if (goals.length === 0) {
+        goals.push({
+          title: 'Advance my career and daily momentum',
+          type: 'JOB_SWITCH',
           priority: 'HIGH',
           targetDate: '2026-12-31',
-          targetRole: profile.targetRole || 'Software Professional',
+          targetRole: 'Software Professional',
           targetSalary: '100,000 / yr',
           salaryCurrency: 'USD',
-          description: '',
-        },
-      ]);
-    }
-  };
+        });
+      }
 
-  const handleUpdateGoal = (index, updates) => {
-    setSelectedGoals(
-      selectedGoals.map((g, i) => (i === index ? { ...g, ...updates } : g))
-    );
-  };
-
-  const handleComplete = async () => {
-    setErrorMessage('');
-    try {
       const payload = {
-        situation,
-        currentRole: profile.currentRole,
-        targetRole: profile.targetRole,
-        experienceLevel: profile.experienceLevel,
-        timezone: profile.timezone || detectedTimezone,
-        wakeTime: routine.wakeTime,
-        workStartTime: routine.workStartTime,
-        workEndTime: routine.workEndTime,
-        personalStartTime: routine.personalStartTime,
-        personalEndTime: routine.personalEndTime,
-        sleepTime: routine.sleepTime,
-        availableCareerMinutes: routine.availableCareerMinutes,
-        careerMission: profile.careerMission,
-        goals: selectedGoals,
-        skills,
+        situation: 'WORKING_PROFESSIONAL',
+        currentRole: 'Professional',
+        targetRole: 'Senior Professional',
+        experienceLevel: 'MID_LEVEL',
+        timezone: detectedTimezone,
+        availableCareerMinutes: dailyCommitment,
+        goals,
+        skills: [
+          { name: 'Core Focus', category: 'TECHNICAL', selfRating: 4 },
+          { name: 'Communication', category: 'COMMUNICATION', selfRating: 3 },
+        ],
       };
 
       const result = await completeOnboarding(payload);
@@ -226,103 +267,336 @@ export const OnboardingPage = () => {
             onboardingCompleted: true,
           });
         }
-        navigate('/app', { replace: true });
+        navigate('/app/today', { replace: true });
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to complete onboarding. Please review your entries.';
+      const msg = err.response?.data?.message || 'Failed to complete setup. Please try again.';
       setErrorMessage(msg);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between p-4 md:p-8">
+    <div className="min-h-screen bg-[#0B0F17] text-[#F8FAFC] flex flex-col justify-between p-4 sm:p-8 select-none">
       {/* Top Header */}
-      <header className="max-w-3xl mx-auto w-full flex items-center justify-between py-2">
-        <div className="flex items-center gap-2">
-          <ValariLogo size="sm" showWordmark={true} />
-        </div>
-
-        <span className="text-xs font-semibold text-slate-500 dark:text-[#94A3B8] bg-slate-100 dark:bg-[#161E2D] px-3 py-1 rounded-full">
-          Personal Growth System
+      <header className="max-w-md mx-auto w-full flex items-center justify-between py-2">
+        <ValariLogo size="sm" variant="wordmark" />
+        <span className="text-[11px] font-medium text-[#64748B]">
+          Step {step} of 4
         </span>
       </header>
 
-      {/* Main Container Card */}
-      <div className="max-w-2xl mx-auto w-full bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl shadow-card p-6 md:p-10 my-4">
-        {step > 1 && <StepProgressBar currentStep={step} totalSteps={7} />}
-
+      {/* Main Form Container */}
+      <div className="max-w-md mx-auto w-full my-auto py-4">
         {errorMessage && (
-          <div className="mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-700 dark:text-[#F87171] text-xs">
-            <AlertCircle size={15} className="shrink-0 mt-0.5" />
+          <div className="mb-4 flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-[#F87171] text-xs">
+            <AlertCircle size={15} className="shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        {step === 1 && <Step1Welcome onNext={() => goToStep(2)} />}
+        {/* STEP 1: What do you want to improve? */}
+        {step === 1 && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-[26px] sm:text-[28px] font-bold tracking-tight text-[#F8FAFC]">
+                What do you want to improve?
+              </h1>
+              <p className="text-sm text-[#94A3B8]">
+                Select the areas of your life you want to develop. You can change these anytime.
+              </p>
+            </div>
 
+            <div className="space-y-2.5">
+              {GROWTH_AREAS.map((area) => {
+                const isSelected = selectedAreas.includes(area.id);
+                const Icon = area.icon;
+
+                return (
+                  <div
+                    key={area.id}
+                    onClick={() => toggleArea(area.id)}
+                    className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-[#151D2B] border-[#FF7A00]/60'
+                        : 'bg-[#111827] border-[#253044] hover:border-[#33435C]'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`p-2 rounded-lg shrink-0 mt-0.5 ${
+                          isSelected
+                            ? 'bg-[#FF7A00]/15 text-[#FF7A00]'
+                            : 'bg-[#151D2B] text-[#94A3B8]'
+                        }`}
+                      >
+                        <Icon size={18} />
+                      </div>
+                      <div className="space-y-0.5">
+                        <h3 className="text-sm font-semibold text-[#F8FAFC]">{area.title}</h3>
+                        <p className="text-xs text-[#94A3B8] leading-relaxed">{area.subtitle}</p>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                        isSelected
+                          ? 'bg-[#FF7A00] text-white'
+                          : 'border border-[#253044] bg-[#0B0F17]'
+                      }`}
+                    >
+                      {isSelected && <Check size={13} strokeWidth={3} />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              className="w-full h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+            >
+              <span>Continue</span>
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* STEP 2: What matters most right now? */}
         {step === 2 && (
-          <Step2Situation
-            value={situation}
-            onChange={(val) => setSituation(val)}
-            onNext={() => goToStep(3)}
-            onBack={() => goToStep(1)}
-          />
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-[26px] sm:text-[28px] font-bold tracking-tight text-[#F8FAFC]">
+                What matters most right now?
+              </h1>
+              <p className="text-sm text-[#94A3B8]">
+                Pick the primary goals to build your daily focus around.
+              </p>
+            </div>
+
+            <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
+              {activePriorityOptions.map((priority) => {
+                const isSelected = selectedPriorities.includes(priority.id);
+
+                return (
+                  <div
+                    key={priority.id}
+                    onClick={() => togglePriority(priority.id)}
+                    className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-[#151D2B] border-[#FF7A00]/60'
+                        : 'bg-[#111827] border-[#253044] hover:border-[#33435C]'
+                    }`}
+                  >
+                    <div className="space-y-0.5 pr-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00]">
+                          {priority.area}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-semibold text-[#F8FAFC]">{priority.title}</h4>
+                      <p className="text-xs text-[#94A3B8] leading-relaxed">{priority.desc}</p>
+                    </div>
+
+                    <div
+                      className={`h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-1 transition-colors ${
+                        isSelected
+                          ? 'bg-[#FF7A00] text-white'
+                          : 'border border-[#253044] bg-[#0B0F17]'
+                      }`}
+                    >
+                      {isSelected && <Check size={13} strokeWidth={3} />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="h-12 px-4 rounded-xl border border-[#253044] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium transition cursor-pointer"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="flex-1 h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+              >
+                <span>Continue</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
         )}
 
+        {/* STEP 3: Set a realistic weekly commitment */}
         {step === 3 && (
-          <Step3Goals
-            selectedGoals={selectedGoals}
-            onToggleGoal={handleToggleGoal}
-            onNext={() => goToStep(4)}
-            onBack={() => goToStep(2)}
-          />
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-[26px] sm:text-[28px] font-bold tracking-tight text-[#F8FAFC]">
+                Set a realistic weekly commitment.
+              </h1>
+              <p className="text-sm text-[#94A3B8]">
+                Small, consistent actions compound faster than sporadic bursts.
+              </p>
+            </div>
+
+            <div className="space-y-2.5">
+              {COMMITMENT_OPTIONS.map((opt) => {
+                const isSelected = dailyCommitment === opt.minutes;
+
+                return (
+                  <div
+                    key={opt.minutes}
+                    onClick={() => setDailyCommitment(opt.minutes)}
+                    className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-[#151D2B] border-[#FF7A00]/60'
+                        : 'bg-[#111827] border-[#253044] hover:border-[#33435C]'
+                    }`}
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-semibold text-[#F8FAFC]">{opt.title}</h4>
+                        {opt.badge && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] bg-[#FF7A00]/15 px-2 py-0.5 rounded-full">
+                            {opt.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-[#94A3B8] font-medium">{opt.pace}</p>
+                      <p className="text-xs text-[#64748B]">{opt.desc}</p>
+                    </div>
+
+                    <div
+                      className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        isSelected
+                          ? 'border-2 border-[#FF7A00] bg-[#FF7A00]'
+                          : 'border border-[#253044] bg-[#0B0F17]'
+                      }`}
+                    >
+                      {isSelected && <div className="h-2 w-2 rounded-full bg-white" />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="h-12 px-4 rounded-xl border border-[#253044] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium transition cursor-pointer"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(4)}
+                className="flex-1 h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+              >
+                <span>Review Workspace</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
         )}
 
+        {/* STEP 4: Your VALARI workspace is ready */}
         {step === 4 && (
-          <Step4GoalDetails
-            goals={selectedGoals}
-            onUpdateGoal={handleUpdateGoal}
-            onNext={() => goToStep(5)}
-            onBack={() => goToStep(3)}
-          />
-        )}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1">
+                <ShieldCheck size={20} strokeWidth={2.2} />
+              </div>
+              <h1 className="text-[26px] sm:text-[28px] font-bold tracking-tight text-[#F8FAFC]">
+                Your VALARI workspace is ready.
+              </h1>
+              <p className="text-sm text-[#94A3B8]">
+                Here is your customized setup for daily progress:
+              </p>
+            </div>
 
-        {step === 5 && (
-          <Step5Routine
-            routine={routine}
-            onChange={(updates) => setRoutine((r) => ({ ...r, ...updates }))}
-            onNext={() => goToStep(6)}
-            onBack={() => goToStep(4)}
-          />
-        )}
+            {/* Summary card */}
+            <div className="p-4 rounded-xl bg-[#111827] border border-[#253044] space-y-3 text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-[#253044]">
+                <span className="text-[#64748B] uppercase font-semibold text-[10px] tracking-wider">
+                  Growth Areas
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {selectedAreas.map((area) => (
+                    <span
+                      key={area}
+                      className="px-2 py-0.5 rounded-md bg-[#151D2B] border border-[#253044] text-[#F8FAFC] font-medium text-[11px]"
+                    >
+                      {area.charAt(0) + area.slice(1).toLowerCase()}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-        {step === 6 && (
-          <Step6Skills
-            profile={profile}
-            skills={skills}
-            onUpdateProfile={(updates) => setProfile((p) => ({ ...p, ...updates }))}
-            onUpdateSkills={(newSkills) => setSkills(newSkills)}
-            onNext={() => goToStep(7)}
-            onBack={() => goToStep(5)}
-          />
-        )}
+              <div className="flex items-center justify-between pb-2 border-b border-[#253044]">
+                <span className="text-[#64748B] uppercase font-semibold text-[10px] tracking-wider">
+                  Daily Commitment
+                </span>
+                <span className="text-[#FF7A00] font-semibold text-xs flex items-center gap-1">
+                  <Clock size={12} />
+                  {dailyCommitment} min / day
+                </span>
+              </div>
 
-        {step === 7 && (
-          <Step7Review
-            situation={situation}
-            goals={selectedGoals}
-            routine={routine}
-            profile={profile}
-            skills={skills}
-            isSubmitting={isCompleting}
-            onSubmit={handleComplete}
-            onBack={() => goToStep(6)}
-          />
+              <div>
+                <span className="text-[#64748B] uppercase font-semibold text-[10px] tracking-wider block mb-1.5">
+                  Selected Priorities ({selectedPriorities.length})
+                </span>
+                <ul className="space-y-1 text-[#94A3B8]">
+                  {selectedPriorities.slice(0, 3).map((pId) => {
+                    const found = Object.values(DYNAMIC_PRIORITIES).flat().find((p) => p.id === pId);
+                    return (
+                      <li key={pId} className="flex items-center gap-2 text-xs">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#FF7A00]" />
+                        <span className="truncate text-[#F8FAFC]">{found?.title || pId}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-2">
+              <button
+                type="button"
+                onClick={handleFinish}
+                disabled={isCompleting}
+                className="w-full h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer disabled:opacity-50"
+              >
+                {isCompleting ? (
+                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Enter VALARI Workspace</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="w-full py-2 text-center text-xs text-[#64748B] hover:text-[#94A3B8] transition"
+              >
+                Adjust commitments
+              </button>
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="text-center text-xs text-slate-400 dark:text-[#64748B] py-3">
+      {/* Creator endorsement */}
+      <footer className="text-center text-xs text-[#64748B] py-2">
         VALARI by TamZode Technology
       </footer>
     </div>

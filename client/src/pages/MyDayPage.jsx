@@ -28,6 +28,8 @@ import {
   FileText,
   Edit3,
   Plus,
+  MessageSquare,
+  Activity,
 } from 'lucide-react';
 
 const ENERGY_OPTIONS = [
@@ -114,6 +116,19 @@ export const MyDayPage = () => {
   const [tomorrowTaskId, setTomorrowTaskId] = useState('');
   const [energyLevel, setEnergyLevel] = useState('OKAY');
   const [reviewSavedSuccess, setReviewSavedSuccess] = useState(false);
+  const [commPracticed, setCommPracticed] = useState(false);
+  const [healthPracticed, setHealthPracticed] = useState(false);
+
+  // Keep Your Balance state
+  const [showCommModal, setShowCommModal] = useState(false);
+  const [commTitle, setCommTitle] = useState('10 min English Speaking Practice');
+  const [commMinutes, setCommMinutes] = useState(10);
+  const [commDesc, setCommDesc] = useState('Speak about what you worked on today for 10 minutes without switching languages.');
+
+  const [showHealthModal, setShowHealthModal] = useState(false);
+  const [healthTitle, setHealthTitle] = useState('20 min Daily Walk');
+  const [healthMinutes, setHealthMinutes] = useState(20);
+  const [healthDesc, setHealthDesc] = useState('Take a 20-minute walk to clear your head and restore energy.');
 
   // Sync Review Data when loaded
   useEffect(() => {
@@ -246,6 +261,27 @@ export const MyDayPage = () => {
     },
   });
 
+  const completeBalanceTaskMutation = useMutation({
+    mutationFn: (taskId) => planningService.updateTaskStatus(taskId, 'COMPLETED'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todayContext'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['progress'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+
+  const createBalanceTaskMutation = useMutation({
+    mutationFn: (data) => planningService.createTask(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todayContext'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['progress'] });
+      setShowCommModal(false);
+      setShowHealthModal(false);
+    },
+  });
+
   // Mobile Loading Skeletons
   if (isTodayLoading) {
     return (
@@ -290,6 +326,11 @@ export const MyDayPage = () => {
   const secondaryTasks = plan?.secondaryTasks || [];
   const incompleteTasks = tasksData?.data || [];
   const weekly = dashboardData?.data?.weeklyExecution;
+
+  const commBalance = context?.balance?.communication;
+  const commTask = commBalance?.task;
+  const healthBalance = context?.balance?.health;
+  const healthTask = healthBalance?.task;
 
   // Up Next candidates: secondary tasks first, then fallback to other incomplete tasks
   const upNextList = [];
@@ -349,92 +390,81 @@ export const MyDayPage = () => {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-6 max-w-xl lg:max-w-4xl mx-auto">
-      {/* 1. Greeting & Date Header (Section 10) */}
+    <div className="space-y-6 max-w-xl lg:max-w-4xl mx-auto select-none">
+      {/* 1. Greeting & Date Header */}
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-[26px] font-semibold text-slate-900 dark:text-[#F8FAFC] tracking-tight leading-tight">
+        <h1 className="text-[28px] sm:text-[30px] font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight leading-tight">
           {getGreeting()}, {firstName}
         </h1>
-        <p className="text-[13px] sm:text-sm text-slate-500 dark:text-[#94A3B8] font-normal">
+        <p className="text-[13px] sm:text-sm text-slate-500 dark:text-[#94A3B8]">
           {todayDateFormatted}
         </p>
-        <p className="text-sm text-slate-600 dark:text-[#CBD5E1] pt-0.5">
-          Focus on one meaningful action today.
+        <p className="text-[14px] sm:text-[15px] text-slate-600 dark:text-[#CBD5E1] pt-0.5 font-medium">
+          What matters today?
         </p>
       </div>
 
-      {/* 2. Today's Main Focus Card — Hero Component */}
-      <div className="bg-white dark:bg-[#111827] rounded-[18px] border border-[#FF7A00]/25 dark:border-[#FF7A00]/30 p-4 sm:p-5 shadow-xs transition-all">
-        {/* State A: Active Focus In Progress */}
+      {/* 2. TODAY'S FOCUS — Flat surface, compact height */}
+      <div className="bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-[#253044] p-4 sm:p-5 transition-all">
         {activeSession ? (
-          <div className="space-y-5 text-center py-2">
-            <div className="flex items-center justify-center gap-2">
-              <span className="relative flex h-2.5 w-2.5">
-                <span
-                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    isTimerPaused ? 'bg-amber-400' : 'bg-emerald-400'
-                  }`}
-                />
-                <span
-                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                    isTimerPaused ? 'bg-[#F59E0B]' : 'bg-[#22C55E]'
-                  }`}
-                />
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-[#CBD5E1]">
-                {isTimerPaused ? 'Focus Paused' : 'Focused'}
+          /* State A: Active Focus In Progress */
+          <div className="space-y-3 py-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${isTimerPaused ? 'bg-[#F59E0B]' : 'bg-[#22C55E] animate-pulse'}`} />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-[#CBD5E1]">
+                  {isTimerPaused ? 'Focus Paused' : 'Focused'}
+                </span>
+              </div>
+              <span className="text-xs text-slate-400 dark:text-[#94A3B8]">
+                Planned: {activeSession.plannedMinutes || 25}m
               </span>
             </div>
 
-            <div className="space-y-1">
-              <h2 className="text-xl sm:text-[22px] font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug max-w-md mx-auto">
+            <div className="space-y-0.5">
+              <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-[#F8FAFC]">
                 {activeSession.task?.title || 'Deep Focus Session'}
               </h2>
               {activeSession.task?.goal && (
-                <p className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
                   {activeSession.task.goal.title}
                 </p>
               )}
             </div>
 
-            {/* Large Center-Aligned Timer (44-52px tabular numbers) */}
-            <div className="py-2">
-              <div className="text-[46px] sm:text-[52px] font-medium font-mono tracking-tight tabular-nums text-slate-900 dark:text-[#F8FAFC] leading-none">
-                {formatTimerDigits(secondsLeft)}
-              </div>
-              <span className="text-xs text-slate-400 dark:text-[#94A3B8] mt-2 block">
-                Planned: {activeSession.plannedMinutes || 25} min
-              </span>
+            {/* Compact Monospace Timer */}
+            <div className="text-[36px] sm:text-[42px] font-mono font-medium tracking-tight tabular-nums text-slate-900 dark:text-[#F8FAFC] leading-none py-1">
+              {formatTimerDigits(secondsLeft)}
             </div>
 
             {/* Controls */}
-            <div className="flex items-center justify-center gap-2 pt-2">
+            <div className="flex items-center gap-2 pt-1">
               {isTimerPaused ? (
                 <button
                   onClick={() => resumeFocusMutation.mutate(activeSession.id)}
                   disabled={resumeFocusMutation.isPending}
-                  className="h-[48px] px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition cursor-pointer"
+                  className="h-9 px-4 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer"
                 >
-                  <Play size={16} strokeWidth={2} />
+                  <Play size={14} />
                   <span>Resume</span>
                 </button>
               ) : (
                 <button
                   onClick={() => pauseFocusMutation.mutate(activeSession.id)}
                   disabled={pauseFocusMutation.isPending}
-                  className="h-[48px] px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1A2434] active:scale-95 text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs flex items-center gap-2 border border-slate-200 dark:border-[#263247] transition cursor-pointer"
+                  className="h-9 px-4 rounded-xl bg-slate-100 dark:bg-[#151D2B] text-slate-800 dark:text-[#F8FAFC] border border-slate-200 dark:border-[#253044] font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer"
                 >
-                  <Pause size={16} strokeWidth={2} />
+                  <Pause size={14} />
                   <span>Pause</span>
                 </button>
               )}
 
               <button
                 onClick={() => setShowFinishModal(true)}
-                className="h-[48px] px-6 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition cursor-pointer"
+                className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer"
               >
-                <CheckCircle2 size={16} strokeWidth={2} />
-                <span>Finish Session</span>
+                <CheckCircle2 size={14} />
+                <span>Finish</span>
               </button>
 
               <button
@@ -443,7 +473,7 @@ export const MyDayPage = () => {
                     cancelFocusMutation.mutate(activeSession.id);
                   }
                 }}
-                className="h-[48px] px-4 rounded-xl text-slate-400 hover:text-[#EF4444] dark:hover:text-[#F87171] text-xs font-medium transition cursor-pointer"
+                className="h-9 px-3 rounded-xl text-slate-400 hover:text-[#EF4444] text-xs font-medium transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -451,327 +481,438 @@ export const MyDayPage = () => {
           </div>
         ) : currentMainTask ? (
           /* State B: Ready to Focus */
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] uppercase tracking-wider bg-[#FFF1D6] dark:bg-[rgba(255,122,0,0.12)] px-3 py-1 rounded-full border border-[#FF7A00]/25 dark:border-[#FF7A00]/30">
-                <Target size={14} strokeWidth={2} />
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#FF7A00] uppercase tracking-wider">
+                <Target size={13} strokeWidth={2} />
                 TODAY'S FOCUS
               </span>
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold py-1 px-2 rounded-lg hover:bg-[#FFF1D6] dark:hover:bg-[rgba(255,122,0,0.12)] transition-colors cursor-pointer"
+                className="text-xs text-[#94A3B8] hover:text-[#FF7A00] font-medium transition cursor-pointer"
               >
                 Change focus
               </button>
             </div>
 
-            <div className="space-y-2.5">
-              <h2 className="text-xl sm:text-[22px] font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug">
+            <div className="space-y-1.5">
+              <h2 className="text-[17px] sm:text-lg font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug">
                 {currentMainTask.title}
               </h2>
 
-              {/* Maximum 3 metadata chips: Goal, Duration, Priority/Due */}
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 {currentMainTask.goal && (
-                  <span className="font-medium text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#161E2D] px-2.5 py-1 rounded-lg">
+                  <span className="text-slate-600 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#151D2B] px-2 py-0.5 rounded-md font-medium text-[11px]">
                     {currentMainTask.goal.title}
                   </span>
                 )}
-                <span className="font-medium text-slate-600 dark:text-[#CBD5E1] bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                  <Clock size={12} className="text-slate-400 dark:text-[#94A3B8]" />
-                  {currentMainTask.estimatedMinutes || 30} min
+                <span className="text-slate-500 dark:text-[#94A3B8] bg-slate-50 dark:bg-[#151D2B] border border-slate-200 dark:border-[#253044] px-2 py-0.5 rounded-md flex items-center gap-1 text-[11px]">
+                  <Clock size={11} />
+                  {currentMainTask.estimatedMinutes || 30}m
                 </span>
-                <span className="font-semibold text-[#FF7A00] bg-[#FFF1D6] dark:bg-[rgba(255,122,0,0.12)] px-2.5 py-1 rounded-lg">
-                  {currentMainTask.priority || 'HIGH'} PRIORITY
+                <span className="text-[#FF7A00] bg-[#FF7A00]/10 px-2 py-0.5 rounded-md font-semibold text-[10px]">
+                  {currentMainTask.priority || 'HIGH'}
                 </span>
               </div>
             </div>
 
-            {/* Primary Action Button: Solid Brand Orange */}
-            <div className="pt-2">
+            <div className="pt-1">
               <button
                 onClick={handleStartFocus}
                 disabled={startFocusMutation.isPending}
-                className="w-full h-[50px] rounded-[14px] bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm shadow-[#FF7A00]/25 transition duration-200 cursor-pointer"
+                className="h-10 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-[0.99] text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition cursor-pointer"
               >
-                <Play size={17} strokeWidth={2} />
+                <Play size={14} strokeWidth={2.2} />
                 <span>Start Focus</span>
               </button>
             </div>
           </div>
         ) : (
-          /* State C: Actionable Focus Panel (Compact: 220-240px) */
-          <div className="text-center py-3 sm:py-4 space-y-2.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/30 flex items-center justify-center mx-auto">
-              <ShieldCheck size={20} strokeWidth={2.2} />
+          /* State C: No focus selected */
+          <div className="space-y-2 py-1">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#FF7A00] uppercase tracking-wider">
+              <Target size={13} strokeWidth={2} />
+              <span>TODAY'S FOCUS</span>
             </div>
             <div className="space-y-0.5">
-              <h3 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">
-                You're clear for today.
+              <h3 className="text-base font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                No focus selected
               </h3>
-              <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-xs mx-auto leading-relaxed">
-                Choose one meaningful action for today.
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                Choose one priority to move forward.
               </p>
             </div>
-            <div className="flex items-center justify-center gap-2.5 pt-2">
+            <div className="pt-1.5">
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="h-10 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-95 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                className="h-10 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-95 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
               >
-                Choose Focus
+                Set today's focus
               </button>
-              <Link
-                to="/app/goals"
-                className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1A2434] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold inline-flex items-center transition"
-              >
-                View Plan
-              </Link>
             </div>
           </div>
         )}
       </div>
 
-      {/* 3. Up Next & Schedule Grid on Desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Up Next Card */}
-        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 space-y-3.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
-              UP NEXT
-            </h3>
-            <Link
-              to="/app/tasks"
-              className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold flex items-center gap-0.5 hover:underline"
-            >
-              View all tasks
-              <ChevronRight size={14} strokeWidth={2} />
-            </Link>
-          </div>
+      {/* Thin Separator */}
+      <hr className="border-t border-slate-200 dark:border-[#253044]" />
 
-          {upNextList.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-[#263247]">
-              {upNextList.map((t) => (
-                <div
-                  key={t.id}
-                  onClick={() => handleSelectDifferentTask(t.id)}
-                  className="flex items-center justify-between py-3 first:pt-0 last:pb-0 cursor-pointer group transition-colors"
-                >
-                  <div className="flex items-center gap-3 min-w-0 pr-3">
-                    <span className="h-3.5 w-3.5 rounded-full border border-slate-300 dark:border-slate-600 group-hover:border-[#FF7A00] shrink-0 transition-colors" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#FF7A00] transition-colors">{t.title}</p>
-                      <p className="text-xs text-slate-400 dark:text-[#94A3B8] truncate mt-0.5">
-                        {t.goal?.title || 'Growth Task'} · {t.estimatedMinutes || 30} min
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-medium text-slate-400 dark:text-[#94A3B8] shrink-0">
-                    {t.estimatedMinutes || 30}m
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 dark:text-[#64748B] italic py-2">No upcoming tasks queued.</p>
-          )}
-        </div>
-
-        {/* 4. Today's Schedule */}
-        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 space-y-3.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
-              TODAY'S SCHEDULE
-            </h3>
-            <Link
-              to="/app/schedule"
-              className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold flex items-center gap-0.5 hover:underline"
-            >
-              Schedule
-              <ChevronRight size={14} strokeWidth={2} />
-            </Link>
-          </div>
-
-          {scheduleItems.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-[#263247]">
-              {scheduleItems.map((block, idx) => (
-                <div
-                  key={block.id}
-                  className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
-                >
-                  <span className="font-mono text-xs font-medium text-slate-500 dark:text-[#94A3B8] w-16 shrink-0">
-                    {block.startTime}
-                  </span>
-                  <span className={`h-2 w-2 rounded-full shrink-0 ${idx === 0 ? 'bg-[#FF7A00]' : 'bg-slate-300 dark:bg-slate-700'}`} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate">{block.title}</p>
-                  </div>
-                  <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium shrink-0">
-                    {block.category === 'CAREEROS' ? 'VALARI' : (block.category || 'Growth')}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 dark:text-[#64748B] italic py-2">No scheduled time blocks today.</p>
-          )}
-        </div>
-      </div>
-
-      {/* 5. Quick Weekly Progress */}
-      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 space-y-3.5 shadow-xs">
+      {/* 3. Up Next — Flat section */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
-            THIS WEEK
-          </h3>
+          <h2 className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-[#F8FAFC]">
+            Up next
+          </h2>
           <Link
-            to="/app/progress"
-            className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold flex items-center gap-0.5 hover:underline"
+            to="/app/tasks"
+            className="text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700] transition"
           >
-            View progress
-            <ChevronRight size={14} strokeWidth={2} />
+            View all
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 text-center pt-1">
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-100 dark:border-[#263247]">
-            <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
-              {formatMinutes(weekly?.totalFocusMinutes || 0)}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium mt-0.5 block">
-              Focused
-            </span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-100 dark:border-[#263247]">
-            <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
-              {weekly?.tasksCompleted || 0}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium mt-0.5 block">
-              Tasks
-            </span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-100 dark:border-[#263247]">
-            <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
-              {weekly?.activeDays || 0}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium mt-0.5 block">
-              Active days
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 5b. Today's Notes / VALARI Journal */}
-      <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-5 space-y-3.5 shadow-xs">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText size={16} className="text-[#FF7A00]" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-[#CBD5E1]">
-              Today's Notes
-            </h3>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/app/work-log"
-              className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] hover:text-[#FF7A00] flex items-center gap-0.5 transition"
-            >
-              <span>Journal</span>
-              <ChevronRight size={13} />
-            </Link>
-            {hasWorkNote && (
-              <button
-                type="button"
-                onClick={() => setShowNoteSheet(true)}
-                className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1A2434] text-slate-700 dark:text-[#F8FAFC] font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer"
+        {upNextList.length > 0 ? (
+          <div className="divide-y divide-slate-100 dark:divide-[#253044]">
+            {upNextList.map((t) => (
+              <div
+                key={t.id}
+                onClick={() => handleSelectDifferentTask(t.id)}
+                className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 cursor-pointer group transition-colors"
               >
-                <Edit3 size={13} />
-                <span>Edit</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {!hasWorkNote ? (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-            <p className="text-xs text-slate-600 dark:text-[#94A3B8]">
-              What did you work on today?
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowNoteSheet(true)}
-              className="h-10 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
-            >
-              <Plus size={14} />
-              <span>+ Add today's note</span>
-            </button>
+                <div className="flex items-center gap-2.5 min-w-0 pr-3">
+                  <span className="h-3 w-3 rounded-full border border-slate-300 dark:border-[#33435C] group-hover:border-[#FF7A00] shrink-0 transition-colors" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#FF7A00] transition-colors">
+                      {t.title}
+                    </p>
+                    <p className="text-xs text-slate-400 dark:text-[#94A3B8] truncate">
+                      {t.goal?.title || 'Growth Task'} · {t.estimatedMinutes || 30}m
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs font-medium text-slate-400 dark:text-[#94A3B8] shrink-0">
+                  {t.estimatedMinutes || 30}m
+                </span>
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="space-y-3 pt-1 text-xs divide-y divide-slate-100 dark:divide-[#263247]/60">
-            {currentWorkLog.workedOn && (
-              <div className="space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#64748B] block">
-                  Worked on
-                </span>
-                <p className="text-slate-800 dark:text-[#F8FAFC] font-medium whitespace-pre-line">
-                  {currentWorkLog.workedOn}
-                </p>
-              </div>
-            )}
-            {currentWorkLog.learned && (
-              <div className="pt-2 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#64748B] block">
-                  Learned
-                </span>
-                <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
-                  {currentWorkLog.learned}
-                </p>
-              </div>
-            )}
-            {currentWorkLog.blockers && (
-              <div className="pt-2 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500/80 dark:text-rose-400/80 block">
-                  Blockers
-                </span>
-                <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
-                  {currentWorkLog.blockers}
-                </p>
-              </div>
-            )}
-            {currentWorkLog.nextStep && (
-              <div className="pt-2 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] block">
-                  Next
-                </span>
-                <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
-                  {currentWorkLog.nextStep}
-                </p>
-              </div>
-            )}
-          </div>
+          <p className="text-xs text-slate-400 dark:text-[#64748B] py-1">
+            No upcoming tasks
+          </p>
         )}
       </div>
 
-      {/* 6. Daily Review / End Day Card */}
-      <div className="bg-[#FFF8EE] dark:bg-[#161E2D] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Moon size={16} className="text-[#FF7A00]" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#FF7A00]">
-              END YOUR DAY
-            </h3>
-          </div>
-          <p className="text-xs text-slate-600 dark:text-[#CBD5E1]">
-            Review what you accomplished and choose tomorrow's main focus.
-          </p>
+      {/* Thin Separator */}
+      <hr className="border-t border-slate-200 dark:border-[#253044]" />
+
+      {/* 4. Schedule — Flat section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-[#F8FAFC]">
+            Schedule
+          </h2>
+          <Link
+            to="/app/schedule"
+            className="text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700] transition"
+          >
+            Open
+          </Link>
         </div>
 
-        <button
-          onClick={() => setShowReviewModal(true)}
-          className="h-11 px-5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs hover:bg-slate-50 dark:hover:bg-[#1A2434] active:scale-95 transition shrink-0 shadow-xs cursor-pointer"
-        >
-          Daily Review
-        </button>
+        {scheduleItems.length > 0 ? (
+          <div className="divide-y divide-slate-100 dark:divide-[#253044]">
+            {scheduleItems.map((block, idx) => (
+              <div
+                key={block.id}
+                className="flex items-center gap-3 py-2 first:pt-0 last:pb-0"
+              >
+                <span className="font-mono text-xs font-medium text-slate-500 dark:text-[#94A3B8] w-14 shrink-0">
+                  {block.startTime}
+                </span>
+                <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${idx === 0 ? 'bg-[#FF7A00]' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate">
+                    {block.title}
+                  </p>
+                </div>
+                <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium shrink-0">
+                  {block.category === 'CAREEROS' ? 'VALARI' : (block.category || 'Growth')}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-slate-400 dark:text-[#64748B] py-1">
+            Nothing scheduled today
+          </p>
+        )}
+      </div>
+
+      {/* Thin Separator */}
+      <hr className="border-t border-slate-200 dark:border-[#253044]" />
+
+      {/* 5. Today's Progress — Minimal 3-column metric strip */}
+      <div className="space-y-2.5">
+        <h2 className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-[#F8FAFC]">
+          Today's progress
+        </h2>
+        <div className="grid grid-cols-3 gap-2.5 text-center">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044]">
+            <span className="text-xs text-slate-400 dark:text-[#94A3B8] font-medium block">
+              Focused
+            </span>
+            <span className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-[#F8FAFC] block mt-0.5">
+              {formatMinutes(context?.todayFocusMinutes || 0)}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044]">
+            <span className="text-xs text-slate-400 dark:text-[#94A3B8] font-medium block">
+              Completed
+            </span>
+            <span className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-[#F8FAFC] block mt-0.5">
+              {context?.completedTasksCount || 0}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044]">
+            <span className="text-xs text-slate-400 dark:text-[#94A3B8] font-medium block">
+              Active
+            </span>
+            <span className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-[#F8FAFC] block mt-0.5">
+              {weekly?.activeDays || 1}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Thin Separator */}
+      <hr className="border-t border-slate-200 dark:border-[#253044]" />
+
+      {/* 6. KEEP YOUR BALANCE (Communication & Health) */}
+      <div className="space-y-3">
+        <h2 className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-[#F8FAFC]">
+          Keep your balance
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Card 1: COMMUNICATION */}
+          <div className="bg-white dark:bg-[#111827] rounded-xl border border-slate-200/80 dark:border-[#253044] p-3.5 space-y-2.5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <MessageSquare size={13} className="text-amber-500" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94A3B8]">
+                    COMMUNICATION
+                  </span>
+                </div>
+                {commBalance?.isCompletedToday ? (
+                  <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 size={12} /> Done
+                  </span>
+                ) : commTask ? (
+                  <span className="text-[11px] font-medium text-slate-400 dark:text-[#94A3B8]">
+                    {commTask.estimatedMinutes || 10}m
+                  </span>
+                ) : null}
+              </div>
+
+              {commTask ? (
+                <div className="space-y-0.5">
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                    {commTask.title}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8] line-clamp-2 leading-relaxed">
+                    {commTask.description || 'Speak clearly about what you worked on today.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC]">
+                    No practice set for today.
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                    Improve how you speak and express yourself.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-1">
+              {commBalance?.isCompletedToday ? (
+                <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 py-0.5">
+                  ✓ Completed today
+                </div>
+              ) : commTask ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => completeBalanceTaskMutation.mutate(commTask.id)}
+                    disabled={completeBalanceTaskMutation.isPending}
+                    className="flex-1 h-8 px-3 rounded-lg bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold transition cursor-pointer"
+                  >
+                    Start Practice
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCommModal(true)}
+                    className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-[#253044] text-slate-600 dark:text-[#94A3B8] hover:bg-slate-50 dark:hover:bg-[#151D2B] text-xs font-medium transition cursor-pointer"
+                  >
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowCommModal(true)}
+                  className="w-full h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#151D2B] dark:hover:bg-[#1A2434] text-slate-800 dark:text-[#F8FAFC] text-xs font-medium transition cursor-pointer"
+                >
+                  Set Practice
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Card 2: HEALTH */}
+          <div className="bg-white dark:bg-[#111827] rounded-xl border border-slate-200/80 dark:border-[#253044] p-3.5 space-y-2.5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Activity size={13} className="text-emerald-500" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94A3B8]">
+                    HEALTH
+                  </span>
+                </div>
+                {healthBalance?.isCompletedToday ? (
+                  <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 size={12} /> Done
+                  </span>
+                ) : healthTask ? (
+                  <span className="text-[11px] font-medium text-slate-400 dark:text-[#94A3B8]">
+                    {healthTask.estimatedMinutes || 20}m
+                  </span>
+                ) : null}
+              </div>
+
+              {healthTask ? (
+                <div className="space-y-0.5">
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                    {healthTask.title}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8] line-clamp-2 leading-relaxed">
+                    {healthTask.description || 'Take a 20-minute walk.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC]">
+                    No routine set for today.
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                    Build one simple habit for energy and wellbeing.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-1">
+              {healthBalance?.isCompletedToday ? (
+                <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 py-0.5">
+                  ✓ Completed today
+                </div>
+              ) : healthTask ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => completeBalanceTaskMutation.mutate(healthTask.id)}
+                    disabled={completeBalanceTaskMutation.isPending}
+                    className="flex-1 h-8 px-3 rounded-lg bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold transition cursor-pointer"
+                  >
+                    Mark Done
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowHealthModal(true)}
+                    className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-[#253044] text-slate-600 dark:text-[#94A3B8] hover:bg-slate-50 dark:hover:bg-[#151D2B] text-xs font-medium transition cursor-pointer"
+                  >
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowHealthModal(true)}
+                  className="w-full h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#151D2B] dark:hover:bg-[#1A2434] text-slate-800 dark:text-[#F8FAFC] text-xs font-medium transition cursor-pointer"
+                >
+                  Set Routine
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Thin Separator */}
+      <hr className="border-t border-slate-200 dark:border-[#253044]" />
+
+      {/* 7. Today's Notes & Daily Review */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4">
+        {/* Work Note Strip */}
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044] rounded-xl p-4 flex flex-col justify-between space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94A3B8] flex items-center gap-1.5">
+              <FileText size={13} className="text-[#FF7A00]" />
+              <span>TODAY'S NOTE</span>
+            </span>
+            <Link
+              to="/app/work-log"
+              className="text-[11px] font-semibold text-[#FF7A00] hover:text-[#EA6700]"
+            >
+              Journal
+            </Link>
+          </div>
+
+          {!hasWorkNote ? (
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+              No work note logged yet for today.
+            </p>
+          ) : (
+            <p className="text-xs text-slate-700 dark:text-[#CBD5E1] line-clamp-2">
+              {currentWorkLog.workedOn || currentWorkLog.learned || 'Note saved.'}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowNoteSheet(true)}
+            className="w-full h-8 px-3 rounded-lg border border-slate-200 dark:border-[#253044] text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#151D2B] text-xs font-medium transition flex items-center justify-center gap-1 cursor-pointer"
+          >
+            {hasWorkNote ? <Edit3 size={12} /> : <Plus size={12} />}
+            <span>{hasWorkNote ? 'Edit note' : 'Add note'}</span>
+          </button>
+        </div>
+
+        {/* Daily Review Strip */}
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044] rounded-xl p-4 flex flex-col justify-between space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94A3B8] flex items-center gap-1.5">
+              <Moon size={13} className="text-[#FF7A00]" />
+              <span>END YOUR DAY</span>
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+            Review accomplishments and set tomorrow's focus.
+          </p>
+
+          <button
+            onClick={() => setShowReviewModal(true)}
+            className="w-full h-8 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#151D2B] dark:hover:bg-[#1A2434] text-slate-800 dark:text-[#F8FAFC] font-medium text-xs transition cursor-pointer"
+          >
+            Daily Review
+          </button>
+        </div>
       </div>
 
       {/* MODAL: Choose Main Focus Task */}
@@ -984,7 +1125,7 @@ export const MyDayPage = () => {
 
               <div>
                 <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1">
-                  What did you complete today?
+                  Career: What did you complete?
                 </label>
                 <input
                   type="text"
@@ -993,6 +1134,69 @@ export const MyDayPage = () => {
                   placeholder="e.g. Finished JWT authentication tests"
                   className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
                 />
+              </div>
+
+              {/* Communication & Health Lightweight Context */}
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-[#161E2D] rounded-xl border border-slate-100 dark:border-[#263247]">
+                <div>
+                  <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1.5 text-[11px]">
+                    Communication: Did you practice?
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCommPracticed(true)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                        commPracticed
+                          ? 'bg-[#FF7A00] text-white shadow-xs'
+                          : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
+                      }`}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCommPracticed(false)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                        !commPracticed
+                          ? 'bg-slate-700 text-white shadow-xs'
+                          : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-slate-700 dark:text-[#CBD5E1] block mb-1.5 text-[11px]">
+                    Health: Complete your routine?
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setHealthPracticed(true)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                        healthPracticed
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
+                      }`}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHealthPracticed(false)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                        !healthPracticed
+                          ? 'bg-slate-700 text-white shadow-xs'
+                          : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -1111,6 +1315,180 @@ export const MyDayPage = () => {
           queryClient.invalidateQueries({ queryKey: ['workLog', 'stats'] });
         }}
       />
+
+      {/* Modal: Set Communication Practice */}
+      {showCommModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs" onClick={() => setShowCommModal(false)} />
+          <div className="relative bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-[#263247] shadow-2xl max-w-md w-full p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#263247]">
+              <div className="flex items-center gap-2">
+                <MessageSquare size={16} className="text-amber-500" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Set Communication Practice</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCommModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-[#F8FAFC] cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                  Practice Title
+                </label>
+                <input
+                  type="text"
+                  value={commTitle}
+                  onChange={(e) => setCommTitle(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                  Target Duration (Minutes)
+                </label>
+                <input
+                  type="number"
+                  min="5"
+                  max="60"
+                  value={commMinutes}
+                  onChange={(e) => setCommMinutes(parseInt(e.target.value, 10) || 10)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                  Prompt / Instructions
+                </label>
+                <textarea
+                  rows="2"
+                  value={commDesc}
+                  onChange={(e) => setCommDesc(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCommModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#263247] text-slate-600 dark:text-[#94A3B8] text-xs font-semibold hover:bg-slate-50 dark:hover:bg-[#161E2D] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    createBalanceTaskMutation.mutate({
+                      title: commTitle,
+                      growthArea: 'COMMUNICATION',
+                      estimatedMinutes: commMinutes,
+                      description: commDesc,
+                    })
+                  }
+                  disabled={createBalanceTaskMutation.isPending}
+                  className="px-5 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                >
+                  {createBalanceTaskMutation.isPending ? 'Saving...' : 'Set Practice'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Set Health Routine */}
+      {showHealthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs" onClick={() => setShowHealthModal(false)} />
+          <div className="relative bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-[#263247] shadow-2xl max-w-md w-full p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#263247]">
+              <div className="flex items-center gap-2">
+                <Activity size={16} className="text-emerald-500" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Set Health Routine</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowHealthModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-[#F8FAFC] cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                  Routine Title
+                </label>
+                <input
+                  type="text"
+                  value={healthTitle}
+                  onChange={(e) => setHealthTitle(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                  Target Duration (Minutes)
+                </label>
+                <input
+                  type="number"
+                  min="5"
+                  max="120"
+                  value={healthMinutes}
+                  onChange={(e) => setHealthMinutes(parseInt(e.target.value, 10) || 20)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
+                  Habit Cue / Notes
+                </label>
+                <textarea
+                  rows="2"
+                  value={healthDesc}
+                  onChange={(e) => setHealthDesc(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowHealthModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#263247] text-slate-600 dark:text-[#94A3B8] text-xs font-semibold hover:bg-slate-50 dark:hover:bg-[#161E2D] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    createBalanceTaskMutation.mutate({
+                      title: healthTitle,
+                      growthArea: 'HEALTH',
+                      estimatedMinutes: healthMinutes,
+                      description: healthDesc,
+                    })
+                  }
+                  disabled={createBalanceTaskMutation.isPending}
+                  className="px-5 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                >
+                  {createBalanceTaskMutation.isPending ? 'Saving...' : 'Set Routine'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

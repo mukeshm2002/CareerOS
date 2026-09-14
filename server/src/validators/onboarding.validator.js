@@ -1,6 +1,8 @@
 const { z } = require('zod');
 const { careerStageEnum, experienceLevelEnum } = require('./user.validator');
 
+const growthAreaEnum = z.enum(['CAREER', 'COMMUNICATION', 'HEALTH', 'PERSONAL']);
+
 const goalTypeEnum = z.enum([
   'FIRST_JOB',
   'JOB_SWITCH',
@@ -13,6 +15,47 @@ const goalTypeEnum = z.enum([
   'PORTFOLIO',
   'BUSINESS',
   'CUSTOM',
+  // Communication Goal Types
+  'ENGLISH_SPEAKING',
+  'PUBLIC_SPEAKING',
+  'PROFESSIONAL_COMMUNICATION',
+  'WRITING',
+  'PRESENTATION',
+  'CONFIDENCE',
+  'LANGUAGE_LEARNING',
+  'INTERVIEW_COMMUNICATION',
+  'IMPROVE_SPOKEN_ENGLISH',
+  'SPEAK_MORE_CONFIDENTLY',
+  'IMPROVE_PROFESSIONAL_COMMUNICATION',
+  'IMPROVE_WRITING',
+  'IMPROVE_PRESENTATION_SKILLS',
+  'IMPROVE_INTERVIEW_COMMUNICATION',
+  'LEARN_A_LANGUAGE',
+  // Health Goal Types
+  'FITNESS',
+  'NUTRITION',
+  'SLEEP',
+  'MENTAL_WELLBEING',
+  'WEIGHT',
+  'DAILY_ACTIVITY',
+  'HEALTH_ROUTINE',
+  'IMPROVE_FITNESS',
+  'BUILD_EXERCISE_HABIT',
+  'IMPROVE_SLEEP',
+  'EAT_BETTER',
+  'WALKING_STEPS',
+  'DRINK_ENOUGH_WATER',
+  'MAINTAIN_HEALTHY_WEIGHT',
+  'GAIN_HEALTHY_WEIGHT',
+  'RELAXATION_STRESS_ROUTINE',
+  // Personal Goal Types
+  'HABIT',
+  'FINANCE',
+  'RELATIONSHIP',
+  'PRODUCTIVITY',
+  'SELF_DEVELOPMENT',
+  'READING',
+  'LIFE_SKILL',
 ]);
 
 const priorityEnum = z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'URGENT']);
@@ -78,6 +121,7 @@ const completeOnboardingSchema = z.object({
 });
 
 module.exports = {
+  growthAreaEnum,
   goalTypeEnum,
   priorityEnum,
   updateOnboardingProfileSchema,

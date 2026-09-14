@@ -213,6 +213,9 @@ class ProgressService {
       projectSessions,
       evidenceAdded,
       portfolioProjects,
+      communicationTasksCompleted,
+      healthTasksCompleted,
+      careerTasksCompleted,
     ] = await Promise.all([
       prisma.project.count({
         where: {
@@ -270,6 +273,33 @@ class ProgressService {
           archivedAt: null,
         },
       }),
+      prisma.task.findMany({
+        where: {
+          userId,
+          growthArea: 'COMMUNICATION',
+          status: 'COMPLETED',
+          completedAt: { gte: bounds.utcStart, lte: bounds.utcEnd },
+        },
+        select: { id: true, completedAt: true, actualMinutes: true },
+      }),
+      prisma.task.findMany({
+        where: {
+          userId,
+          growthArea: 'HEALTH',
+          status: 'COMPLETED',
+          completedAt: { gte: bounds.utcStart, lte: bounds.utcEnd },
+        },
+        select: { id: true, completedAt: true, actualMinutes: true },
+      }),
+      prisma.task.findMany({
+        where: {
+          userId,
+          growthArea: { notIn: ['COMMUNICATION', 'HEALTH'] },
+          status: 'COMPLETED',
+          completedAt: { gte: bounds.utcStart, lte: bounds.utcEnd },
+        },
+        select: { id: true, completedAt: true, actualMinutes: true },
+      }),
     ]);
 
     const learningFocusMinutes = learningSessions.reduce(
@@ -281,6 +311,40 @@ class ProgressService {
       0
     );
 
+    const communicationDaysSet = new Set(
+      (communicationTasksCompleted || [])
+        .map((t) => (t.completedAt ? t.completedAt.toISOString().slice(0, 10) : null))
+        .filter(Boolean)
+    );
+    const healthDaysSet = new Set(
+      (healthTasksCompleted || [])
+        .map((t) => (t.completedAt ? t.completedAt.toISOString().slice(0, 10) : null))
+        .filter(Boolean)
+    );
+
+    const growthAreas = {
+      career: {
+        focusedMinutes: metrics.totalFocusMinutes || 0,
+        tasksCompleted: (careerTasksCompleted || []).length,
+        activeGoalsCount: goals.filter((g) => g.growthArea === 'CAREER' || !g.growthArea).length,
+      },
+      communication: {
+        practiceDays: communicationDaysSet.size,
+        practiceSessions: (communicationTasksCompleted || []).length,
+        tasksCompleted: (communicationTasksCompleted || []).length,
+      },
+      health: {
+        routineDays: healthDaysSet.size,
+        tasksCompleted: (healthTasksCompleted || []).length,
+      },
+    };
+
+    const weeklySummary = {
+      career: `${Math.floor((metrics.totalFocusMinutes || 0) / 60)}h ${(metrics.totalFocusMinutes || 0) % 60}m focused`,
+      communication: `${communicationDaysSet.size} practice days`,
+      health: `${healthDaysSet.size} active days`,
+    };
+
     return {
       period: {
         type: bounds.periodType,
@@ -289,6 +353,8 @@ class ProgressService {
         endDate: bounds.endDate,
         timezone,
       },
+      growthAreas,
+      weeklySummary,
       metrics: {
         ...metrics,
         plannedMinutes: metrics.plannedFocusMinutes,
@@ -461,6 +527,11 @@ class ProgressService {
         tasks: goalTasks,
       },
     };
+  }
+
+  async getProgressSummary(userId, query = {}) {
+    const q = typeof query === 'string' ? { period: query } : query;
+    return this.getProgress(userId, q);
   }
 }
 

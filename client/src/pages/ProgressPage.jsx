@@ -25,6 +25,8 @@ import {
   Send,
   HelpCircle,
   Layers,
+  MessageSquare,
+  Activity,
 } from 'lucide-react';
 
 function formatMinutes(min) {
@@ -120,6 +122,12 @@ export const ProgressPage = () => {
   const actualMinutes = metrics.totalFocusMinutes || 0;
   const timeDifference = actualMinutes - plannedMinutes;
 
+  const growthAreas = p.growthAreas || {};
+  const careerSummary = growthAreas.career || {};
+  const commSummary = growthAreas.communication || {};
+  const healthSummary = growthAreas.health || {};
+  const weeklySummary = p.weeklySummary;
+
   return (
     <div className="space-y-6 pb-16">
       {/* Header & Period Controls */}
@@ -181,6 +189,132 @@ export const ProgressPage = () => {
           </span>
         </div>
       )}
+
+      {/* Growth Areas Factual Summary (Section 19 & 20) */}
+      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-5 shadow-card space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-[#64748B]">
+              GROWTH AREAS SUMMARY ({p.period?.label || 'THIS WEEK'})
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+              Factual progress tracked across your core personal growth areas.
+            </p>
+          </div>
+          {weeklySummary && (
+            <div className="flex flex-wrap items-center gap-2 text-xs pt-1 sm:pt-0">
+              <span className="px-2.5 py-1 rounded-lg bg-[#FF7A00]/10 text-[#FF7A00] font-semibold">
+                Career: {weeklySummary.career}
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold">
+                Comm: {weeklySummary.communication}
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                Health: {weeklySummary.health}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Career Card */}
+          <div className="p-4 rounded-xl border border-slate-200/70 dark:border-[#263247] bg-slate-50/50 dark:bg-[#161E2D] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Briefcase size={15} className="text-[#FF7A00]" />
+                <span className="text-xs font-bold text-slate-900 dark:text-[#F8FAFC]">CAREER</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FF7A00]/10 text-[#FF7A00]">
+                {careerSummary.activeGoalsCount || 0} active goals
+              </span>
+            </div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Focused time</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {formatMinutes(careerSummary.focusedMinutes || metrics.totalFocusMinutes || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Tasks completed</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {careerSummary.tasksCompleted ?? metrics.tasksCompleted ?? 0}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Goal progress</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {goalProgress.length > 0 ? `${Math.round(goalProgress.reduce((acc, g) => acc + (g.progress || 0), 0) / goalProgress.length)}% avg` : '—'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Communication Card */}
+          <div className="p-4 rounded-xl border border-slate-200/70 dark:border-[#263247] bg-slate-50/50 dark:bg-[#161E2D] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MessageSquare size={15} className="text-amber-500" />
+                <span className="text-xs font-bold text-slate-900 dark:text-[#F8FAFC]">COMMUNICATION</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                {commSummary.practiceDays || 0} practice days
+              </span>
+            </div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Practice days</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {commSummary.practiceDays || 0} days
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Practice sessions</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {commSummary.practiceSessions || 0}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Completed tasks</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {commSummary.tasksCompleted || 0}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Health Card */}
+          <div className="p-4 rounded-xl border border-slate-200/70 dark:border-[#263247] bg-slate-50/50 dark:bg-[#161E2D] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity size={15} className="text-emerald-500" />
+                <span className="text-xs font-bold text-slate-900 dark:text-[#F8FAFC]">HEALTH</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                {healthSummary.routineDays || 0} active days
+              </span>
+            </div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Routine days</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {healthSummary.routineDays || 0} days
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Completed tasks</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">
+                  {healthSummary.tasksCompleted || 0}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
+                <span>Habit state</span>
+                <span className="font-semibold text-slate-900 dark:text-[#F8FAFC]">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Hero Factual Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

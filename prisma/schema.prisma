@@ -41,6 +41,13 @@ enum ExperienceLevel {
   OTHER
 }
 
+enum GrowthArea {
+  CAREER
+  COMMUNICATION
+  HEALTH
+  PERSONAL
+}
+
 enum GoalType {
   FIRST_JOB
   JOB_SWITCH
@@ -53,6 +60,50 @@ enum GoalType {
   PORTFOLIO
   BUSINESS
   CUSTOM
+
+  // Communication Goal Types
+  ENGLISH_SPEAKING
+  PUBLIC_SPEAKING
+  PROFESSIONAL_COMMUNICATION
+  WRITING
+  PRESENTATION
+  CONFIDENCE
+  LANGUAGE_LEARNING
+  INTERVIEW_COMMUNICATION
+  IMPROVE_SPOKEN_ENGLISH
+  SPEAK_MORE_CONFIDENTLY
+  IMPROVE_PROFESSIONAL_COMMUNICATION
+  IMPROVE_WRITING
+  IMPROVE_PRESENTATION_SKILLS
+  IMPROVE_INTERVIEW_COMMUNICATION
+  LEARN_A_LANGUAGE
+
+  // Health Goal Types
+  FITNESS
+  NUTRITION
+  SLEEP
+  MENTAL_WELLBEING
+  WEIGHT
+  DAILY_ACTIVITY
+  HEALTH_ROUTINE
+  IMPROVE_FITNESS
+  BUILD_EXERCISE_HABIT
+  IMPROVE_SLEEP
+  EAT_BETTER
+  WALKING_STEPS
+  DRINK_ENOUGH_WATER
+  MAINTAIN_HEALTHY_WEIGHT
+  GAIN_HEALTHY_WEIGHT
+  RELAXATION_STRESS_ROUTINE
+
+  // Personal Goal Types
+  HABIT
+  FINANCE
+  RELATIONSHIP
+  PRODUCTIVITY
+  SELF_DEVELOPMENT
+  READING
+  LIFE_SKILL
 }
 
 enum Priority {
@@ -143,6 +194,8 @@ enum ScheduleCategory {
   FREELANCE
   INTERVIEW
   OTHER
+  COMMUNICATION
+  HEALTH
 }
 
 enum WorkMode {
@@ -464,6 +517,8 @@ model Goal {
   targetSalary   String?
   salaryCurrency String?       @default("USD")
   notes          String?       @db.Text
+  growthArea     GrowthArea    @default(CAREER)
+  metadata       Json?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -478,6 +533,7 @@ model Goal {
   reminders               Reminder[]
 
   @@index([userId])
+  @@index([userId, growthArea])
   @@map("goals")
 }
 
@@ -638,6 +694,8 @@ model Task {
   internshipOpportunityId String?
   internshipOpportunity   InternshipOpportunity? @relation(fields: [internshipOpportunityId], references: [id], onDelete: SetNull)
 
+  growthArea       GrowthArea?       @default(CAREER)
+
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -649,6 +707,7 @@ model Task {
   reminders               Reminder[]
 
   @@index([userId])
+  @@index([userId, growthArea])
   @@index([dueDate])
   @@index([projectId])
   @@index([projectMilestoneId])

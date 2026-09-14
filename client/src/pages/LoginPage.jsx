@@ -43,7 +43,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#090D16] px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#0B0F17] px-4 py-12">
       <div className="w-full max-w-md">
         {/* Official Brand Header */}
         <div className="text-center mb-6">
@@ -56,7 +56,7 @@ export const LoginPage = () => {
         </div>
 
         {/* Login Card */}
-        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-[#E5E7EB] dark:border-[#263247] shadow-card p-7 md:p-8">
+        <div className="bg-white dark:bg-[#111827] rounded-xl border border-[#E5E7EB] dark:border-[#253044] p-7 md:p-8">
           <div className="mb-6">
             <h2 className="text-lg font-bold text-slate-800 dark:text-[#F8FAFC]">Sign In</h2>
             <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">

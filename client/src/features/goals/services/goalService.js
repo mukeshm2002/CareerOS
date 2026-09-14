@@ -1,8 +1,14 @@
 import api from '../../../services/api';
 
 export const goalService = {
-  async getGoals(status) {
-    const params = status ? { status } : {};
+  async getGoals(status, growthArea) {
+    let params = {};
+    if (typeof status === 'object' && status !== null) {
+      params = { ...status };
+    } else {
+      if (status) params.status = status;
+      if (growthArea && growthArea !== 'ALL') params.growthArea = growthArea;
+    }
     const response = await api.get('/goals', { params });
     return response.data;
   },

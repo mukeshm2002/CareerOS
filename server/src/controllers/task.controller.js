@@ -5,7 +5,7 @@ const { sendSuccess } = require('../utils/response');
 class TaskController {
   async getTasks(req, res, next) {
     try {
-      const { status, goalId, milestoneId, skillId, due, priority } = req.query;
+      const { status, goalId, milestoneId, skillId, due, priority, growthArea } = req.query;
       const tasks = await taskPlanningService.getTasks(req.user.id, {
         status,
         goalId,
@@ -13,6 +13,7 @@ class TaskController {
         skillId,
         due,
         priority,
+        growthArea,
       });
       return sendSuccess(res, { tasks }, 'Tasks retrieved successfully');
     } catch (error) {

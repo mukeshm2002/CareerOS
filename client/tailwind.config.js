@@ -61,7 +61,7 @@ export default {
         },
       },
       borderRadius: {
-        'card': '16px',
+        'card': '12px',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],

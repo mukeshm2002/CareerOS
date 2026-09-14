@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalService } from '../features/goals/services/goalService';
 import { PageHeader } from '../components/common/PageHeader';
 import { EmptyState } from '../components/common/EmptyState';
+import { CreateGoalModal } from '../components/goals/CreateGoalModal';
 import {
   Target,
   Plus,
@@ -13,69 +14,28 @@ import {
   PauseCircle,
   PlayCircle,
   Archive,
-  X,
   AlertCircle,
 } from 'lucide-react';
 
-const goalTypes = [
-  'FIRST_JOB',
-  'JOB_SWITCH',
-  'SALARY_GROWTH',
-  'PROMOTION',
-  'FREELANCING',
-  'CAREER_CHANGE',
-  'SKILL_MASTERY',
-  'CERTIFICATION',
-  'PORTFOLIO',
-  'BUSINESS',
-  'CUSTOM',
-];
-
 export const GoalsPage = () => {
+  const [selectedArea, setSelectedArea] = useState('ALL');
   const [activeTab, setActiveTab] = useState('ACTIVE');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  // New goal form state
-  const [newGoal, setNewGoal] = useState({
-    title: '',
-    description: '',
-    type: 'JOB_SWITCH',
-    priority: 'HIGH',
-    targetDate: '2026-12-31',
-    targetRole: '',
-    targetSalary: '',
-  });
 
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['goals', activeTab],
-    queryFn: () => goalService.getGoals(activeTab),
+    queryKey: ['goals', activeTab, selectedArea],
+    queryFn: () => goalService.getGoals(activeTab, selectedArea === 'ALL' ? undefined : selectedArea),
   });
 
   const goals = data?.data?.goals || [];
 
-  const createGoalMutation = useMutation({
-    mutationFn: (goalData) => goalService.createGoal(goalData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['goals'] });
-      setIsModalOpen(false);
-      setNewGoal({
-        title: '',
-        description: '',
-        type: 'JOB_SWITCH',
-        priority: 'HIGH',
-        targetDate: '2026-12-31',
-        targetRole: '',
-        targetSalary: '',
-      });
-    },
-    onError: (err) => {
-      const msg = err.response?.data?.message || 'Failed to create goal';
-      setErrorMessage(msg);
-    },
-  });
+  const handleGoalCreated = async (payload) => {
+    const result = await goalService.createGoal(payload);
+    queryClient.invalidateQueries({ queryKey: ['goals'] });
+    return result;
+  };
 
   const statusMutation = useMutation({
     mutationFn: ({ goalId, status }) => goalService.updateGoalStatus(goalId, status),
@@ -84,18 +44,26 @@ export const GoalsPage = () => {
     },
   });
 
-  const handleCreateSubmit = (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    if (!newGoal.title.trim()) {
-      setErrorMessage('Goal title is required');
-      return;
-    }
-    createGoalMutation.mutate(newGoal);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
   const handleStatusChange = (goalId, newStatus) => {
     statusMutation.mutate({ goalId, status: newStatus });
+  };
+
+  const getAreaBadge = (area) => {
+    switch (area) {
+      case 'COMMUNICATION':
+        return { label: 'Communication', color: 'bg-slate-100 dark:bg-[#151D2B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#253044]' };
+      case 'HEALTH':
+        return { label: 'Health', color: 'bg-slate-100 dark:bg-[#151D2B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#253044]' };
+      case 'PERSONAL':
+        return { label: 'Personal', color: 'bg-slate-100 dark:bg-[#151D2B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#253044]' };
+      case 'CAREER':
+      default:
+        return { label: 'Career', color: 'bg-slate-100 dark:bg-[#151D2B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#253044]' };
+    }
   };
 
   return (
@@ -103,12 +71,12 @@ export const GoalsPage = () => {
       {/* Header */}
       <PageHeader
         icon={Target}
-        title="Goals"
-        subtitle="Define your primary anchors and track strategic progress."
+        title="My Goals"
+        subtitle="Build progress across the areas that matter to you."
         action={
           <button
             type="button"
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenModal}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
           >
             <Plus size={15} />
@@ -117,25 +85,54 @@ export const GoalsPage = () => {
         }
       />
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-[#263247] pb-3 text-xs">
-        {['ACTIVE', 'COMPLETED', 'ARCHIVED'].map((tab) => {
-          const isActive = activeTab === tab;
-          return (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
-                  : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
-              }`}
-            >
-              {tab.charAt(0) + tab.slice(1).toLowerCase()}
-            </button>
-          );
-        })}
+      {/* Growth Area Filter Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-[#263247] pb-3 text-xs">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 dark:bg-[#161E2D] rounded-xl">
+          {[
+            { id: 'ALL', label: 'All' },
+            { id: 'CAREER', label: 'Career' },
+            { id: 'COMMUNICATION', label: 'Communication' },
+            { id: 'HEALTH', label: 'Health' },
+            { id: 'PERSONAL', label: 'Personal' },
+          ].map((area) => {
+            const isSelected = selectedArea === area.id;
+            return (
+              <button
+                key={area.id}
+                type="button"
+                onClick={() => setSelectedArea(area.id)}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer text-xs ${
+                  isSelected
+                    ? 'bg-white dark:bg-[#0D121C] text-[#FF7A00] shadow-xs'
+                    : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#F8FAFC]'
+                }`}
+              >
+                {area.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Status Filter Tabs */}
+        <div className="flex items-center gap-1">
+          {['ACTIVE', 'COMPLETED', 'ARCHIVED'].map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer text-xs ${
+                  isActive
+                    ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                    : 'text-slate-500 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
+                }`}
+              >
+                {tab.charAt(0) + tab.slice(1).toLowerCase()}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Loading & Error States */}
@@ -160,13 +157,13 @@ export const GoalsPage = () => {
           description={
             activeTab === 'ACTIVE'
               ? 'Create your first goal and start building toward what matters to you.'
-              : `You have no ${activeTab.toLowerCase()} goals at this moment.`
+              : `You have no ${activeTab.toLowerCase()} goals in this category.`
           }
           primaryAction={
             activeTab === 'ACTIVE'
               ? {
                   label: 'Create Goal',
-                  onClick: () => setIsModalOpen(true),
+                  onClick: handleOpenModal,
                 }
               : undefined
           }
@@ -184,6 +181,8 @@ export const GoalsPage = () => {
                 })
               : 'Dec 31, 2026';
 
+            const areaInfo = getAreaBadge(goal.growthArea);
+
             return (
               <div
                 key={goal.id}
@@ -191,9 +190,14 @@ export const GoalsPage = () => {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md bg-brand-soft text-[#FF7A00]">
-                      {goal.type?.replace('_', ' ')}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-md ${areaInfo.color}`}>
+                        {areaInfo.label}
+                      </span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#161E2D] text-slate-600 dark:text-[#94A3B8]">
+                        {goal.type?.replace(/_/g, ' ')}
+                      </span>
+                    </div>
                     <span className="text-xs font-bold text-[#16A34A] dark:text-[#22C55E]">{goal.progress || 0}% Done</span>
                   </div>
 
@@ -206,9 +210,21 @@ export const GoalsPage = () => {
                     {goal.targetSalary && (
                       <p>Target Salary: <strong className="text-slate-700 dark:text-[#CBD5E1]">{goal.targetSalary}</strong></p>
                     )}
+                    {goal.metadata?.currentLevel && (
+                      <p>Level: <strong className="text-slate-700 dark:text-[#CBD5E1]">{goal.metadata.currentLevel}</strong></p>
+                    )}
+                    {goal.metadata?.practiceTarget && (
+                      <p>Target: <strong className="text-slate-700 dark:text-[#CBD5E1]">{goal.metadata.practiceTarget}</strong></p>
+                    )}
+                    {goal.metadata?.routine && (
+                      <p>Routine: <strong className="text-slate-700 dark:text-[#CBD5E1]">{goal.metadata.routine}</strong></p>
+                    )}
+                    {goal.metadata?.frequency && (
+                      <p>Frequency: <strong className="text-slate-700 dark:text-[#CBD5E1]">{goal.metadata.frequency}</strong></p>
+                    )}
                   </div>
 
-                  {/* Progress bar with growth/accent color */}
+                  {/* Progress bar */}
                   <div className="w-full bg-slate-100 dark:bg-[#161E2D] h-2 rounded-full overflow-hidden mb-4">
                     <div
                       className="bg-[#22C55E] dark:bg-[#34D399] h-full rounded-full transition-all duration-300"
@@ -216,7 +232,7 @@ export const GoalsPage = () => {
                     />
                   </div>
 
-                  {/* Next action placeholder */}
+                  {/* Next action */}
                   <div className="p-3 bg-slate-50 dark:bg-[#161E2D] rounded-xl border border-slate-200/60 dark:border-[#263247] text-xs mb-4">
                     <span className="text-slate-400 dark:text-[#64748B] font-medium">Next Action: </span>
                     <span className="font-semibold text-slate-800 dark:text-[#F8FAFC]">
@@ -287,130 +303,13 @@ export const GoalsPage = () => {
         </div>
       )}
 
-      {/* New Goal Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"
-            onClick={() => setIsModalOpen(false)}
-          />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h2 className="text-base font-bold text-slate-900">Create New Career Goal</h2>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {errorMessage && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-700 text-xs">
-                {errorMessage}
-              </div>
-            )}
-
-            <form onSubmit={handleCreateSubmit} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Goal Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newGoal.title}
-                  onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
-                  placeholder="e.g. Master Spring Boot and System Design"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:bg-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Type</label>
-                  <select
-                    value={newGoal.type}
-                    onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:bg-white cursor-pointer"
-                  >
-                    {goalTypes.map((gt) => (
-                      <option key={gt} value={gt}>
-                        {gt.replace('_', ' ')}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Priority</label>
-                  <select
-                    value={newGoal.priority}
-                    onChange={(e) => setNewGoal({ ...newGoal, priority: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:bg-white cursor-pointer"
-                  >
-                    <option value="HIGH">High</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="LOW">Low</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Date</label>
-                  <input
-                    type="date"
-                    value={newGoal.targetDate}
-                    onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Role</label>
-                  <input
-                    type="text"
-                    value={newGoal.targetRole}
-                    onChange={(e) => setNewGoal({ ...newGoal, targetRole: e.target.value })}
-                    placeholder="e.g. Senior Backend Dev"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:bg-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Target Compensation</label>
-                <input
-                  type="text"
-                  value={newGoal.targetSalary}
-                  onChange={(e) => setNewGoal({ ...newGoal, targetSalary: e.target.value })}
-                  placeholder="e.g. $130,000 / yr"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:bg-white"
-                />
-              </div>
-
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createGoalMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm shadow-brand-600/30 disabled:opacity-50 cursor-pointer"
-                >
-                  {createGoalMutation.isPending ? 'Creating...' : 'Create Goal'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* 3-Step Guided Create Goal Modal */}
+      <CreateGoalModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialArea={selectedArea === 'ALL' ? 'CAREER' : selectedArea}
+        onGoalCreated={handleGoalCreated}
+      />
     </div>
   );
 };
