@@ -637,7 +637,7 @@ export const MyDayPage = () => {
                   </p>
                 </div>
                 <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium shrink-0">
-                  {block.category === 'CAREEROS' ? 'VALARI' : (block.category || 'Growth')}
+                  {block.category === 'CAREEROS' ? 'VAZHARI' : (block.category || 'Growth')}
                 </span>
               </div>
             ))}

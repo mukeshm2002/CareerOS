@@ -38,7 +38,7 @@ import { detectBrowserTimezone } from '../utils/timezones';
 import { pwaService } from '../services/pwaService';
 import { BottomNav } from '../components/layout/BottomNav';
 import { MobileHeader } from '../components/layout/MobileHeader';
-import { ValariLogo } from '../components/common/ValariLogo';
+import { VazhariLogo } from '../components/common/VazhariLogo';
 
 const navigationGroups = [
   {
@@ -213,7 +213,7 @@ export const AppLayout = () => {
     if (path.includes('/app/reviews')) return 'Reviews';
     if (path.includes('/app/reminders')) return 'Reminders';
     if (path.includes('/app/settings')) return 'Settings';
-    return 'VALARI';
+    return 'VAZHARI';
   };
 
   const displayName = user?.fullName || 'User';
@@ -221,14 +221,11 @@ export const AppLayout = () => {
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0B0F17] border-r border-[#E5E7EB] dark:border-[#253044] select-none">
-      {/* Brand Header: Official VALARI Wordmark without redundant V icon */}
+      {/* Desktop Brand Header: [VAZHARI symbol] VAZHARI / Personal Growth System */}
       <div className="p-5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between">
-        <div className="flex flex-col justify-center">
-          <ValariLogo size="sm" variant="wordmark" />
-          <p className="text-[10px] text-[#64748B] dark:text-[#64748B] font-medium tracking-wide mt-1">
-            Personal Growth System
-          </p>
-        </div>
+        <NavLink to="/app/today" className="flex items-center">
+          <VazhariLogo size="sm" variant="icon-wordmark" showTagline={true} taglineText="Personal Growth System" />
+        </NavLink>
         {mobileMenuOpen && (
           <button
             onClick={() => setMobileMenuOpen(false)}
@@ -352,7 +349,7 @@ export const AppLayout = () => {
 
             {/* Breadcrumb / Title */}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-[#64748B] font-semibold hidden sm:inline">VALARI</span>
+              <span className="text-[#64748B] font-semibold hidden sm:inline">VAZHARI</span>
               <ChevronRight size={14} className="text-[#64748B] hidden sm:inline" />
               <span className="text-slate-900 dark:text-[#F8FAFC] font-bold text-base">{getPageTitle()}</span>
             </div>
@@ -373,7 +370,7 @@ export const AppLayout = () => {
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#64748B]" />
               <input
                 type="text"
-                placeholder="Search VALARI..."
+                placeholder="Search VAZHARI..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#253044] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#FF7A00] focus:border-[#FF7A00] transition-all"
@@ -521,7 +518,7 @@ export const AppLayout = () => {
           <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#111827] border border-[#FF7A00]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#FF7A00] animate-pulse" />
-              <span className="text-xs font-semibold text-slate-200">VALARI update available</span>
+              <span className="text-xs font-semibold text-slate-200">VAZHARI update available</span>
             </div>
             <button
               onClick={() => pwaService.updateApp()}

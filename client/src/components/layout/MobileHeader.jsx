@@ -4,7 +4,7 @@ import { Bell } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import { notificationService } from '../../services/notificationService';
-import { ValariLogo } from '../common/ValariLogo';
+import { VazhariLogo } from '../common/VazhariLogo';
 import { NotificationSheet } from './NotificationSheet';
 import { ProfileSheet } from './ProfileSheet';
 
@@ -26,9 +26,9 @@ export const MobileHeader = () => {
   return (
     <>
       <header className="md:hidden sticky top-0 left-0 right-0 h-14 bg-white dark:bg-[#0B0F17] border-b border-[#E5E7EB] dark:border-[#253044] px-4 flex items-center justify-between z-30 shrink-0">
-        {/* Left: Official VALARI Wordmark only (no separate V icon) */}
+        {/* Left: Clean [VAZHARI symbol] VAZHARI branding */}
         <NavLink to="/app/today" className="flex items-center py-1">
-          <ValariLogo size="md" variant="wordmark" />
+          <VazhariLogo size="sm" variant="icon-wordmark" />
         </NavLink>
 
         {/* Right: Actions (Notification + Profile Avatar) */}

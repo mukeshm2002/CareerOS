@@ -388,7 +388,7 @@ class JobOpportunityService {
   }
 
   /**
-   * Create a CareerOS task from a job opportunity
+   * Create a VAZHARI task from a job opportunity
    */
   async createTaskFromOpportunity(userId, jobId, taskData) {
     const job = await prisma.jobOpportunity.findFirst({

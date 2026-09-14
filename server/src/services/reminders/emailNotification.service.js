@@ -5,7 +5,7 @@
 class EmailNotificationService {
   constructor() {
     this.provider = process.env.EMAIL_PROVIDER || 'console';
-    this.fromAddress = process.env.EMAIL_FROM || 'notifications@valari.local';
+    this.fromAddress = process.env.EMAIL_FROM || 'notifications@vazhari.local';
   }
 
   /**
@@ -47,24 +47,24 @@ class EmailNotificationService {
       case 'DAILY_CAREER_REVIEW':
       case 'DAILY_CAREEROS_REVIEW':
         res = {
-          subject: 'VALARI Daily Focus Check-in',
-          text: `Hi ${data.userName || 'there'},\n\nIt is time for your daily career check-in. Review today's focus and choose what moves your career forward.\n\nOpen VALARI: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
-          html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>It is time for your daily career check-in. Review today's focus and choose what moves your career forward.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today">Open Today's Focus</a></p>`,
+          subject: 'VAZHARI Daily Focus Check-in',
+          text: `Hi ${data.userName || 'there'},\n\nIt is time for your daily check-in. Review today's focus and choose what moves your growth forward.\n\nOpen VAZHARI: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
+          html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>It is time for your daily check-in. Review today's focus and choose what moves your growth forward.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today">Open Today's Focus</a></p>`,
         };
         break;
 
       case 'DAILY_SHUTDOWN':
         res = {
-          subject: 'VALARI Daily Shutdown Reminder',
-          text: `Hi ${data.userName || 'there'},\n\nWrap up today's career efforts, log your progress, and pick tomorrow's main focus task.\n\nOpen Daily Review: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
-          html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Wrap up today's career efforts, log your progress, and pick tomorrow's main focus task.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today">Complete Daily Review</a></p>`,
+          subject: 'VAZHARI Daily Shutdown Reminder',
+          text: `Hi ${data.userName || 'there'},\n\nWrap up today's efforts, log your progress, and pick tomorrow's main focus task.\n\nOpen Daily Review: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
+          html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Wrap up today's efforts, log your progress, and pick tomorrow's main focus task.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today">Complete Daily Review</a></p>`,
         };
         break;
 
       case 'WEEKLY_REVIEW':
       case 'WEEKLY_CAREER_REVIEW':
         res = {
-          subject: 'VALARI Weekly Check-in Due',
+          subject: 'VAZHARI Weekly Check-in Due',
           text: `Hi ${data.userName || 'there'},\n\nYour weekly review is ready. Reflect on your wins, milestones completed, and set direction for next week.\n\nOpen Weekly Review: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/reviews`,
           html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Your weekly review is ready. Reflect on your wins, milestones completed, and set direction for next week.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/reviews">Start Weekly Review</a></p>`,
         };
@@ -90,16 +90,16 @@ class EmailNotificationService {
       case 'INTERVIEW':
         res = {
           subject: `Upcoming Interview: ${data.opportunityTitle || 'Scheduled Meeting'}`,
-          text: `Hi ${data.userName || 'there'},\n\nReminder: You have an upcoming interview session scheduled for "${data.opportunityTitle || 'Opportunity'}".\n\nOpen VALARI: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/opportunities`,
+          text: `Hi ${data.userName || 'there'},\n\nReminder: You have an upcoming interview session scheduled for "${data.opportunityTitle || 'Opportunity'}".\n\nOpen VAZHARI: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/opportunities`,
           html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Reminder: You have an upcoming interview session scheduled for <strong>${data.opportunityTitle || 'Opportunity'}</strong>.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/opportunities">View Opportunity Details</a></p>`,
         };
         break;
 
       default:
         res = {
-          subject: data.subject || 'VALARI Reminder',
-          text: data.message || 'You have a scheduled reminder in VALARI.',
-          html: `<p>${data.message || 'You have a scheduled reminder in VALARI.'}</p>`,
+          subject: data.subject || 'VAZHARI Reminder',
+          text: data.message || 'You have a scheduled reminder in VAZHARI.',
+          html: `<p>${data.message || 'You have a scheduled reminder in VAZHARI.'}</p>`,
         };
         break;
     }
@@ -111,8 +111,8 @@ class EmailNotificationService {
    * Append consistent parent-brand endorsement footer
    */
   appendBrandFooter(template) {
-    const textFooter = '\n\n---\nVALARI · A product by TamZode Technology';
-    const htmlFooter = '<br/><hr style="border:none;border-top:1px solid #E2E8F0;margin:24px 0 12px 0;"/><p style="color:#64748B;font-size:11px;margin:0;">VALARI &middot; A product by TamZode Technology</p>';
+    const textFooter = '\n\n---\nVAZHARI · A product by TamZode Technology';
+    const htmlFooter = '<br/><hr style="border:none;border-top:1px solid #E2E8F0;margin:24px 0 12px 0;"/><p style="color:#64748B;font-size:11px;margin:0;">VAZHARI &middot; A product by TamZode Technology</p>';
 
     return {
       ...template,

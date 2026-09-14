@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
 import { ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
-import { ValariLogo } from '../components/common/ValariLogo';
+import { VazhariLogo } from '../components/common/VazhariLogo';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -48,10 +48,10 @@ export const LoginPage = () => {
         {/* Official Brand Header */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
-            <ValariLogo variant="lockup" size="md" />
+            <VazhariLogo variant="lockup" size="md" />
           </div>
           <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-            Plan your growth. Execute your day. Track your progress.
+            Plan your growth. Take action. Track progress.
           </p>
         </div>
 

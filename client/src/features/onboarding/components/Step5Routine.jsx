@@ -17,7 +17,7 @@ export const Step5Routine = ({ routine, onChange, onNext, onBack }) => {
           When are you actually available?
         </h2>
         <p className="text-xs md:text-sm text-slate-500 mt-1">
-          VALARI plans realistic daily focus blocks around your work and family routine.
+          VAZHARI plans realistic daily focus blocks around your work and family routine.
         </p>
       </div>
 

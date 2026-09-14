@@ -1,5 +1,5 @@
 /**
- * CareerOS Client Timezone Utilities
+ * VAZHARI Client Timezone Utilities
  * Standard IANA timezones formatted with offsets, friendly labels, and search keywords.
  */
 

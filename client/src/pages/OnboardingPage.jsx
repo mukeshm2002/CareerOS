@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useOnboarding } from '../features/onboarding/hooks/useOnboarding';
-import { ValariLogo } from '../components/common/ValariLogo';
+import { VazhariLogo } from '../components/common/VazhariLogo';
 import {
   Briefcase,
   MessageSquare,
@@ -279,7 +279,7 @@ export const OnboardingPage = () => {
     <div className="min-h-screen bg-[#0B0F17] text-[#F8FAFC] flex flex-col justify-between p-4 sm:p-8 select-none">
       {/* Top Header */}
       <header className="max-w-md mx-auto w-full flex items-center justify-between py-2">
-        <ValariLogo size="sm" variant="wordmark" />
+        <VazhariLogo size="sm" variant="icon-wordmark" />
         <span className="text-[11px] font-medium text-[#64748B]">
           Step {step} of 4
         </span>
@@ -505,7 +505,7 @@ export const OnboardingPage = () => {
           </div>
         )}
 
-        {/* STEP 4: Your VALARI workspace is ready */}
+        {/* STEP 4: Your VAZHARI workspace is ready */}
         {step === 4 && (
           <div className="space-y-6">
             <div className="space-y-2">
@@ -513,7 +513,7 @@ export const OnboardingPage = () => {
                 <ShieldCheck size={20} strokeWidth={2.2} />
               </div>
               <h1 className="text-[26px] sm:text-[28px] font-bold tracking-tight text-[#F8FAFC]">
-                Your VALARI workspace is ready.
+                Your VAZHARI workspace is ready.
               </h1>
               <p className="text-sm text-[#94A3B8]">
                 Here is your customized setup for daily progress:
@@ -577,7 +577,7 @@ export const OnboardingPage = () => {
                   <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Enter VALARI Workspace</span>
+                    <span>Enter VAZHARI Workspace</span>
                     <ArrowRight size={16} />
                   </>
                 )}
@@ -597,7 +597,7 @@ export const OnboardingPage = () => {
 
       {/* Creator endorsement */}
       <footer className="text-center text-xs text-[#64748B] py-2">
-        VALARI by TamZode Technology
+        VAZHARI — A product by TamZode Technology
       </footer>
     </div>
   );

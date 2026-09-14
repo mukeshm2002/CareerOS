@@ -1,5 +1,5 @@
 /**
- * CareerOS Progressive Web App Client Service
+ * VAZHARI Progressive Web App Client Service
  *
  * Handles:
  * - Service worker registration

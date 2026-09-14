@@ -244,7 +244,7 @@ export const SchedulePage = () => {
                           : 'bg-slate-100 text-slate-600 border border-slate-200'
                       }`}
                     >
-                      {b.category === 'CAREEROS' ? 'VALARI' : b.category}
+                      {b.category === 'CAREEROS' ? 'VAZHARI' : b.category}
                     </span>
                   </div>
 
@@ -361,7 +361,7 @@ export const SchedulePage = () => {
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white"
                 >
-                  <option value="CAREEROS">VALARI</option>
+                  <option value="CAREEROS">VAZHARI</option>
                   <option value="WORK">WORK</option>
                   <option value="STUDY">STUDY</option>
                   <option value="PERSONAL">PERSONAL</option>

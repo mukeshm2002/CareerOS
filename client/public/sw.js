@@ -1,5 +1,5 @@
 /**
- * VALARI Progressive Web App — Service Worker
+ * VAZHARI Progressive Web App — Service Worker
  *
  * Responsibilities:
  * 1. Static asset & offline fallback caching
@@ -9,15 +9,15 @@
  * NOTE: Authenticated API responses and personal data are NEVER cached in this service worker.
  */
 
-const CACHE_NAME = 'valari-static-v1';
+const CACHE_NAME = 'vazhari-static-v1';
 const STATIC_ASSETS = [
   '/',
   '/offline.html',
   '/manifest.webmanifest',
-  '/favicon.svg',
-  '/icons/icon-192x192.svg',
-  '/icons/icon-512x512.svg',
-  '/icons/icon-maskable-512x512.svg',
+  '/favicon.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  '/icons/icon-maskable-512x512.png',
 ];
 
 // Install Event: pre-cache static shell assets
@@ -89,21 +89,21 @@ self.addEventListener('push', (event) => {
     try {
       data = event.data.json();
     } catch (err) {
-      data = { title: 'VALARI Reminder', body: event.data.text() };
+      data = { title: 'VAZHARI Reminder', body: event.data.text() };
     }
   }
 
-  const title = data.title || 'VALARI Reminder';
+  const title = data.title || 'VAZHARI Reminder';
   const options = {
     body: data.body || 'Time for your scheduled focus.',
-    icon: '/icons/icon-192x192.svg',
-    badge: '/icons/icon-192x192.svg',
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-192x192.png',
     data: {
       url: data.url || '/app/today',
       type: data.type || 'REMINDER',
       notificationId: data.notificationId || null,
     },
-    tag: data.notificationId || 'valari-reminder',
+    tag: data.notificationId || 'vazhari-reminder',
     renotify: true,
   };
 
@@ -124,7 +124,7 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // If a VALARI window is already open, focus it and navigate
+      // If a VAZHARI window is already open, focus it and navigate
       for (const client of windowClients) {
         if (client.url && 'focus' in client) {
           client.navigate(targetPath);
@@ -137,11 +137,4 @@ self.addEventListener('notificationclick', (event) => {
       }
     })
   );
-});
-
-// Message listener for skip waiting prompt
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });

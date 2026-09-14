@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
 import { ArrowRight, Lock, Mail, User, AlertCircle } from 'lucide-react';
-import { ValariLogo } from '../components/common/ValariLogo';
+import { VazhariLogo } from '../components/common/VazhariLogo';
 
 export const RegisterPage = () => {
   const [fullName, setFullName] = useState('');
@@ -12,25 +12,27 @@ export const RegisterPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { setAuth } = useAuthStore();
   const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await authService.register({ fullName, email, password });
-      if (response.success) {
-        const { user, tokens } = response.data;
-        setAuth(user, tokens.accessToken, tokens.refreshToken);
-        // New users go to onboarding first
-        navigate('/onboarding', { replace: true });
-      }
+      const { user, accessToken, refreshToken } = response.data;
+      setAuth(user, accessToken, refreshToken);
+      navigate('/onboarding', { replace: true });
     } catch (err) {
-      const message = err.response?.data?.message || 'Registration failed. Please try again.';
-      setError(message);
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -41,18 +43,18 @@ export const RegisterPage = () => {
       <div className="w-full max-w-md">
         {/* Official Brand Header */}
         <div className="text-center mb-6">
-          <div className="flex justify-center mb-3">
-            <ValariLogo variant="lockup" size="md" />
+          <div className="flex justify-center mb-2">
+            <VazhariLogo variant="lockup" size="md" />
           </div>
-          <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-            Plan your growth. Execute your day. Track your progress.
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-2">
+            Plan your growth. Take action. Track progress.
           </p>
         </div>
 
         {/* Register Card */}
         <div className="bg-white dark:bg-[#111827] rounded-xl border border-[#E5E7EB] dark:border-[#253044] p-7 md:p-8">
           <div className="mb-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-[#F8FAFC]">Build your VALARI</h2>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-[#F8FAFC]">Build your VAZHARI workspace</h2>
             <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
               Start structuring your goals, priorities, and daily execution system.
             </p>

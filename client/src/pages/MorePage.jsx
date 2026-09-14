@@ -132,12 +132,12 @@ export const MorePage = () => {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
-                {isStandalone ? 'VALARI is installed' : 'Install VALARI'}
+                {isStandalone ? 'VAZHARI is installed' : 'Install VAZHARI'}
               </p>
               <p className="text-xs text-slate-500 dark:text-[#94A3B8] truncate">
                 {isStandalone
                   ? 'Running as standalone app on your home screen'
-                  : 'Add VALARI to your home screen for faster access.'}
+                  : 'Add VAZHARI to your home screen for faster access.'}
               </p>
             </div>
           </div>
@@ -196,8 +196,8 @@ export const MorePage = () => {
 
       {/* Brand Ownership Footer */}
       <div className="pt-4 pb-8 text-center select-none">
-        <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">VALARI</p>
-        <p className="text-[11px] font-semibold text-[#FF6A00] mt-0.5">Grow Forward.</p>
+        <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">VAZHARI</p>
+        <p className="text-[11px] font-semibold text-[#FF7A00] mt-0.5">Personal Growth System</p>
         <p className="text-[11px] text-slate-400 dark:text-[#64748B] mt-1">
           A product by TamZode Technology
         </p>
