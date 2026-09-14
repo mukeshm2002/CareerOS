@@ -28,7 +28,7 @@ export const MobileHeader = () => {
       <header className="md:hidden sticky top-0 left-0 right-0 h-14 bg-white/95 dark:bg-[#090D16]/95 backdrop-blur-md border-b border-[#E5E7EB] dark:border-[#263247] px-4 flex items-center justify-between z-30 shrink-0">
         {/* Brand Left: Geometric VALARI Mark + Wordmark */}
         <NavLink to="/app/today" className="flex items-center gap-2">
-          <ValariLogo size="sm" showWordmark={true} />
+          <ValariLogo size="md" variant="icon-wordmark" />
         </NavLink>
 
         {/* Actions Right (44px touch targets) */}

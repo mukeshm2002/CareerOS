@@ -323,7 +323,7 @@ export const OnboardingPage = () => {
 
       {/* Footer */}
       <footer className="text-center text-xs text-slate-400 dark:text-[#64748B] py-3">
-        VALARI © 2026 • Your Personal Growth & Career System
+        VALARI by TamZode Technology
       </footer>
     </div>
   );

@@ -22,6 +22,8 @@ import {
   ListTodo,
 } from 'lucide-react';
 import { opportunityService } from '../services/opportunityService';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 
 const JOB_STAGES = [
   'SAVED', 'PREPARING', 'APPLIED', 'SCREENING', 'ASSESSMENT',
@@ -235,47 +237,48 @@ export const OpportunitiesPage = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 py-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">OPPORTUNITIES</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Turn preparation into real career outcomes.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-brand-600/20"
-        >
-          <Plus size={16} />
-          <span>
-            {activeTab === 'JOBS' ? 'Add Job Opportunity' : activeTab === 'FREELANCE' ? 'Add Freelance Lead' : 'Add Internship'}
-          </span>
-        </button>
-      </div>
+      <PageHeader
+        icon={Briefcase}
+        title="Opportunities"
+        subtitle="Turn preparation into real career outcomes."
+        action={
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+          >
+            <Plus size={15} />
+            <span>
+              {activeTab === 'JOBS' ? 'Add Job' : activeTab === 'FREELANCE' ? 'Add Lead' : 'Add Internship'}
+            </span>
+          </button>
+        }
+      />
 
       {/* Primary Tabs */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-[#263247] pb-3 text-xs">
         {[
           { id: 'JOBS', label: 'Jobs' },
           { id: 'FREELANCE', label: 'Freelance' },
           { id: 'INTERNSHIPS', label: 'Internships' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              setActiveTab(tab.id);
-              setStatusFilter('');
-            }}
-            className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === tab.id
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setStatusFilter('');
+              }}
+              className={`px-4 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                  : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Overview Factual Count Strip */}
@@ -422,32 +425,32 @@ export const OpportunitiesPage = () => {
           Loading opportunities...
         </div>
       ) : items.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-          <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mx-auto text-slate-400">
-            <Briefcase size={22} />
-          </div>
-          <h3 className="text-sm font-bold text-slate-800">
-            {activeTab === 'JOBS' && "No job opportunities yet."}
-            {activeTab === 'FREELANCE' && "No freelance leads yet."}
-            {activeTab === 'INTERNSHIPS' && "No internship opportunities yet."}
-          </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            {activeTab === 'JOBS' && "Save a role you're considering or add an application."}
-            {activeTab === 'FREELANCE' && "Add a potential client or project opportunity."}
-            {activeTab === 'INTERNSHIPS' && "Track internships, requirements, and interviews."}
-          </p>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="mt-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition-colors inline-flex items-center gap-1.5"
-          >
-            <Plus size={14} />
-            <span>
-              {activeTab === 'JOBS' && "Add Job Opportunity"}
-              {activeTab === 'FREELANCE' && "Add Freelance Lead"}
-              {activeTab === 'INTERNSHIPS' && "Add Internship"}
-            </span>
-          </button>
-        </div>
+        <EmptyState
+          icon={Briefcase}
+          title={
+            activeTab === 'JOBS'
+              ? 'No job opportunities yet'
+              : activeTab === 'FREELANCE'
+              ? 'No freelance leads yet'
+              : 'No internship opportunities yet'
+          }
+          description={
+            activeTab === 'JOBS'
+              ? "Save a role you're considering or add an application to track stages."
+              : activeTab === 'FREELANCE'
+              ? 'Add a potential client or project opportunity to manage leads.'
+              : 'Track internships, requirements, and scheduled interviews.'
+          }
+          primaryAction={{
+            label:
+              activeTab === 'JOBS'
+                ? 'Add Job Opportunity'
+                : activeTab === 'FREELANCE'
+                ? 'Add Freelance Lead'
+                : 'Add Internship',
+            onClick: () => setShowAddModal(true),
+          }}
+        />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
           <div className="overflow-x-auto">

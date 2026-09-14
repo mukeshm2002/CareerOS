@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { planningService } from '../features/planning/services/planningService';
 import { goalService } from '../features/goals/services/goalService';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 import {
   CheckSquare,
   Plus,
@@ -162,27 +164,22 @@ export const TasksPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header & New Task (Section 21) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <CheckSquare className="text-brand-600" size={22} />
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">TASKS</h1>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Turn your career plan into action.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-brand-600/30 cursor-pointer self-start sm:self-auto"
-        >
-          <Plus size={15} />
-          <span>Add Task</span>
-        </button>
-      </div>
+    <div className="space-y-5">
+      {/* Header & New Task */}
+      <PageHeader
+        icon={CheckSquare}
+        title="Tasks"
+        subtitle="Turn your plan into action."
+        action={
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+          >
+            <Plus size={15} />
+            <span>Add Task</span>
+          </button>
+        }
+      />
 
       {/* Recommended Focus Banner (Section 30) */}
       {recommendation?.recommendedTask && (
@@ -212,26 +209,29 @@ export const TasksPage = () => {
         </div>
       )}
 
-      {/* Tabs Filter Bar (Section 21) */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-3 text-xs">
+      {/* Tabs Filter Bar */}
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-[#263247] pb-3 text-xs">
         {[
           { key: 'TODAY', label: 'Today' },
           { key: 'UPCOMING', label: 'Upcoming' },
           { key: 'COMPLETED', label: 'Completed' },
           { key: 'ALL', label: 'All Tasks' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setFilterTab(tab.key)}
-            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              filterTab === tab.key
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+        ].map((tab) => {
+          const isActive = filterTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setFilterTab(tab.key)}
+              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                  : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tasks List */}
@@ -382,31 +382,16 @@ export const TasksPage = () => {
           })}
         </div>
       ) : (
-        /* Empty State: Section 32 */
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-10 shadow-card text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
-            <CheckSquare size={28} />
-          </div>
-
-          <div className="space-y-1">
-            <h2 className="text-base font-bold text-slate-900">
-              Your plan has no actions yet.
-            </h2>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-              Create a task from a roadmap milestone to start connecting goals with daily practice.
-            </p>
-          </div>
-
-          <div className="pt-2">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm shadow-brand-600/30 transition-colors cursor-pointer"
-            >
-              <Plus size={16} />
-              <span>Add Task</span>
-            </button>
-          </div>
-        </div>
+        /* Empty State */
+        <EmptyState
+          icon={CheckSquare}
+          title="Your plan has no actions yet"
+          description="Create a task to start connecting your goals with daily practice."
+          primaryAction={{
+            label: 'Add Task',
+            onClick: () => setShowAddModal(true),
+          }}
+        />
       )}
 
       {/* PLAN INTO SCHEDULE MODAL (Section 28) */}
@@ -484,7 +469,7 @@ export const TasksPage = () => {
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900">Add Career Task</h3>
+              <h3 className="text-sm font-bold text-slate-900">Add Task</h3>
               <button onClick={resetForm} className="text-slate-400 hover:text-slate-600">
                 <X size={16} />
               </button>

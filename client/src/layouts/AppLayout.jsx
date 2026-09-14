@@ -214,7 +214,7 @@ export const AppLayout = () => {
       {/* Brand Header */}
       <div className="p-5 border-b border-[#E5E7EB] dark:border-[#263247] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <ValariLogo size="sm" showWordmark={false} />
+          <ValariLogo size="sm" variant="icon" />
           <div>
             <h1 className="font-black text-slate-900 dark:text-[#F8FAFC] text-base leading-tight tracking-tight">
               VALARI
@@ -254,8 +254,8 @@ export const AppLayout = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
                       isActive
-                        ? 'bg-[rgba(255,122,0,0.12)] text-[#FF7A00] dark:text-[#FFFFFF] font-semibold shadow-xs'
-                        : 'text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,122,0,0.08)]'
+                        ? 'bg-[#FFF0E3] dark:bg-[rgba(255,122,0,0.14)] text-[#F56A00] font-semibold shadow-xs'
+                        : 'text-[#334155] dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-[#FFF7EF] dark:hover:bg-[rgba(255,122,0,0.08)]'
                     }`
                   }
                 >
@@ -265,8 +265,8 @@ export const AppLayout = () => {
                         size={18}
                         className={`shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#FF7A00]'
-                            : 'text-slate-400 dark:text-[#94A3B8]'
+                            ? 'text-[#F56A00]'
+                            : 'text-[#94A3B8]'
                         }`}
                       />
                       <span>{item.name}</span>
@@ -298,6 +298,13 @@ export const AppLayout = () => {
           >
             <LogOut size={16} />
           </button>
+        </div>
+
+        {/* Desktop Footer */}
+        <div className="pt-2 text-center select-none">
+          <p className="text-[10px] text-slate-400 dark:text-[#64748B]">
+            © 2026 TamZode Technology. All rights reserved.
+          </p>
         </div>
       </div>
     </div>
@@ -499,7 +506,7 @@ export const AppLayout = () => {
 
         {/* Scrollable Page Body */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 pb-24 md:pb-8">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-[1320px] mx-auto">
             <Outlet />
           </div>
         </main>

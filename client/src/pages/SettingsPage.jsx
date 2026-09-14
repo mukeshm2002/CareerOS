@@ -30,15 +30,18 @@ import { useAuthStore } from '../store/authStore';
 import { applyTheme } from '../utils/theme';
 import { formatFriendlyTimezone, detectBrowserTimezone } from '../utils/timezones';
 import { TimezonePickerModal } from '../components/common/TimezonePickerModal';
+import { PageHeader } from '../components/common/PageHeader';
+import { ValariLogo } from '../components/common/ValariLogo';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
-  { id: 'preferences', label: 'Career Preferences', icon: Sliders },
+  { id: 'preferences', label: 'Preferences', icon: Sliders },
   { id: 'schedule', label: 'Schedule Routine', icon: Calendar },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security & Auth', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'account', label: 'Account', icon: Key },
+  { id: 'about', label: 'About', icon: Info },
 ];
 
 export const SettingsPage = () => {
@@ -359,15 +362,11 @@ export const SettingsPage = () => {
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
-      <div>
-        <div className="flex items-center gap-2">
-          <Settings className="text-[#FF7A00]" size={22} />
-          <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC]">Workspace Settings</h1>
-        </div>
-        <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
-          Configure personal profile, career preferences, notification reminders, and security credentials.
-        </p>
-      </div>
+      <PageHeader
+        icon={Settings}
+        title="Settings"
+        subtitle="Configure personal profile, routine, notifications, and credentials."
+      />
 
       {/* Notifications banner */}
       {saveSuccess && (
@@ -413,7 +412,7 @@ export const SettingsPage = () => {
           {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <h2 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC] border-b border-slate-100 dark:border-[#243044] pb-2">
-                Personal & Career Identity
+                Profile & Identity
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -535,7 +534,7 @@ export const SettingsPage = () => {
           {activeTab === 'preferences' && (
             <form onSubmit={handleSavePreferences} className="space-y-4">
               <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
-                Career Planning & Focus Defaults
+                Planning & Focus Defaults
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -554,7 +553,7 @@ export const SettingsPage = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Weekly Career Target (Minutes)
+                    Weekly Focus Target (Minutes)
                   </label>
                   <input
                     type="number"
@@ -624,10 +623,10 @@ export const SettingsPage = () => {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition-colors shadow-sm disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
                 >
                   <Save size={15} />
-                  <span>{saving ? 'Saving...' : 'Save Career Preferences'}</span>
+                  <span>{saving ? 'Saving...' : 'Save Preferences'}</span>
                 </button>
               </div>
             </form>
@@ -655,7 +654,7 @@ export const SettingsPage = () => {
                   </p>
                 </div>
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                  <p className="text-xs font-bold text-slate-800">Personal Career Window</p>
+                  <p className="text-xs font-bold text-slate-800">Personal Growth Window</p>
                   <p className="text-sm font-semibold text-slate-600 mt-1">
                     {profile.personalStartTime || '19:00'} - {profile.personalEndTime || '21:00'}
                   </p>
@@ -1097,6 +1096,45 @@ export const SettingsPage = () => {
                 <p className="text-xs text-slate-500 mt-1">
                   VALARI preserves historical focus sessions, weekly review snapshots, and evidence records to maintain factual career integrity. Full self-service account deletion will be available after v1.
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 8: ABOUT */}
+          {activeTab === 'about' && (
+            <div className="space-y-6">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC] border-b border-slate-100 dark:border-[#263247] pb-2">
+                About VALARI
+              </h2>
+
+              <div className="p-6 bg-slate-50 dark:bg-[#161E2D] border border-slate-200/80 dark:border-[#263247] rounded-2xl flex flex-col items-center text-center space-y-4">
+                <ValariLogo variant="lockup" size="md" />
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-sm leading-relaxed">
+                  Your structured personal growth and execution system to plan, execute, and build momentum.
+                </p>
+              </div>
+
+              <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl divide-y divide-slate-100 dark:divide-[#263247] overflow-hidden text-xs">
+                <div className="p-4 flex items-center justify-between">
+                  <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Product</span>
+                  <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">VALARI</span>
+                </div>
+                <div className="p-4 flex items-center justify-between">
+                  <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Tagline</span>
+                  <span className="font-semibold text-[#FF6A00]">Grow Forward.</span>
+                </div>
+                <div className="p-4 flex items-center justify-between">
+                  <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Version</span>
+                  <span className="font-mono font-medium text-slate-700 dark:text-[#CBD5E1]">1.0.0</span>
+                </div>
+                <div className="p-4 flex items-center justify-between">
+                  <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Developed by</span>
+                  <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">TamZode Technology</span>
+                </div>
+                <div className="p-4 flex items-center justify-between">
+                  <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Copyright</span>
+                  <span className="text-slate-500 dark:text-[#94A3B8]">© 2026 TamZode Technology. All rights reserved.</span>
+                </div>
               </div>
             </div>
           )}

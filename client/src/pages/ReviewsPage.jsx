@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { progressReviewService } from '../services/progressReviewService';
 import { planningService } from '../features/planning/services/planningService';
+import { PageHeader } from '../components/common/PageHeader';
 import {
   RotateCcw,
   CheckCircle2,
@@ -182,38 +183,29 @@ export const ReviewsPage = () => {
   };
 
   return (
-    <div className="space-y-7 pb-16">
+    <div className="space-y-6 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-brand-50 text-brand-600 rounded-xl">
-              <RotateCcw size={20} />
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-              Weekly Review & Adaptation
-            </h1>
+      <PageHeader
+        icon={RotateCcw}
+        title="Reviews"
+        subtitle="Evaluate past execution, inspect honest metrics, and adapt your plan for next week."
+        action={
+          <div className="flex items-center gap-3">
+            <span
+              className={`text-xs font-bold px-3 py-1 rounded-xl border ${
+                isCompleted
+                  ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                  : 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+              }`}
+            >
+              {isCompleted ? '✓ COMPLETED' : 'DRAFT IN PROGRESS'}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">
+              {formatDateLabel(currentReview.weekStartDate)} – {formatDateLabel(currentReview.weekEndDate)}
+            </span>
           </div>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">
-            Evaluate past execution, inspect honest metrics, and adapt your plan for next week.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span
-            className={`text-xs font-bold px-3 py-1 rounded-xl border ${
-              isCompleted
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'bg-amber-50 text-amber-700 border-amber-200'
-            }`}
-          >
-            {isCompleted ? '✓ COMPLETED' : 'DRAFT IN PROGRESS'}
-          </span>
-          <span className="text-xs text-slate-500 font-medium">
-            {formatDateLabel(currentReview.weekStartDate)} – {formatDateLabel(currentReview.weekEndDate)}
-          </span>
-        </div>
-      </div>
+        }
+      />
 
       {saveSuccessMsg && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-semibold text-emerald-800 flex items-center gap-2">
@@ -405,7 +397,7 @@ export const ReviewsPage = () => {
 
               <div>
                 <label className="font-bold text-slate-800 block mb-1">
-                  Stop Doing / Reduce (What is wasting career energy?)
+                  Stop Doing / Reduce (What is wasting focus energy?)
                 </label>
                 <input
                   type="text"
@@ -459,7 +451,7 @@ export const ReviewsPage = () => {
 
               <div>
                 <label className="font-bold text-slate-800 block mb-1">
-                  Target Career Work Time (Minutes)
+                  Target Focus Time (Minutes)
                 </label>
                 <input
                   type="number"

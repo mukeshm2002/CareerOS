@@ -359,12 +359,12 @@ export const MyDayPage = () => {
           {todayDateFormatted}
         </p>
         <p className="text-sm text-slate-600 dark:text-[#CBD5E1] pt-0.5">
-          Focus on one meaningful career action.
+          Focus on one meaningful action today.
         </p>
       </div>
 
       {/* 2. Today's Main Focus Card — Hero Component */}
-      <div className="bg-white dark:bg-[#111827] rounded-[18px] border border-[#FF7A00]/25 dark:border-[#FF7A00]/30 p-5 sm:p-6 shadow-xs transition-all">
+      <div className="bg-white dark:bg-[#111827] rounded-[18px] border border-[#FF7A00]/25 dark:border-[#FF7A00]/30 p-4 sm:p-5 shadow-xs transition-all">
         {/* State A: Active Focus In Progress */}
         {activeSession ? (
           <div className="space-y-5 text-center py-2">
@@ -492,7 +492,7 @@ export const MyDayPage = () => {
               <button
                 onClick={handleStartFocus}
                 disabled={startFocusMutation.isPending}
-                className="w-full h-[52px] rounded-[14px] bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm shadow-[#FF7A00]/25 transition duration-200 cursor-pointer"
+                className="w-full h-[50px] rounded-[14px] bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm shadow-[#FF7A00]/25 transition duration-200 cursor-pointer"
               >
                 <Play size={17} strokeWidth={2} />
                 <span>Start Focus</span>
@@ -500,25 +500,29 @@ export const MyDayPage = () => {
             </div>
           </div>
         ) : (
-          /* State C: No Focus Selected (Empty State) */
-          <div className="text-center py-6 space-y-3">
-            <ShieldCheck size={36} className="text-[#22C55E] dark:text-[#34D399] mx-auto" />
-            <div className="space-y-1">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-[#F8FAFC]">You're clear for today.</h3>
-              <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-xs mx-auto">
-                Choose one meaningful task for today.
+          /* State C: Actionable Focus Panel (Compact: 220-240px) */
+          <div className="text-center py-3 sm:py-4 space-y-2.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/30 flex items-center justify-center mx-auto">
+              <ShieldCheck size={20} strokeWidth={2.2} />
+            </div>
+            <div className="space-y-0.5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">
+                You're clear for today.
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-xs mx-auto leading-relaxed">
+                Choose one meaningful action for today.
               </p>
             </div>
-            <div className="flex justify-center gap-3 pt-2">
+            <div className="flex items-center justify-center gap-2.5 pt-2">
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="h-11 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                className="h-10 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-95 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
               >
                 Choose Focus
               </button>
               <Link
                 to="/app/goals"
-                className="h-11 px-4 rounded-xl bg-slate-100 dark:bg-[#161E2D] hover:bg-slate-200 dark:hover:bg-[#1A2434] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold flex items-center transition"
+                className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1A2434] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold inline-flex items-center transition"
               >
                 View Plan
               </Link>

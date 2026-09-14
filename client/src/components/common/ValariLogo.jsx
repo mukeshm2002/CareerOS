@@ -1,99 +1,251 @@
 import React from 'react';
+import valariSymbol from '../../assets/valari-symbol.png';
+import valariSymbolDark from '../../assets/valari-symbol-dark.png';
+import valariWordmark from '../../assets/valari-wordmark.png';
+import valariWordmarkDark from '../../assets/valari-wordmark-dark.png';
+import valariLockup from '../../assets/valari-lockup.png';
+import valariLockupDark from '../../assets/valari-lockup-dark.png';
 
 /**
- * VALARI Brand Logo Component
- * Geometric "V" with upward-forward growth motion and warm orange-yellow gradient.
- * Inspired by Tamil "வளர்" (Grow).
+ * Official VALARI Brand Logo Component
+ * 
+ * The single source of truth for the VALARI product brand identity:
+ * - Stylized V-shaped mark with charcoal left stroke and orange-to-gold upward arrow
+ * - Official VALARI typography & "GROW FORWARD" lockup
+ * 
+ * Supported variants:
+ * 1. 'symbol' (or 'icon'): Only the official V + upward arrow symbol.
+ * 2. 'wordmark': Official VALARI wordmark typography.
+ * 3. 'lockup' (or 'full'): Full vertical brand lockup (Symbol + Wordmark + Tagline).
+ * 4. 'icon-wordmark': Horizontal lockup of official symbol + wordmark.
  */
 export const ValariLogo = ({
+  variant = 'icon-wordmark',
   size = 'md',
   showWordmark = true,
   showTagline = false,
+  taglineText = 'Personal Growth System',
   className = '',
+  symbolClassName = '',
+  wordmarkClassName = '',
   iconOnly = false,
+  forceLight = false,
+  forceDark = false,
 }) => {
-  const sizeMap = {
-    xs: { icon: 20, text: 'text-sm', markW: 20, markH: 20 },
-    sm: { icon: 24, text: 'text-base', markW: 24, markH: 24 },
-    md: { icon: 32, text: 'text-lg', markW: 32, markH: 32 },
-    lg: { icon: 40, text: 'text-xl', markW: 40, markH: 40 },
-    xl: { icon: 48, text: 'text-2xl', markW: 48, markH: 48 },
-    '2xl': { icon: 64, text: 'text-3xl', markW: 64, markH: 64 },
-  };
-
-  const currentSize = sizeMap[size] || sizeMap.md;
-
-  // Geometric V Mark SVG with upward-forward growth momentum
-  const LogoMark = (
-    <svg
-      width={currentSize.markW}
-      height={currentSize.markH}
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="shrink-0"
-    >
-      <defs>
-        {/* Brand Orange to Golden Yellow Gradient */}
-        <linearGradient id="valariGradPrimary" x1="6" y1="42" x2="42" y2="6" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FF7A00" />
-          <stop offset="60%" stopColor="#FF9E00" />
-          <stop offset="100%" stopColor="#FFC400" />
-        </linearGradient>
-        <linearGradient id="valariGradAccent" x1="18" y1="40" x2="44" y2="8" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FF7A00" />
-          <stop offset="100%" stopColor="#FFC400" />
-        </linearGradient>
-      </defs>
-
-      {/* Background Rounded Shield / Tile */}
-      <rect width="48" height="48" rx="13" fill="#0D121C" />
-
-      {/* Geometric V - Primary Downward/Upward Arm */}
-      {/* Left arm starts at (11, 13) and leads down to vertex (22, 36) */}
-      <path
-        d="M11 13L21.5 35.5C22.1 36.8 23.9 36.8 24.5 35.5L37 13"
-        stroke="url(#valariGradPrimary)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Forward Arrow Dynamic Accent on right arm: elevated forward slash pointing northeast */}
-      <path
-        d="M27.5 24L37 8"
-        stroke="url(#valariGradAccent)"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      {/* Arrowhead / Forward Motion Tip */}
-      <path
-        d="M29 8H37V16"
-        stroke="url(#valariGradAccent)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-
-  if (iconOnly || !showWordmark) {
-    return <div className={`inline-flex items-center justify-center ${className}`}>{LogoMark}</div>;
+  // Normalize variant
+  let effectiveVariant = variant;
+  if (iconOnly || (!showWordmark && variant !== 'lockup')) {
+    effectiveVariant = 'symbol';
+  } else if (variant === 'icon') {
+    effectiveVariant = 'symbol';
+  } else if (variant === 'full') {
+    effectiveVariant = 'lockup';
   }
 
+  // Symbol sizing maps
+  const symbolSizeClasses = {
+    xs: 'h-5 w-auto',
+    sm: 'h-6.5 w-auto',
+    md: 'h-8 w-auto',
+    lg: 'h-10 w-auto',
+    xl: 'h-14 w-auto',
+    '2xl': 'h-18 w-auto',
+  };
+
+  // Wordmark sizing maps
+  const wordmarkSizeClasses = {
+    xs: 'h-3.5 w-auto',
+    sm: 'h-4.5 w-auto',
+    md: 'h-5.5 w-auto',
+    lg: 'h-7 w-auto',
+    xl: 'h-9 w-auto',
+    '2xl': 'h-11 w-auto',
+  };
+
+  // Lockup sizing maps
+  const lockupSizeClasses = {
+    xs: 'w-28 max-w-full h-auto',
+    sm: 'w-36 max-w-full h-auto',
+    md: 'w-44 max-w-full h-auto',
+    lg: 'w-52 max-w-full h-auto',
+    xl: 'w-60 max-w-full h-auto',
+    '2xl': 'w-72 max-w-full h-auto',
+  };
+
+  const symbolClass = `${symbolSizeClasses[size] || symbolSizeClasses.md} object-contain shrink-0 ${symbolClassName}`;
+  const wordmarkClass = `${wordmarkSizeClasses[size] || wordmarkSizeClasses.md} object-contain shrink-0 ${wordmarkClassName}`;
+  const lockupClass = `${lockupSizeClasses[size] || lockupSizeClasses.md} object-contain mx-auto ${className}`;
+
+  // 1. FULL BRAND LOCKUP (Used on Login, Register, Onboarding, Splash)
+  if (effectiveVariant === 'lockup') {
+    if (forceDark) {
+      return (
+        <div className={`inline-flex flex-col items-center justify-center ${className}`}>
+          <img
+            src={valariLockupDark}
+            alt="VALARI — Grow Forward"
+            className={lockupClass}
+            loading="eager"
+          />
+        </div>
+      );
+    }
+    if (forceLight) {
+      return (
+        <div className={`inline-flex flex-col items-center justify-center ${className}`}>
+          <img
+            src={valariLockup}
+            alt="VALARI — Grow Forward"
+            className={lockupClass}
+            loading="eager"
+          />
+        </div>
+      );
+    }
+    return (
+      <div className={`inline-flex flex-col items-center justify-center ${className}`}>
+        <img
+          src={valariLockup}
+          alt="VALARI — Grow Forward"
+          className={`dark:hidden ${lockupClass}`}
+          loading="eager"
+        />
+        <img
+          src={valariLockupDark}
+          alt="VALARI — Grow Forward"
+          className={`hidden dark:block ${lockupClass}`}
+          loading="eager"
+        />
+      </div>
+    );
+  }
+
+  // 2. VALARI SYMBOL (Only the official V + arrow symbol)
+  if (effectiveVariant === 'symbol') {
+    if (forceDark) {
+      return (
+        <div className={`inline-flex items-center justify-center ${className}`} aria-label="VALARI">
+          <img
+            src={valariSymbolDark}
+            alt="VALARI"
+            className={symbolClass}
+            loading="eager"
+          />
+        </div>
+      );
+    }
+    if (forceLight) {
+      return (
+        <div className={`inline-flex items-center justify-center ${className}`} aria-label="VALARI">
+          <img
+            src={valariSymbol}
+            alt="VALARI"
+            className={symbolClass}
+            loading="eager"
+          />
+        </div>
+      );
+    }
+    return (
+      <div className={`inline-flex items-center justify-center ${className}`} aria-label="VALARI">
+        <img
+          src={valariSymbol}
+          alt="VALARI"
+          className={`dark:hidden ${symbolClass}`}
+          loading="eager"
+        />
+        <img
+          src={valariSymbolDark}
+          alt="VALARI"
+          className={`hidden dark:block ${symbolClass}`}
+          loading="eager"
+        />
+      </div>
+    );
+  }
+
+  // 3. VALARI WORDMARK ONLY
+  if (effectiveVariant === 'wordmark') {
+    if (forceDark) {
+      return (
+        <div className={`inline-flex items-center ${className}`} aria-label="VALARI">
+          <img
+            src={valariWordmarkDark}
+            alt="VALARI"
+            className={wordmarkClass}
+            loading="eager"
+          />
+        </div>
+      );
+    }
+    if (forceLight) {
+      return (
+        <div className={`inline-flex items-center ${className}`} aria-label="VALARI">
+          <img
+            src={valariWordmark}
+            alt="VALARI"
+            className={wordmarkClass}
+            loading="eager"
+          />
+        </div>
+      );
+    }
+    return (
+      <div className={`inline-flex items-center ${className}`} aria-label="VALARI">
+        <img
+          src={valariWordmark}
+          alt="VALARI"
+          className={`dark:hidden ${wordmarkClass}`}
+          loading="eager"
+        />
+        <img
+          src={valariWordmarkDark}
+          alt="VALARI"
+          className={`hidden dark:block ${wordmarkClass}`}
+          loading="eager"
+        />
+      </div>
+    );
+  }
+
+  // 4. ICON + WORDMARK (Horizontal side-by-side for headers & sidebars)
   return (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
-      {LogoMark}
-      <div className="flex flex-col justify-center leading-none select-none">
-        <span
-          className={`font-black tracking-tight text-slate-900 dark:text-[#F8FAFC] ${currentSize.text}`}
-          style={{ letterSpacing: '-0.03em' }}
-        >
-          VALARI
-        </span>
+      {/* Official Symbol */}
+      <div className="shrink-0 flex items-center justify-center">
+        <img
+          src={valariSymbol}
+          alt="VALARI"
+          className={`dark:hidden ${symbolClass}`}
+          loading="eager"
+        />
+        <img
+          src={valariSymbolDark}
+          alt="VALARI"
+          className={`hidden dark:block ${symbolClass}`}
+          loading="eager"
+        />
+      </div>
+
+      {/* Official Wordmark or Tagline text */}
+      <div className={`flex flex-col justify-center select-none ${wordmarkClassName}`}>
+        <div className="flex items-center">
+          <img
+            src={valariWordmark}
+            alt="VALARI"
+            className={`dark:hidden ${wordmarkClass}`}
+            loading="eager"
+          />
+          <img
+            src={valariWordmarkDark}
+            alt="VALARI"
+            className={`hidden dark:block ${wordmarkClass}`}
+            loading="eager"
+          />
+        </div>
         {showTagline && (
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-[#FF7A00] mt-0.5">
-            Grow Forward
+          <span className="text-[10px] font-medium tracking-normal text-[#64748B] dark:text-[#94A3B8] mt-0.5">
+            {taglineText}
           </span>
         )}
       </div>

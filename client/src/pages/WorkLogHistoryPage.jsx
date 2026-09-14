@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { workLogService } from '../services/workLogService';
 import { QuickNoteSheet } from '../components/workLog/QuickNoteSheet';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 
 function formatDateLabel(dateStr) {
   if (!dateStr) return '';
@@ -112,36 +114,29 @@ export const WorkLogHistoryPage = () => {
             <span>Back to Today</span>
           </Link>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <BookOpen size={22} className="text-[#FF7A00]" />
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-[#F8FAFC]">
-                  Career Journal
-                </h1>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-[#94A3B8]">
-                What did I do for my career today?
-              </p>
-            </div>
-
-            <button
-              onClick={handleNewToday}
-              className="h-11 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition active:scale-95 shrink-0"
-            >
-              {hasTodayLog ? (
-                <>
-                  <Edit3 size={15} />
-                  <span>Edit Today's Note</span>
-                </>
-              ) : (
-                <>
-                  <Plus size={16} />
-                  <span>Add Today's Note</span>
-                </>
-              )}
-            </button>
-          </div>
+          <PageHeader
+            icon={BookOpen}
+            title="Journal"
+            subtitle="What did you work on today?"
+            action={
+              <button
+                onClick={handleNewToday}
+                className="h-10 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm shadow-[#FF7A00]/25 transition active:scale-95 shrink-0 cursor-pointer"
+              >
+                {hasTodayLog ? (
+                  <>
+                    <Edit3 size={15} />
+                    <span>Edit Today's Note</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus size={15} />
+                    <span>Add Today's Note</span>
+                  </>
+                )}
+              </button>
+            }
+          />
         </div>
 
         {/* Factual Metrics (No vanity scores) */}
@@ -179,7 +174,7 @@ export const WorkLogHistoryPage = () => {
           {isHistoryLoading ? (
             <div className="p-12 flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-[#94A3B8]">
               <Loader2 size={24} className="animate-spin text-[#FF7A00]" />
-              <p className="text-xs">Loading career journal...</p>
+              <p className="text-xs">Loading journal...</p>
             </div>
           ) : isHistoryError ? (
             <div className="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 text-rose-700 dark:text-rose-400 text-xs space-y-3">
@@ -195,26 +190,15 @@ export const WorkLogHistoryPage = () => {
               </button>
             </div>
           ) : history.length === 0 ? (
-            <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-8 text-center space-y-4 shadow-xs">
-              <div className="w-12 h-12 rounded-2xl bg-brand-soft border border-[#FF7A00]/20 flex items-center justify-center mx-auto text-[#FF7A00]">
-                <BookOpen size={22} />
-              </div>
-              <div className="space-y-1 max-w-sm mx-auto">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
-                  No journal entries yet
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-                  Start recording what you worked on and learned each day to build momentum in your career.
-                </p>
-              </div>
-              <button
-                onClick={handleNewToday}
-                className="h-10 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition"
-              >
-                <Plus size={15} />
-                <span>Add Today's Note</span>
-              </button>
-            </div>
+            <EmptyState
+              icon={BookOpen}
+              title="No journal entries yet"
+              description="Start recording what you worked on and learned each day to build momentum."
+              primaryAction={{
+                label: "Add Today's Note",
+                onClick: handleNewToday,
+              }}
+            />
           ) : (
             <div className="space-y-3.5">
               {history.map((log) => {

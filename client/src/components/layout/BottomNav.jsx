@@ -64,7 +64,7 @@ export const BottomNav = () => {
       aria-label="Mobile Bottom Navigation"
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0D121C]/95 backdrop-blur-md border-t border-[#E5E7EB] dark:border-[#263247] shadow-xs pb-[env(safe-area-inset-bottom,0px)]"
     >
-      <div className="grid grid-cols-5 h-16 items-center px-2">
+      <div className="grid grid-cols-5 h-[66px] items-center px-1.5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.isActive;
@@ -74,20 +74,20 @@ export const BottomNav = () => {
               key={item.to}
               to={item.to}
               aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center min-h-[48px] py-1 px-1 rounded-xl transition-all ${
+              className={`flex flex-col items-center justify-center min-h-[52px] py-1 px-1 rounded-xl transition-all ${
                 active
                   ? 'text-[#FF7A00]'
                   : 'text-[#64748B] dark:text-[#94A3B8] hover:text-[#111827] dark:hover:text-[#F8FAFC]'
               }`}
             >
               <div
-                className={`relative flex items-center justify-center h-8 w-11 rounded-xl transition-colors ${
+                className={`relative flex items-center justify-center h-8 w-12 rounded-xl transition-colors ${
                   active
-                    ? 'bg-[#FFF1D6] dark:bg-[rgba(255,122,0,0.14)]'
+                    ? 'bg-[#FFF3E4] dark:bg-[rgba(255,122,0,0.12)]'
                     : 'bg-transparent'
                 }`}
               >
-                <Icon size={19} strokeWidth={active ? 2.2 : 1.75} className={active ? 'text-[#FF7A00]' : ''} />
+                <Icon size={22} strokeWidth={active ? 2.2 : 1.75} className={active ? 'text-[#FF7A00]' : 'text-[#64748B] dark:text-[#94A3B8]'} />
               </div>
               <span
                 className={`text-[11px] tracking-tight mt-0.5 leading-none select-none ${

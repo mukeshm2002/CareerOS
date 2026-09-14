@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { planningService } from '../features/planning/services/planningService';
 import { useAuthStore } from '../store/authStore';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -157,30 +159,25 @@ export const SchedulePage = () => {
   const isCurrentDay = selectedDate === new Date().toISOString().split('T')[0];
 
   return (
-    <div className="space-y-6">
-      {/* Header (Section 27) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="text-[#FF7A00]" size={22} />
-            <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">SCHEDULE</h1>
-          </div>
-          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
-            Plan career growth around your real life. Timezone: <span className="font-semibold text-slate-700 dark:text-[#CBD5E1]">{timezone}</span>
-          </p>
-        </div>
-
-        <button
-          onClick={() => {
-            resetForm();
-            setShowAddModal(true);
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer self-start sm:self-auto"
-        >
-          <Plus size={15} />
-          <span>Add Block</span>
-        </button>
-      </div>
+    <div className="space-y-5">
+      {/* Header */}
+      <PageHeader
+        icon={CalendarIcon}
+        title="Schedule"
+        subtitle={`Plan your daily rhythm around your real life. Timezone: ${timezone}`}
+        action={
+          <button
+            onClick={() => {
+              resetForm();
+              setShowAddModal(true);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+          >
+            <Plus size={15} />
+            <span>Add Block</span>
+          </button>
+        }
+      />
 
       {/* Day Selector & Navigation (Section 27) */}
       <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-3.5 shadow-card flex items-center justify-between">
@@ -291,30 +288,19 @@ export const SchedulePage = () => {
             ))}
           </div>
         ) : (
-          /* Empty State (Section 32) */
-          <div className="text-center py-10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
-              <Clock size={24} />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-slate-800">
-                No career work planned for this day.
-              </h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Schedule protected focus blocks around your work and personal commitments.
-              </p>
-            </div>
-            <button
-              onClick={() => {
+          /* Empty State */
+          <EmptyState
+            icon={Clock}
+            title="No focus blocks planned for this day"
+            description="Schedule protected focus blocks around your work and personal commitments."
+            primaryAction={{
+              label: 'Add Block',
+              onClick: () => {
                 resetForm();
                 setShowAddModal(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-700 transition-colors shadow-xs cursor-pointer"
-            >
-              <Plus size={14} />
-              <span>Plan a Task</span>
-            </button>
-          </div>
+              },
+            }}
+          />
         )}
       </div>
 

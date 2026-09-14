@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { pwaService } from '../services/pwaService';
+import { PageHeader } from '../components/common/PageHeader';
 
 export const MorePage = () => {
   const { user } = useAuthStore();
@@ -56,7 +57,7 @@ export const MorePage = () => {
       title: 'REFLECTION',
       items: [
         {
-          name: 'Career Journal',
+          name: 'Journal',
           path: '/app/work-log',
           icon: BookOpen,
           desc: 'Daily work logs, learnings, blockers & next steps',
@@ -97,12 +98,11 @@ export const MorePage = () => {
   return (
     <div className="space-y-6 pb-20 max-w-xl mx-auto">
       {/* Header */}
-      <div className="border-b border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] pb-4">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">More</h1>
-        <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
-          Explore secondary career tools, pipelines, reflections, and settings.
-        </p>
-      </div>
+      <PageHeader
+        icon={Compass}
+        title="More"
+        subtitle="Explore tools, pipelines, reflections, and settings."
+      />
 
       {/* PWA Install Card (Section 5) */}
       {(canInstall || isStandalone) && (
@@ -173,6 +173,15 @@ export const MorePage = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Brand Ownership Footer */}
+      <div className="pt-4 pb-8 text-center select-none">
+        <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">VALARI</p>
+        <p className="text-[11px] font-semibold text-[#FF6A00] mt-0.5">Grow Forward.</p>
+        <p className="text-[11px] text-slate-400 dark:text-[#64748B] mt-1">
+          A product by TamZode Technology
+        </p>
       </div>
     </div>
   );

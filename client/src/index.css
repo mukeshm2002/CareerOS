@@ -3,25 +3,36 @@
 @tailwind utilities;
 
 :root {
+  /* Official VALARI Brand Color Tokens */
+  --valari-black: #101318;
+  --valari-charcoal: #1B1F26;
+  --valari-orange: #FF6A00;
+  --valari-amber: #FF9500;
+  --valari-gold: #FFC400;
+  --valari-bg: #F7F8FA;
+  --valari-surface: #FFFFFF;
+  --valari-text: #111827;
+  --valari-muted: #64748B;
+
   /* VALARI Semantic Tokens - Light Mode */
-  --bg-app: #F8FAFC;
+  --bg-app: var(--valari-bg);
   --bg-sidebar: #FFFFFF;
   --surface-1: #FFFFFF;
   --surface-2: #FFF8EE;
   --surface-card: #FFFFFF;
   --surface-hover: #FFF8EE;
-  --text-primary: #111827;
+  --text-primary: var(--valari-text);
   --text-secondary: #475569;
-  --text-muted: #64748B;
+  --text-muted: var(--valari-muted);
   --text-subtle: #94A3B8;
   --border-subtle: #E5E7EB;
   --border-strong: #CBD5E1;
 
   /* Brand Colors */
-  --brand-orange: #FF7A00;
+  --brand-orange: var(--valari-orange);
   --brand-orange-hover: #EA6700;
-  --brand-yellow: #FFC400;
-  --brand-amber: #FFB000;
+  --brand-yellow: var(--valari-gold);
+  --brand-amber: var(--valari-amber);
   --brand-soft: #FFF1D6;
 
   --accent: #FF7A00;

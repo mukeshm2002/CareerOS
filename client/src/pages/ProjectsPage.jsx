@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { projectService } from '../services/projectService';
 import { evidenceService } from '../services/evidenceService';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -205,89 +207,95 @@ export const ProjectsPage = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
-      {/* Header Section 40 */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-3 mb-1">
-            <FolderGit2 className="w-8 h-8 text-cyan-400" />
-            <h1 className="text-3xl font-bold tracking-tight text-white">PROJECTS</h1>
-          </div>
-          <p className="text-slate-400 text-base">Turn skills into proof of work.</p>
-        </div>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <PageHeader
+        icon={FolderGit2}
+        title="Projects"
+        subtitle="Turn skills into proof of work."
+        action={
+          <button
+            onClick={() => setCreateModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Project</span>
+          </button>
+        }
+      />
 
-        <button
-          onClick={() => setCreateModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-slate-950 rounded-xl font-semibold text-sm transition-all shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Project</span>
-        </button>
-      </div>
-
-      {/* Top Factual Summary Strip Section 40 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <div className="text-xs text-slate-400 uppercase tracking-wider font-medium">Active Projects</div>
-          <div className="text-2xl font-bold text-white mt-1">{summary.activeProjects}</div>
+      {/* Top Factual Summary Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Active Projects</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-[#F8FAFC] mt-1">{summary.activeProjects}</div>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <div className="text-xs text-slate-400 uppercase tracking-wider font-medium">Completed</div>
-          <div className="text-2xl font-bold text-emerald-400 mt-1">{summary.completedProjects}</div>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Completed</div>
+          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{summary.completedProjects}</div>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <div className="text-xs text-slate-400 uppercase tracking-wider font-medium">Portfolio Ready</div>
-          <div className="text-2xl font-bold text-amber-400 mt-1">{summary.portfolioReady}</div>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Portfolio Ready</div>
+          <div className="text-2xl font-bold text-[#FF7A00] mt-1">{summary.portfolioReady}</div>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <div className="text-xs text-slate-400 uppercase tracking-wider font-medium">Evidence Items</div>
-          <div className="text-2xl font-bold text-cyan-400 mt-1">{summary.evidenceItems}</div>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Evidence Items</div>
+          <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400 mt-1">{summary.evidenceItems}</div>
         </div>
       </div>
 
-      {/* Filters Section 41 */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-2 text-xs">
+      {/* Filters Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-[#263247] pb-3">
+        <div className="flex flex-wrap gap-1.5 text-xs">
           {[
             { id: 'ALL', label: 'All' },
             { id: 'ACTIVE', label: 'Active' },
             { id: 'COMPLETED', label: 'Completed' },
             { id: 'PORTFOLIO', label: 'Portfolio' },
             { id: 'ARCHIVED', label: 'Archived' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setStatusFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-lg border transition-all ${
-                statusFilter === tab.id
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-medium'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          ].map((tab) => {
+            const isActive = statusFilter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id)}
+                className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                    : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-slate-900 border border-slate-800 text-sm text-white rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:border-cyan-500"
+            className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-xs text-slate-800 dark:text-[#F8FAFC] rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
           />
         </div>
       </div>
 
-      {/* Project Cards Grid Section 42 */}
+      {/* Project Cards Grid Section */}
       {loading ? (
         <div className="text-center py-12 text-slate-500">Loading projects...</div>
       ) : projects.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-sm">
-          No projects found matching your filters.
-        </div>
+        <EmptyState
+          icon={FolderGit2}
+          title="No projects found"
+          description="Create a project to turn your skills into concrete proof of work."
+          primaryAction={{
+            label: 'New Project',
+            onClick: () => setCreateModalOpen(true),
+          }}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((proj) => {

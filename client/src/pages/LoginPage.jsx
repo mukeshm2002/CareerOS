@@ -45,18 +45,12 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#090D16] px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Brand Header */}
-        <div className="text-center mb-8">
+        {/* Official Brand Header */}
+        <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
-            <ValariLogo size="xl" showWordmark={false} />
+            <ValariLogo variant="lockup" size="md" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-[#F8FAFC]">
-            VALARI
-          </h1>
-          <p className="text-sm font-bold text-[#FF7A00] mt-1">
-            Grow Forward.
-          </p>
-          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
             Plan your growth. Execute your day. Track your progress.
           </p>
         </div>
@@ -136,6 +130,13 @@ export const LoginPage = () => {
               </Link>
             </p>
           </div>
+        </div>
+
+        {/* Product Ownership */}
+        <div className="text-center mt-6">
+          <p className="text-[11px] text-slate-400 dark:text-[#64748B]">
+            A product by TamZode Technology
+          </p>
         </div>
       </div>
     </div>

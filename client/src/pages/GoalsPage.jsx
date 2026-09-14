@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalService } from '../features/goals/services/goalService';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 import {
   Target,
   Plus,
@@ -97,45 +99,43 @@ export const GoalsPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <Target className="text-[#FF7A00]" size={22} />
-            <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC]">Career Goals</h1>
-          </div>
-          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
-            Define your primary anchors and track strategic progress.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
-        >
-          <Plus size={15} />
-          <span>New Goal</span>
-        </button>
-      </div>
+      <PageHeader
+        icon={Target}
+        title="Goals"
+        subtitle="Define your primary anchors and track strategic progress."
+        action={
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+          >
+            <Plus size={15} />
+            <span>New Goal</span>
+          </button>
+        }
+      />
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-[#263247] pb-3 text-xs">
-        {['ACTIVE', 'COMPLETED', 'ARCHIVED'].map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
-              activeTab === tab
-                ? 'bg-[#FF7A00] text-white shadow-xs'
-                : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
-            }`}
-          >
-            {tab.charAt(0) + tab.slice(1).toLowerCase()}
-          </button>
-        ))}
+        {['ACTIVE', 'COMPLETED', 'ARCHIVED'].map((tab) => {
+          const isActive = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                  : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
+              }`}
+            >
+              {tab.charAt(0) + tab.slice(1).toLowerCase()}
+            </button>
+          );
+        })}
       </div>
 
       {/* Loading & Error States */}
@@ -154,26 +154,23 @@ export const GoalsPage = () => {
 
       {/* Goals Grid */}
       {!isLoading && !isError && goals.length === 0 && (
-        <div className="py-16 text-center bg-white dark:bg-[#111827] rounded-2xl border border-dashed border-slate-200 dark:border-[#243044] p-8 space-y-3">
-          <div className="h-12 w-12 rounded-xl bg-slate-50 dark:bg-[#172033] text-slate-400 dark:text-[#94A3B8] mx-auto flex items-center justify-center">
-            <Target size={24} />
-          </div>
-          <h3 className="text-sm font-bold text-slate-800 dark:text-[#F8FAFC]">No {activeTab.toLowerCase()} goals found</h3>
-          <p className="text-xs text-slate-400 dark:text-[#94A3B8] max-w-sm mx-auto">
-            {activeTab === 'ACTIVE'
-              ? 'Start by creating your first primary career target.'
-              : `You have no ${activeTab.toLowerCase()} goals at this moment.`}
-          </p>
-          {activeTab === 'ACTIVE' && (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold cursor-pointer shadow-sm"
-            >
-              <Plus size={14} />
-              <span>Create First Goal</span>
-            </button>
-          )}
-        </div>
+        <EmptyState
+          icon={Target}
+          title={activeTab === 'ACTIVE' ? 'No active goals yet' : `No ${activeTab.toLowerCase()} goals`}
+          description={
+            activeTab === 'ACTIVE'
+              ? 'Create your first goal and start building toward what matters to you.'
+              : `You have no ${activeTab.toLowerCase()} goals at this moment.`
+          }
+          primaryAction={
+            activeTab === 'ACTIVE'
+              ? {
+                  label: 'Create Goal',
+                  onClick: () => setIsModalOpen(true),
+                }
+              : undefined
+          }
+        />
       )}
 
       {!isLoading && goals.length > 0 && (

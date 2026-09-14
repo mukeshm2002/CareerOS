@@ -1,14 +1,32 @@
 {
   "name": "VALARI",
   "short_name": "VALARI",
-  "description": "Your Personal Growth & Career System",
+  "description": "VALARI — Your personal growth system by TamZode Technology.",
   "start_url": "/app/today",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#FF7A00",
-  "background_color": "#090D16",
+  "theme_color": "#FF6A00",
+  "background_color": "#101318",
   "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/icons/icon-192x192.svg",
       "sizes": "192x192",
@@ -20,12 +38,6 @@
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-maskable-512x512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
     }
   ]
 }

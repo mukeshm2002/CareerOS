@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { PageHeader } from '../components/common/PageHeader';
+import { EmptyState } from '../components/common/EmptyState';
 import {
   Bell,
   Plus,
@@ -207,29 +209,20 @@ export const RemindersPage = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-[rgba(255,122,0,0.12)] border border-[rgba(255,122,0,0.24)] text-[#FF7A00] flex items-center justify-center shrink-0">
-              <Bell size={22} className="stroke-[2.2]" />
-            </div>
-            <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-slate-900 dark:text-[#F8FAFC] leading-none">
-              Reminders
-            </h1>
-          </div>
-          <p className="text-sm text-slate-500 dark:text-[#94A3B8] pl-0.5">
-            Stay aware without constantly checking VALARI.
-          </p>
-        </div>
-
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center justify-center gap-2 h-11 px-5 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs sm:text-sm transition-all duration-180 shadow-md shadow-[#FF7A00]/20 active:scale-[0.98] shrink-0 cursor-pointer"
-        >
-          <Plus size={16} className="stroke-[2.4]" />
-          <span>New Reminder</span>
-        </button>
-      </div>
+      <PageHeader
+        icon={Bell}
+        title="Reminders"
+        subtitle="Stay aware without constantly checking VALARI."
+        action={
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center justify-center gap-2 h-10 px-4 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+          >
+            <Plus size={15} />
+            <span>New Reminder</span>
+          </button>
+        }
+      />
 
       {/* Factual Summary Row */}
       {!loading && reminders.length > 0 && (
@@ -291,24 +284,15 @@ export const RemindersPage = () => {
             <span className="text-xs font-medium">Loading scheduled reminders...</span>
           </div>
         ) : filteredReminders.length === 0 ? (
-          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-10 text-center space-y-3 shadow-card">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-[#161E2D] text-slate-400 dark:text-[#94A3B8] mx-auto flex items-center justify-center">
-              <Clock size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-[#F8FAFC]">No Reminders Found</p>
-              <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-sm mx-auto mt-1">
-                Create a reminder to build daily and weekly consistency without manual check-ins.
-              </p>
-            </div>
-            <button
-              onClick={handleOpenCreate}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[rgba(255,122,0,0.12)] hover:bg-[rgba(255,122,0,0.20)] text-[#FF7A00] border border-[rgba(255,122,0,0.25)] rounded-xl text-xs font-semibold transition cursor-pointer"
-            >
-              <Plus size={14} />
-              <span>Create your first reminder</span>
-            </button>
-          </div>
+          <EmptyState
+            icon={Clock}
+            title="No Reminders Found"
+            description="Create a reminder to build daily and weekly consistency without manual check-ins."
+            primaryAction={{
+              label: 'Create Reminder',
+              onClick: handleOpenCreate,
+            }}
+          />
         ) : (
           <div className="space-y-3">
             {filteredReminders.map((rem) => (
@@ -399,7 +383,7 @@ export const RemindersPage = () => {
 
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-[rgba(148,163,184,0.14)] pb-3">
               <h2 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">
-                {editingReminder ? 'Edit Reminder' : 'New Career Reminder'}
+                {editingReminder ? 'Edit Reminder' : 'New Reminder'}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}

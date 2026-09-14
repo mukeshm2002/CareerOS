@@ -6,16 +6,13 @@ export const Step1Welcome = ({ onNext }) => {
   return (
     <div className="text-center space-y-6 py-4">
       <div className="flex justify-center">
-        <ValariLogo size="xl" showWordmark={false} />
+        <ValariLogo variant="lockup" size="lg" />
       </div>
 
       <div className="space-y-2 max-w-lg mx-auto">
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-[#F8FAFC]">
-          Welcome to VALARI.
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-[#F8FAFC]">
+          Welcome to your Personal Growth System
         </h1>
-        <p className="text-sm font-bold text-[#FF7A00]">
-          Grow Forward.
-        </p>
         <p className="text-slate-600 dark:text-[#CBD5E1] text-sm md:text-base leading-relaxed">
           Build a personal growth and career system around your life — with clarity and daily momentum.
         </p>

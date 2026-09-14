@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { progressReviewService } from '../services/progressReviewService';
 import { workLogService } from '../services/workLogService';
+import { PageHeader } from '../components/common/PageHeader';
 import {
   TrendingUp,
   Clock,
@@ -120,46 +121,39 @@ export const ProgressPage = () => {
   const timeDifference = actualMinutes - plannedMinutes;
 
   return (
-    <div className="space-y-7 pb-16">
+    <div className="space-y-6 pb-16">
       {/* Header & Period Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-brand-50 text-brand-600 rounded-xl">
-              <TrendingUp size={20} />
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-              Progress & Evidence Engine
-            </h1>
+      <PageHeader
+        icon={TrendingUp}
+        title="Progress"
+        subtitle="Factual execution, deliberate practice time, and verified skill upgrades."
+        action={
+          <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 dark:bg-[#161E2D] p-1.5 rounded-2xl border border-slate-200/80 dark:border-[#263247] text-xs font-semibold">
+            {[
+              { key: 'THIS_WEEK', label: 'This Week' },
+              { key: 'LAST_WEEK', label: 'Last Week' },
+              { key: 'THIS_MONTH', label: 'This Month' },
+              { key: 'LAST_30_DAYS', label: 'Last 30 Days' },
+              { key: 'CUSTOM', label: 'Custom' },
+            ].map((tab) => {
+              const isActive = period === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setPeriod(tab.key)}
+                  className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-white dark:bg-[#111827] text-[#FF7A00] shadow-xs border border-slate-200/60 dark:border-[#263247] font-bold'
+                      : 'text-slate-500 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">
-            Factual career execution, deliberate practice time, and verified skill upgrades.
-          </p>
-        </div>
-
-        {/* Period Selector Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-xs font-semibold">
-          {[
-            { key: 'THIS_WEEK', label: 'This Week' },
-            { key: 'LAST_WEEK', label: 'Last Week' },
-            { key: 'THIS_MONTH', label: 'This Month' },
-            { key: 'LAST_30_DAYS', label: 'Last 30 Days' },
-            { key: 'CUSTOM', label: 'Custom' },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setPeriod(tab.key)}
-              className={`px-3 py-1.5 rounded-xl transition-all ${
-                period === tab.key
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/60 font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+        }
+      />
 
       {/* Custom Date Range Picker if Custom selected */}
       {period === 'CUSTOM' && (
@@ -263,7 +257,7 @@ export const ProgressPage = () => {
               <BookOpen size={16} />
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
-              Career Journal Activity
+              Journal Activity
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
@@ -309,7 +303,7 @@ export const ProgressPage = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Target size={16} className="text-brand-600" />
-              Planned vs Actual Career Time
+              Planned vs Actual Focus Time
             </h3>
             <span className="text-[11px] font-semibold text-slate-400">Period Total</span>
           </div>

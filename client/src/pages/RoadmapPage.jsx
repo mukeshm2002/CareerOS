@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalService } from '../features/goals/services/goalService';
 import { planningService } from '../features/planning/services/planningService';
+import { PageHeader } from '../components/common/PageHeader';
 import {
   Milestone,
   CheckCircle2,
@@ -154,37 +155,32 @@ export const RoadmapPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header & Goal Selector (Section 8) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      {/* Header & Goal Selector */}
+      <PageHeader
+        icon={Milestone}
+        title="Roadmap"
+        subtitle="Your goals, turned into actionable paths."
+        action={
+          /* Goal Selector Dropdown */
           <div className="flex items-center gap-2">
-            <Milestone className="text-brand-600" size={22} />
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">CAREER ROADMAP</h1>
+            <label className="text-xs font-semibold text-slate-500 dark:text-[#94A3B8] shrink-0">Goal:</label>
+            <div className="relative">
+              <select
+                value={selectedGoalId || ''}
+                onChange={(e) => handleGoalChange(e.target.value)}
+                className="appearance-none bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-slate-800 dark:text-[#F8FAFC] text-xs font-semibold py-2 pl-3.5 pr-8 rounded-xl shadow-xs focus:ring-2 focus:ring-[#FF7A00] focus:outline-hidden cursor-pointer"
+              >
+                {goals.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.title} ({g.type?.replace('_', ' ')})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={14} className="absolute right-2.5 top-3 text-slate-400 pointer-events-none" />
+            </div>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Your goals, turned into actionable paths.
-          </p>
-        </div>
-
-        {/* Goal Selector Dropdown */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-slate-500 shrink-0">Goal:</label>
-          <div className="relative">
-            <select
-              value={selectedGoalId || ''}
-              onChange={(e) => handleGoalChange(e.target.value)}
-              className="appearance-none bg-white border border-slate-200 text-slate-800 text-xs font-semibold py-2 pl-3.5 pr-8 rounded-xl shadow-xs focus:ring-2 focus:ring-brand-500 focus:outline-hidden cursor-pointer"
-            >
-              {goals.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.title} ({g.type?.replace('_', ' ')})
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-2.5 top-3 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Overview Card (Section 8) */}
       {roadmap && (

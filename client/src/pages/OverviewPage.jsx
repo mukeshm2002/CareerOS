@@ -53,7 +53,7 @@ export const OverviewPage = () => {
     return (
       <div className="p-8 bg-rose-50 border border-rose-200 rounded-2xl text-center space-y-4">
         <AlertCircle size={36} className="text-rose-600 mx-auto" />
-        <h2 className="text-lg font-bold text-slate-900">We couldn't load your career overview.</h2>
+        <h2 className="text-lg font-bold text-slate-900">We couldn't load your workspace overview.</h2>
         <p className="text-xs text-slate-600 max-w-md mx-auto">
           Please check your connection and try again.
         </p>
@@ -222,7 +222,7 @@ export const OverviewPage = () => {
           </div>
         ) : (
           <p className="text-xs text-slate-500 py-2">
-            You're clear for today. There are no pending career tasks that require attention.
+            You're clear for today. There are no pending tasks that require attention.
           </p>
         )}
 
@@ -287,12 +287,12 @@ export const OverviewPage = () => {
           </div>
         </div>
 
-        {/* Career Check Section (Section 32) */}
+        {/* System Check Section */}
         <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-card space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">CAREER CHECK</h3>
-              <p className="text-xs text-slate-500">Live operational status across career areas</p>
+              <h3 className="text-sm font-bold text-slate-900">SYSTEM CHECK</h3>
+              <p className="text-xs text-slate-500">Live operational status across focus areas</p>
             </div>
             <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
               Live Factual Records
