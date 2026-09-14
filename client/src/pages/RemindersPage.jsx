@@ -210,21 +210,21 @@ export const RemindersPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-[rgba(124,108,242,0.12)] border border-[rgba(124,108,242,0.24)] text-[#7C6CF2] dark:text-[#8B7CF6] flex items-center justify-center shrink-0">
+            <div className="p-2.5 rounded-xl bg-[rgba(255,122,0,0.12)] border border-[rgba(255,122,0,0.24)] text-[#FF7A00] flex items-center justify-center shrink-0">
               <Bell size={22} className="stroke-[2.2]" />
             </div>
             <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-slate-900 dark:text-[#F8FAFC] leading-none">
-              Career Reminders
+              Reminders
             </h1>
           </div>
           <p className="text-sm text-slate-500 dark:text-[#94A3B8] pl-0.5">
-            Stay aware without constantly checking CareerOS.
+            Stay aware without constantly checking VALARI.
           </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center justify-center gap-2 h-11 px-5 bg-[#7C6CF2] hover:bg-[#8B7CF6] text-white rounded-xl font-semibold text-xs sm:text-sm transition-all duration-180 shadow-md shadow-[#7C6CF2]/20 active:scale-[0.98] shrink-0"
+          className="inline-flex items-center justify-center gap-2 h-11 px-5 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs sm:text-sm transition-all duration-180 shadow-md shadow-[#FF7A00]/20 active:scale-[0.98] shrink-0 cursor-pointer"
         >
           <Plus size={16} className="stroke-[2.4]" />
           <span>New Reminder</span>
@@ -271,9 +271,9 @@ export const RemindersPage = () => {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-[10px] text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+              className={`px-3.5 py-1.5 rounded-[10px] text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                 isActive
-                  ? 'text-[#7C6CF2] dark:text-[#FFFFFF] bg-[#7C6CF2]/10 dark:bg-[rgba(124,108,242,0.14)] border border-[#7C6CF2]/20 dark:border-[rgba(124,108,242,0.30)] shadow-xs'
+                  ? 'text-[#FF7A00] dark:text-[#FFFFFF] bg-[#FF7A00]/10 dark:bg-[rgba(255,122,0,0.14)] border border-[#FF7A00]/20 dark:border-[rgba(255,122,0,0.30)] shadow-xs'
                   : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#E2E8F0] hover:bg-slate-100 dark:hover:bg-[rgba(255,255,255,0.035)] border border-transparent'
               }`}
             >
@@ -286,13 +286,13 @@ export const RemindersPage = () => {
       {/* Reminders List */}
       <div className="space-y-3">
         {loading ? (
-          <div className="bg-white dark:bg-[#131A2A] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] p-12 text-center text-slate-400 dark:text-[#94A3B8]">
-            <Loader2 className="animate-spin text-[#7C6CF2] mx-auto mb-2.5" size={24} />
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-12 text-center text-slate-400 dark:text-[#94A3B8]">
+            <Loader2 className="animate-spin text-[#FF7A00] mx-auto mb-2.5" size={24} />
             <span className="text-xs font-medium">Loading scheduled reminders...</span>
           </div>
         ) : filteredReminders.length === 0 ? (
-          <div className="bg-white dark:bg-[#131A2A] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] p-10 text-center space-y-3 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-[#192235] text-slate-400 dark:text-[#94A3B8] mx-auto flex items-center justify-center">
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-10 text-center space-y-3 shadow-card">
+            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-[#161E2D] text-slate-400 dark:text-[#94A3B8] mx-auto flex items-center justify-center">
               <Clock size={24} />
             </div>
             <div>
@@ -303,7 +303,7 @@ export const RemindersPage = () => {
             </div>
             <button
               onClick={handleOpenCreate}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[rgba(124,108,242,0.12)] hover:bg-[rgba(124,108,242,0.20)] text-[#7C6CF2] dark:text-[#A99CFF] border border-[rgba(124,108,242,0.25)] rounded-xl text-xs font-semibold transition"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[rgba(255,122,0,0.12)] hover:bg-[rgba(255,122,0,0.20)] text-[#FF7A00] border border-[rgba(255,122,0,0.25)] rounded-xl text-xs font-semibold transition cursor-pointer"
             >
               <Plus size={14} />
               <span>Create your first reminder</span>
@@ -314,17 +314,17 @@ export const RemindersPage = () => {
             {filteredReminders.map((rem) => (
               <div
                 key={rem.id}
-                className="bg-white dark:bg-[#131A2A] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] p-4 sm:p-5 shadow-xs hover:border-slate-300 dark:hover:border-[rgba(148,163,184,0.25)] transition-all duration-180 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 shadow-xs hover:border-slate-300 dark:hover:border-[#33435C] transition-all duration-180 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug">
                       {rem.title}
                     </h3>
-                    <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[rgba(255,255,255,0.05)] text-slate-600 dark:text-[#CBD5E1] border border-slate-200 dark:border-[rgba(148,163,184,0.14)]">
+                    <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[rgba(255,255,255,0.05)] text-slate-600 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#263247]">
                       {rem.channel || 'IN_APP'}
                     </span>
-                    <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md bg-[#7C6CF2]/10 dark:bg-[rgba(124,108,242,0.14)] text-[#7C6CF2] dark:text-[#A99CFF] border border-[#7C6CF2]/20 dark:border-[rgba(124,108,242,0.30)]">
+                    <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md bg-[#FF7A00]/10 dark:bg-[rgba(255,122,0,0.14)] text-[#FF7A00] border border-[#FF7A00]/20 dark:border-[rgba(255,122,0,0.30)]">
                       {rem.recurrence || 'DAILY'}
                     </span>
                   </div>
@@ -336,7 +336,7 @@ export const RemindersPage = () => {
                   )}
 
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-[#64748B] pt-0.5">
-                    <span className="inline-flex items-center gap-1 text-[#7C6CF2] dark:text-[#8B7CF6]/90 font-medium">
+                    <span className="inline-flex items-center gap-1 text-[#FF7A00] font-medium">
                       <Clock size={12} />
                       <span>{formatReminderTime(rem.time)}</span>
                     </span>
@@ -419,8 +419,8 @@ export const RemindersPage = () => {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Daily Career Focus"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                  placeholder="e.g. Daily Growth Focus"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                 />
               </div>
 
@@ -433,7 +433,7 @@ export const RemindersPage = () => {
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   placeholder="e.g. Take 15 minutes to review progress and select tomorrow's main focus."
-                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                 />
               </div>
 
@@ -443,9 +443,9 @@ export const RemindersPage = () => {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                   >
-                    <option value="DAILY_CAREEROS_REVIEW">Daily Check-in</option>
+                    <option value="DAILY_CAREEROS_REVIEW">VALARI Daily Check-in</option>
                     <option value="DAILY_SHUTDOWN">Daily Shutdown</option>
                     <option value="WEEKLY_CAREER_REVIEW">Weekly Review</option>
                     <option value="TASK_DUE">Task Due</option>
@@ -466,7 +466,7 @@ export const RemindersPage = () => {
                     placeholder="20:00"
                     value={formData.time}
                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                   />
                 </div>
               </div>
@@ -477,7 +477,7 @@ export const RemindersPage = () => {
                   <select
                     value={formData.recurrence}
                     onChange={(e) => setFormData({ ...formData, recurrence: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                   >
                     <option value="DAILY">Daily</option>
                     <option value="WEEKLY">Weekly</option>
@@ -489,7 +489,7 @@ export const RemindersPage = () => {
                   <select
                     value={formData.channel}
                     onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                   >
                     <option value="IN_APP">In App Only</option>
                     <option value="EMAIL">In App + Email</option>
@@ -500,7 +500,7 @@ export const RemindersPage = () => {
                   {!isPushSubscribed && (
                     <p className="text-[11px] text-slate-400 dark:text-[#94A3B8] mt-1">
                       Push not enabled on this device.{' '}
-                      <Link to="/app/settings" className="text-[#7C6CF2] dark:text-[#8B7CF6] font-semibold hover:underline">
+                      <Link to="/app/settings" className="text-[#FF7A00] font-semibold hover:underline">
                         Enable in Settings
                       </Link>
                     </p>
@@ -509,7 +509,7 @@ export const RemindersPage = () => {
               </div>
 
               {/* Simplified Timezone display with custom searchable picker */}
-              <div className="p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl flex items-center justify-between gap-2">
+              <div className="p-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl flex items-center justify-between gap-2">
                 <div>
                   <span className="block text-[11px] font-medium text-slate-500 dark:text-[#94A3B8]">
                     Timezone
@@ -521,7 +521,7 @@ export const RemindersPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowTzPicker(true)}
-                  className="text-xs font-semibold text-[#7C6CF2] dark:text-[#8B7CF6] hover:underline px-2 py-1 rounded-lg hover:bg-[#7C6CF2]/10 transition shrink-0"
+                  className="text-xs font-semibold text-[#FF7A00] hover:underline px-2 py-1 rounded-lg hover:bg-[#FF7A00]/10 transition shrink-0 cursor-pointer"
                 >
                   Change timezone
                 </button>
@@ -533,7 +533,7 @@ export const RemindersPage = () => {
                   <select
                     value={formData.dayOfWeek !== null ? formData.dayOfWeek : 0}
                     onChange={(e) => setFormData({ ...formData, dayOfWeek: parseInt(e.target.value, 10) })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                   >
                     <option value="0">Sunday</option>
                     <option value="1">Monday</option>
@@ -546,17 +546,17 @@ export const RemindersPage = () => {
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-[rgba(148,163,184,0.14)]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-[#263247]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs font-semibold text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#192235] transition"
+                  className="px-4 py-2 border border-slate-200 dark:border-[#263247] rounded-xl text-xs font-semibold text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#161E2D] transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#7C6CF2] hover:bg-[#8B7CF6] text-white rounded-xl text-xs font-semibold transition shadow-md shadow-[#7C6CF2]/20"
+                  className="px-5 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl text-xs font-semibold transition shadow-md shadow-[#FF7A00]/20 cursor-pointer"
                 >
                   Save Reminder
                 </button>

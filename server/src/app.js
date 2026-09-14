@@ -107,11 +107,11 @@ app.get('/api/health', (req, res) => {
     {
       status: 'healthy',
       database: 'connected',
-      service: 'CareerOS API',
+      service: 'VALARI API',
       environment: currentEnv,
       timestamp: new Date().toISOString(),
     },
-    'CareerOS API service is operational'
+    'VALARI API service is operational'
   );
 });
 
@@ -128,7 +128,7 @@ app.get('/api/ready', async (req, res) => {
         environment: currentEnv,
         timestamp: new Date().toISOString(),
       },
-      'CareerOS API is ready to accept traffic'
+      'VALARI API is ready to accept traffic'
     );
   } catch (err) {
     return res.status(503).json({
@@ -181,7 +181,7 @@ if (require.main === module) {
   const PORT = config.port || 5000;
   app.listen(PORT, () => {
     console.log(`========================================`);
-    console.log(`🚀 CareerOS Server running on port ${PORT}`);
+    console.log(`🚀 VALARI Server running on port ${PORT}`);
     console.log(`🌍 Environment: ${config.nodeEnv}`);
     console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
     console.log(`========================================`);

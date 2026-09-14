@@ -12,7 +12,7 @@ class PushService {
     const { publicKey, privateKey, subject } = config.vapid || {};
     if (publicKey && privateKey) {
       try {
-        webpush.setVapidDetails(subject || 'mailto:admin@careeros.app', publicKey, privateKey);
+        webpush.setVapidDetails(subject || 'mailto:admin@valari.app', publicKey, privateKey);
         this.isVapidConfigured = true;
       } catch (err) {
         console.warn('[PUSH SERVICE] VAPID configuration failed:', err.message);
@@ -188,7 +188,7 @@ class PushService {
    */
   async sendTestNotification(userId) {
     const payload = {
-      title: 'CareerOS',
+      title: 'VALARI',
       body: 'Push notifications are working.',
       url: '/app/today',
       type: 'TEST',
@@ -227,7 +227,7 @@ class PushService {
     }
 
     const payloadString = JSON.stringify({
-      title: payload.title || 'CareerOS Reminder',
+      title: payload.title || 'VALARI Reminder',
       body: payload.body || 'Time for your planned career session.',
       url: payload.url || '/app/today',
       type: payload.type || 'REMINDER',

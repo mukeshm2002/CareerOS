@@ -1,5 +1,5 @@
 /**
- * CareerOS Progressive Web App — Service Worker
+ * VALARI Progressive Web App — Service Worker
  *
  * Responsibilities:
  * 1. Static asset & offline fallback caching
@@ -9,15 +9,15 @@
  * NOTE: Authenticated API responses and personal data are NEVER cached in this service worker.
  */
 
-const CACHE_NAME = 'careeros-static-v1';
+const CACHE_NAME = 'valari-static-v1';
 const STATIC_ASSETS = [
   '/',
   '/offline.html',
   '/manifest.webmanifest',
   '/favicon.svg',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/icons/icon-maskable-512x512.png',
+  '/icons/icon-192x192.svg',
+  '/icons/icon-512x512.svg',
+  '/icons/icon-maskable-512x512.svg',
 ];
 
 // Install Event: pre-cache static shell assets
@@ -89,21 +89,21 @@ self.addEventListener('push', (event) => {
     try {
       data = event.data.json();
     } catch (err) {
-      data = { title: 'CareerOS Reminder', body: event.data.text() };
+      data = { title: 'VALARI Reminder', body: event.data.text() };
     }
   }
 
-  const title = data.title || 'CareerOS Reminder';
+  const title = data.title || 'VALARI Reminder';
   const options = {
-    body: data.body || 'Time for your scheduled career focus.',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png',
+    body: data.body || 'Time for your scheduled focus.',
+    icon: '/icons/icon-192x192.svg',
+    badge: '/icons/icon-192x192.svg',
     data: {
       url: data.url || '/app/today',
       type: data.type || 'REMINDER',
       notificationId: data.notificationId || null,
     },
-    tag: data.notificationId || 'careeros-reminder',
+    tag: data.notificationId || 'valari-reminder',
     renotify: true,
   };
 
@@ -124,7 +124,7 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // If a CareerOS window is already open, focus it and navigate
+      // If a VALARI window is already open, focus it and navigate
       for (const client of windowClients) {
         if (client.url && 'focus' in client) {
           client.navigate(targetPath);

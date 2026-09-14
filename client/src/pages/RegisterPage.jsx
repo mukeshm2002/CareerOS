@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
 import { ArrowRight, Lock, Mail, User, AlertCircle } from 'lucide-react';
+import { ValariLogo } from '../components/common/ValariLogo';
 
 export const RegisterPage = () => {
   const [fullName, setFullName] = useState('');
@@ -36,33 +37,35 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#090D16] px-4 py-12">
       <div className="w-full max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-12 w-12 rounded-2xl bg-brand-600 items-center justify-center text-white font-bold text-2xl shadow-md shadow-brand-500/20 mb-3">
-            C
+          <div className="flex justify-center mb-3">
+            <ValariLogo size="xl" showWordmark={false} />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">CareerOS</h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">
-            Your Personal Career Operating System
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-[#F8FAFC]">
+            VALARI
+          </h1>
+          <p className="text-sm font-bold text-[#FF7A00] mt-1">
+            Grow Forward.
           </p>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Know where you are. Know where you're going. Know what to do today.
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+            Plan your growth. Execute your day. Track your progress.
           </p>
         </div>
 
         {/* Register Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card p-7 md:p-8">
+        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-[#E5E7EB] dark:border-[#263247] shadow-card p-7 md:p-8">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-slate-800">Create your CareerOS</h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Start structuring your career goals and daily execution system.
+            <h2 className="text-lg font-bold text-slate-800 dark:text-[#F8FAFC]">Build your VALARI</h2>
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
+              Start structuring your goals, priorities, and daily execution system.
             </p>
           </div>
 
           {error && (
-            <div className="mb-5 flex items-start gap-3 p-3.5 rounded-xl bg-red-50 border border-red-100 text-red-700 text-xs">
+            <div className="mb-5 flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-700 dark:text-[#F87171] text-xs">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -70,7 +73,7 @@ export const RegisterPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1.5">
                 Full Name
               </label>
               <div className="relative">
@@ -81,13 +84,13 @@ export const RegisterPage = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Morgan"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/25 focus:border-[#FF7A00] focus:bg-white dark:focus:bg-[#111827] transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1.5">
                 Work or Personal Email
               </label>
               <div className="relative">
@@ -98,13 +101,13 @@ export const RegisterPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@domain.com"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/25 focus:border-[#FF7A00] focus:bg-white dark:focus:bg-[#111827] transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -116,7 +119,7 @@ export const RegisterPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/25 focus:border-[#FF7A00] focus:bg-white dark:focus:bg-[#111827] transition-all"
                 />
               </div>
             </div>
@@ -124,7 +127,7 @@ export const RegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shadow-sm shadow-brand-600/30 disabled:opacity-50 cursor-pointer"
+              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] text-white font-semibold text-sm transition-all shadow-sm shadow-[#FF7A00]/25 disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -137,10 +140,10 @@ export const RegisterPage = () => {
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-500">
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-[#263247] text-center">
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
               Already have an account?{' '}
-              <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700">
+              <Link to="/login" className="font-semibold text-[#FF7A00] hover:text-[#EA6700]">
                 Sign In
               </Link>
             </p>

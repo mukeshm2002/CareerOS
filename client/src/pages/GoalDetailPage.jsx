@@ -395,7 +395,7 @@ export const GoalDetailPage = () => {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Based on your goal type (<strong className="text-brand-700">{goal.type?.replace('_', ' ')}</strong>), CareerOS has prepared a deterministic 10-stage execution path:
+              Based on your goal type (<strong className="text-brand-700">{goal.type?.replace('_', ' ')}</strong>), VALARI has prepared a deterministic 10-stage execution path:
             </p>
 
             <div className="space-y-2">

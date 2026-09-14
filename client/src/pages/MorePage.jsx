@@ -106,19 +106,19 @@ export const MorePage = () => {
 
       {/* PWA Install Card (Section 5) */}
       {(canInstall || isStandalone) && (
-        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] p-4 shadow-xs flex items-center justify-between gap-4">
+        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 shadow-xs flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-[rgba(124,108,242,0.12)] border border-[rgba(124,108,242,0.24)] text-[#7C6CF2] dark:text-[#8B7CF6] flex items-center justify-center shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-brand-soft border border-[#FF7A00]/20 text-[#FF7A00] flex items-center justify-center shrink-0">
               <Download size={18} strokeWidth={2} />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
-                {isStandalone ? 'CareerOS is installed' : 'Install CareerOS'}
+                {isStandalone ? 'VALARI is installed' : 'Install VALARI'}
               </p>
               <p className="text-xs text-slate-500 dark:text-[#94A3B8] truncate">
                 {isStandalone
                   ? 'Running as standalone app on your home screen'
-                  : 'Add CareerOS to your home screen for faster access.'}
+                  : 'Add VALARI to your home screen for faster access.'}
               </p>
             </div>
           </div>
@@ -131,7 +131,7 @@ export const MorePage = () => {
           ) : (
             <button
               onClick={() => pwaService.promptInstall()}
-              className="h-9 px-4 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white font-semibold text-xs transition active:scale-95 shrink-0 shadow-xs"
+              className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-xs transition active:scale-95 shrink-0 shadow-xs"
             >
               Install
             </button>
@@ -146,17 +146,17 @@ export const MorePage = () => {
             <h2 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider px-1">
               {section.title}
             </h2>
-            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] divide-y divide-slate-100 dark:divide-[rgba(148,163,184,0.10)] shadow-xs overflow-hidden">
+            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] divide-y divide-slate-100 dark:divide-[rgba(148,163,184,0.10)] shadow-xs overflow-hidden">
               {section.items.map((item, iIdx) => {
                 const Icon = item.icon;
                 return (
                   <NavLink
                     key={iIdx}
                     to={item.path}
-                    className="flex items-center justify-between min-h-[52px] px-4 py-3 hover:bg-slate-50 dark:hover:bg-[#131A2A] transition active:bg-slate-100 dark:active:bg-[#192235] group"
+                    className="flex items-center justify-between min-h-[52px] px-4 py-3 hover:bg-slate-50 dark:hover:bg-[#161E2D] transition active:bg-slate-100 dark:active:bg-[#1A2434] group"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="h-9 w-9 rounded-xl bg-slate-100 dark:bg-[#131A2A] text-slate-600 dark:text-[#CBD5E1] group-hover:text-[#7C6CF2] dark:group-hover:text-[#8B7CF6] flex items-center justify-center shrink-0 transition-colors">
+                      <div className="h-9 w-9 rounded-xl bg-slate-100 dark:bg-[#161E2D] text-slate-600 dark:text-[#CBD5E1] group-hover:text-[#FF7A00] dark:group-hover:text-[#FF8A1F] flex items-center justify-center shrink-0 transition-colors">
                         <Icon size={18} strokeWidth={1.8} />
                       </div>
                       <div className="min-w-0">

@@ -259,7 +259,7 @@ export const ProgressPage = () => {
       <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-5 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-violet-50 dark:bg-[#7C6CF2]/15 text-[#6C5CE7] dark:text-[#8B7CF6]">
+            <div className="p-2 rounded-xl bg-brand-soft border border-[#FF7A00]/20 text-[#FF7A00]">
               <BookOpen size={16} />
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">

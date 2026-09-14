@@ -5,7 +5,7 @@
 class EmailNotificationService {
   constructor() {
     this.provider = process.env.EMAIL_PROVIDER || 'console';
-    this.fromAddress = process.env.EMAIL_FROM || 'notifications@careeros.local';
+    this.fromAddress = process.env.EMAIL_FROM || 'notifications@valari.local';
   }
 
   /**
@@ -46,14 +46,14 @@ class EmailNotificationService {
       case 'DAILY_CAREER_REVIEW':
       case 'DAILY_CAREEROS_REVIEW':
         return {
-          subject: 'CareerOS Daily Focus Check-in',
-          text: `Hi ${data.userName || 'there'},\n\nIt is time for your daily career check-in. Review today's focus and choose what moves your career forward.\n\nOpen CareerOS: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
+          subject: 'VALARI Daily Focus Check-in',
+          text: `Hi ${data.userName || 'there'},\n\nIt is time for your daily career check-in. Review today's focus and choose what moves your career forward.\n\nOpen VALARI: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
           html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>It is time for your daily career check-in. Review today's focus and choose what moves your career forward.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today">Open Today's Focus</a></p>`,
         };
 
       case 'DAILY_SHUTDOWN':
         return {
-          subject: 'CareerOS Daily Shutdown Reminder',
+          subject: 'VALARI Daily Shutdown Reminder',
           text: `Hi ${data.userName || 'there'},\n\nWrap up today's career efforts, log your progress, and pick tomorrow's main focus task.\n\nOpen Daily Review: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today`,
           html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Wrap up today's career efforts, log your progress, and pick tomorrow's main focus task.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/today">Complete Daily Review</a></p>`,
         };
@@ -61,7 +61,7 @@ class EmailNotificationService {
       case 'WEEKLY_REVIEW':
       case 'WEEKLY_CAREER_REVIEW':
         return {
-          subject: 'Weekly Career Review Due',
+          subject: 'VALARI Weekly Check-in Due',
           text: `Hi ${data.userName || 'there'},\n\nYour weekly review is ready. Reflect on your wins, milestones completed, and set direction for next week.\n\nOpen Weekly Review: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/reviews`,
           html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Your weekly review is ready. Reflect on your wins, milestones completed, and set direction for next week.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/reviews">Start Weekly Review</a></p>`,
         };
@@ -84,15 +84,15 @@ class EmailNotificationService {
       case 'INTERVIEW':
         return {
           subject: `Upcoming Interview: ${data.opportunityTitle || 'Scheduled Meeting'}`,
-          text: `Hi ${data.userName || 'there'},\n\nReminder: You have an upcoming interview session scheduled for "${data.opportunityTitle || 'Opportunity'}".\n\nOpen CareerOS: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/opportunities`,
+          text: `Hi ${data.userName || 'there'},\n\nReminder: You have an upcoming interview session scheduled for "${data.opportunityTitle || 'Opportunity'}".\n\nOpen VALARI: ${process.env.CLIENT_URL || 'http://localhost:5173'}/app/opportunities`,
           html: `<p>Hi <strong>${data.userName || 'there'}</strong>,</p><p>Reminder: You have an upcoming interview session scheduled for <strong>${data.opportunityTitle || 'Opportunity'}</strong>.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/app/opportunities">View Opportunity Details</a></p>`,
         };
 
       default:
         return {
-          subject: data.subject || 'CareerOS Reminder',
-          text: data.message || 'You have a scheduled reminder in CareerOS.',
-          html: `<p>${data.message || 'You have a scheduled reminder in CareerOS.'}</p>`,
+          subject: data.subject || 'VALARI Reminder',
+          text: data.message || 'You have a scheduled reminder in VALARI.',
+          html: `<p>${data.message || 'You have a scheduled reminder in VALARI.'}</p>`,
         };
     }
   }

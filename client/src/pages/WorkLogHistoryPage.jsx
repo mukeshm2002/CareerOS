@@ -115,7 +115,7 @@ export const WorkLogHistoryPage = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <BookOpen size={22} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
+                <BookOpen size={22} className="text-[#FF7A00]" />
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-[#F8FAFC]">
                   Career Journal
                 </h1>
@@ -127,7 +127,7 @@ export const WorkLogHistoryPage = () => {
 
             <button
               onClick={handleNewToday}
-              className="h-11 px-4 rounded-xl bg-[#6C5CE7] hover:bg-[#5A4AD1] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition active:scale-95 shrink-0"
+              className="h-11 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition active:scale-95 shrink-0"
             >
               {hasTodayLog ? (
                 <>
@@ -178,7 +178,7 @@ export const WorkLogHistoryPage = () => {
 
           {isHistoryLoading ? (
             <div className="p-12 flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-[#94A3B8]">
-              <Loader2 size={24} className="animate-spin text-[#6C5CE7]" />
+              <Loader2 size={24} className="animate-spin text-[#FF7A00]" />
               <p className="text-xs">Loading career journal...</p>
             </div>
           ) : isHistoryError ? (
@@ -195,8 +195,8 @@ export const WorkLogHistoryPage = () => {
               </button>
             </div>
           ) : history.length === 0 ? (
-            <div className="bg-white dark:bg-[#121829] border border-slate-200/80 dark:border-[#28324A] rounded-2xl p-8 text-center space-y-4 shadow-xs">
-              <div className="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-[#7C6CF2]/10 border border-violet-100 dark:border-[#7C6CF2]/20 flex items-center justify-center mx-auto text-[#6C5CE7] dark:text-[#8B7CF6]">
+            <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-8 text-center space-y-4 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-brand-soft border border-[#FF7A00]/20 flex items-center justify-center mx-auto text-[#FF7A00]">
                 <BookOpen size={22} />
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
@@ -209,7 +209,7 @@ export const WorkLogHistoryPage = () => {
               </div>
               <button
                 onClick={handleNewToday}
-                className="h-10 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5A4AD1] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition"
+                className="h-10 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition"
               >
                 <Plus size={15} />
                 <span>Add Today's Note</span>
@@ -224,21 +224,21 @@ export const WorkLogHistoryPage = () => {
                 return (
                   <div
                     key={log.id}
-                    className={`bg-white dark:bg-[#121829] border ${
+                    className={`bg-white dark:bg-[#111827] border ${
                       isToday
-                        ? 'border-[#6C5CE7]/40 dark:border-[#8B7CF6]/40 shadow-sm'
-                        : 'border-slate-200/80 dark:border-[#28324A]'
+                        ? 'border-[#FF7A00]/40 shadow-sm'
+                        : 'border-slate-200/80 dark:border-[#263247]'
                     } rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xs transition`}
                   >
                     {/* Entry Header */}
-                    <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A]/60 pb-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#263247]/60 pb-3">
                       <div className="flex items-center gap-2">
                         {dateMeta.badge && (
                           <span
                             className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                               isToday
-                                ? 'bg-[#6C5CE7] text-white'
-                                : 'bg-slate-100 dark:bg-[#181F34] text-slate-600 dark:text-[#94A3B8]'
+                                ? 'bg-[#FF7A00] text-white'
+                                : 'bg-slate-100 dark:bg-[#161E2D] text-slate-600 dark:text-[#94A3B8]'
                             }`}
                           >
                             {dateMeta.badge}
@@ -297,7 +297,7 @@ export const WorkLogHistoryPage = () => {
 
                       {log.nextStep && (
                         <div className="pt-2.5 space-y-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6] block">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] block">
                             Next
                           </span>
                           <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line leading-relaxed">

@@ -36,6 +36,7 @@ import { detectBrowserTimezone } from '../utils/timezones';
 import { pwaService } from '../services/pwaService';
 import { BottomNav } from '../components/layout/BottomNav';
 import { MobileHeader } from '../components/layout/MobileHeader';
+import { ValariLogo } from '../components/common/ValariLogo';
 
 const navigationGroups = [
   {
@@ -137,7 +138,6 @@ export const AppLayout = () => {
   useEffect(() => {
     const syncBrowserTimezone = async () => {
       if (!user) return;
-      // If user has explicitly chosen a timezone before, respect their choice
       const explicitChoice = localStorage.getItem('careeros_tz_explicit');
       if (explicitChoice) return;
 
@@ -190,7 +190,7 @@ export const AppLayout = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/app') return 'Overview';
-    if (path.includes('/app/today')) return 'My Day';
+    if (path.includes('/app/today')) return 'Today';
     if (path.includes('/app/tasks')) return 'Tasks';
     if (path.includes('/app/schedule')) return 'Schedule';
     if (path.includes('/app/goals')) return 'Goals';
@@ -203,29 +203,31 @@ export const AppLayout = () => {
     if (path.includes('/app/reviews')) return 'Reviews';
     if (path.includes('/app/reminders')) return 'Reminders';
     if (path.includes('/app/settings')) return 'Settings';
-    return 'CareerOS';
+    return 'VALARI';
   };
 
-  const displayName = user?.fullName || 'Professional';
+  const displayName = user?.fullName || 'User';
   const displayRole = user?.profile?.currentRole || user?.profile?.targetRole || 'Member';
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0D1220] border-r border-slate-200/80 dark:border-[rgba(148,163,184,0.10)] select-none">
+    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0D121C] border-r border-[#E5E7EB] dark:border-[#263247] select-none">
       {/* Brand Header */}
-      <div className="p-5 border-b border-slate-100 dark:border-[rgba(148,163,184,0.10)] flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-[#7C6CF2] flex items-center justify-center text-white font-bold text-lg shadow-xs">
-            C
-          </div>
+      <div className="p-5 border-b border-[#E5E7EB] dark:border-[#263247] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <ValariLogo size="sm" showWordmark={false} />
           <div>
-            <h1 className="font-bold text-slate-900 dark:text-[#F8FAFC] text-base leading-tight tracking-tight">CareerOS</h1>
-            <p className="text-[11px] text-slate-400 dark:text-[#94A3B8] font-medium">Personal Career Operating System</p>
+            <h1 className="font-black text-slate-900 dark:text-[#F8FAFC] text-base leading-tight tracking-tight">
+              VALARI
+            </h1>
+            <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] font-medium">
+              Personal Growth System
+            </p>
           </div>
         </div>
         {mobileMenuOpen && (
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#192235]"
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#161E2D]"
           >
             <X size={18} />
           </button>
@@ -237,7 +239,7 @@ export const AppLayout = () => {
         {navigationGroups.map((group, idx) => (
           <div key={idx} className="space-y-1">
             {group.title && (
-              <p className="px-3 text-[11px] font-semibold tracking-[0.08em] text-slate-400 dark:text-[#64748B] uppercase mb-2">
+              <p className="px-3 text-[11px] font-semibold tracking-[0.08em] text-[#64748B] uppercase mb-2">
                 {group.title}
               </p>
             )}
@@ -252,8 +254,8 @@ export const AppLayout = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
                       isActive
-                        ? 'bg-[rgba(124,108,242,0.10)] dark:bg-[rgba(124,108,242,0.16)] text-[#7C6CF2] dark:text-[#A99CFF] font-semibold shadow-xs'
-                        : 'text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)]'
+                        ? 'bg-[rgba(255,122,0,0.12)] text-[#FF7A00] dark:text-[#FFFFFF] font-semibold shadow-xs'
+                        : 'text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,122,0,0.08)]'
                     }`
                   }
                 >
@@ -263,7 +265,7 @@ export const AppLayout = () => {
                         size={18}
                         className={`shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#7C6CF2] dark:text-[#8B7CF6]'
+                            ? 'text-[#FF7A00]'
                             : 'text-slate-400 dark:text-[#94A3B8]'
                         }`}
                       />
@@ -278,10 +280,10 @@ export const AppLayout = () => {
       </div>
 
       {/* Bottom User Profile Card */}
-      <div className="p-3 border-t border-slate-100 dark:border-[rgba(148,163,184,0.10)] bg-slate-50/40 dark:bg-[#0D1220]">
-        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/70 dark:border-[rgba(148,163,184,0.14)] shadow-xs">
+      <div className="p-3 border-t border-[#E5E7EB] dark:border-[#263247] bg-[#F8FAFC] dark:bg-[#0D121C]">
+        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#263247] shadow-xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="h-8 w-8 rounded-lg bg-[#7C6CF2]/15 dark:bg-[rgba(124,108,242,0.20)] text-[#7C6CF2] dark:text-[#8B7CF6] font-semibold text-xs flex items-center justify-center shrink-0">
+            <div className="h-8 w-8 rounded-lg bg-[#FF7A00] text-white font-bold text-xs flex items-center justify-center shrink-0">
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -292,7 +294,7 @@ export const AppLayout = () => {
           <button
             onClick={handleLogout}
             title="Log out"
-            className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-red-600 dark:hover:text-[#FB7185] hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+            className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-red-600 dark:hover:text-[#F87171] hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut size={16} />
           </button>
@@ -302,7 +304,7 @@ export const AppLayout = () => {
   );
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#080B14]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#090D16]">
       {/* Desktop Persistent Sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col shrink-0">
         {sidebarContent}
@@ -312,10 +314,10 @@ export const AppLayout = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div
-            className="fixed inset-0 bg-slate-900/40 dark:bg-[#080B14]/80 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-slate-900/40 dark:bg-[#090D16]/80 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative flex w-72 flex-1 flex-col bg-white dark:bg-[#0D1220]">
+          <div className="relative flex w-72 flex-1 flex-col bg-white dark:bg-[#0D121C]">
             {sidebarContent}
           </div>
         </div>
@@ -327,20 +329,20 @@ export const AppLayout = () => {
         <MobileHeader />
 
         {/* Desktop Top Header (hidden md:flex) */}
-        <header className="hidden md:flex h-16 bg-white dark:bg-[#0D1220] border-b border-slate-200/80 dark:border-[rgba(148,163,184,0.10)] items-center justify-between px-6 lg:px-8 shrink-0 z-10">
+        <header className="hidden md:flex h-16 bg-white dark:bg-[#0D121C] border-b border-[#E5E7EB] dark:border-[#263247] items-center justify-between px-6 lg:px-8 shrink-0 z-10">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#192235]"
+              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]"
             >
               <Menu size={20} />
             </button>
 
             {/* Breadcrumb / Title */}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-400 dark:text-[#64748B] font-medium hidden sm:inline">CareerOS</span>
-              <ChevronRight size={14} className="text-slate-300 dark:text-[#64748B] hidden sm:inline" />
-              <span className="text-slate-900 dark:text-[#F8FAFC] font-semibold text-base">{getPageTitle()}</span>
+              <span className="text-[#64748B] font-semibold hidden sm:inline">VALARI</span>
+              <ChevronRight size={14} className="text-[#64748B] hidden sm:inline" />
+              <span className="text-slate-900 dark:text-[#F8FAFC] font-bold text-base">{getPageTitle()}</span>
             </div>
           </div>
 
@@ -354,15 +356,15 @@ export const AppLayout = () => {
               <span className="text-[11px] text-slate-400 dark:text-[#94A3B8]">{todayFormatted}</span>
             </div>
 
-            {/* Search Input Placeholder */}
+            {/* Search Input */}
             <div className="relative hidden sm:block w-48 lg:w-64">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#64748B]" />
               <input
                 type="text"
-                placeholder="Search CareerOS..."
+                placeholder="Search VALARI..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#7C6CF2] focus:border-[#7C6CF2] transition-all"
+                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#263247] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#FF7A00] focus:border-[#FF7A00] transition-all"
               />
             </div>
 
@@ -372,7 +374,7 @@ export const AppLayout = () => {
                 onClick={() => setNotificationOpen((prev) => !prev)}
                 className={`relative h-10 w-10 flex items-center justify-center rounded-xl transition-colors ${
                   notificationOpen
-                    ? 'bg-[rgba(124,108,242,0.12)] text-[#7C6CF2] dark:text-[#8B7CF6]'
+                    ? 'bg-[rgba(255,122,0,0.12)] text-[#FF7A00]'
                     : 'text-slate-500 dark:text-[#CBD5E1] hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)]'
                 }`}
                 title="Notifications"
@@ -380,7 +382,7 @@ export const AppLayout = () => {
               >
                 <Bell size={18} />
                 {unreadCount > 0 && (
-                  <span className="absolute 1.5 top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#7C6CF2] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0D1220] shadow-xs">
+                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#FF7A00] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0D121C] shadow-xs">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -388,12 +390,12 @@ export const AppLayout = () => {
 
               {/* Notification Popover */}
               {notificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[rgba(148,163,184,0.18)] shadow-2xl shadow-slate-900/15 z-50 overflow-hidden animate-in fade-in-50 duration-150">
-                  <div className="p-3.5 border-b border-slate-100 dark:border-[rgba(148,163,184,0.12)] flex items-center justify-between bg-slate-50/50 dark:bg-[#131A2A]">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#263247] shadow-2xl shadow-slate-900/15 z-50 overflow-hidden animate-in fade-in-50 duration-150">
+                  <div className="p-3.5 border-b border-[#E5E7EB] dark:border-[#263247] flex items-center justify-between bg-slate-50/50 dark:bg-[#161E2D]">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-[#F8FAFC]">Notifications</span>
                       {unreadCount > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-[rgba(124,108,242,0.12)] text-[#7C6CF2] dark:text-[#8B7CF6] text-[10px] font-semibold">
+                        <span className="px-2 py-0.5 rounded-full bg-[rgba(255,122,0,0.14)] text-[#FF7A00] text-[10px] font-semibold">
                           {unreadCount} new
                         </span>
                       )}
@@ -402,7 +404,7 @@ export const AppLayout = () => {
                       <button
                         onClick={() => markAllReadMutation.mutate()}
                         disabled={markAllReadMutation.isPending}
-                        className="text-[11px] font-medium text-[#7C6CF2] dark:text-[#8B7CF6] hover:text-[#6B5AE0] dark:hover:text-[#9D91FF] flex items-center gap-1 transition-colors"
+                        className="text-[11px] font-semibold text-[#FF7A00] hover:text-[#EA6700] flex items-center gap-1 transition-colors"
                       >
                         <CheckCheck size={13} />
                         Mark all read
@@ -410,12 +412,12 @@ export const AppLayout = () => {
                     )}
                   </div>
 
-                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[rgba(148,163,184,0.10)]">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#263247]">
                     {notificationsLoading ? (
                       <div className="p-6 text-center text-xs text-slate-400 dark:text-[#94A3B8]">Loading notifications...</div>
                     ) : recentNotifications.length === 0 ? (
                       <div className="p-8 text-center">
-                        <div className="h-10 w-10 mx-auto rounded-full bg-slate-100 dark:bg-[#192235] text-slate-400 dark:text-[#94A3B8] flex items-center justify-center mb-2">
+                        <div className="h-10 w-10 mx-auto rounded-full bg-slate-100 dark:bg-[#161E2D] text-slate-400 dark:text-[#94A3B8] flex items-center justify-center mb-2">
                           <Bell size={18} />
                         </div>
                         <p className="text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">All caught up!</p>
@@ -426,13 +428,13 @@ export const AppLayout = () => {
                         <div
                           key={notif.id}
                           className={`p-3.5 transition-colors flex items-start justify-between gap-3 ${
-                            !notif.readAt ? 'bg-[rgba(124,108,242,0.06)] dark:bg-[rgba(124,108,242,0.12)] hover:bg-[rgba(124,108,242,0.10)]' : 'hover:bg-slate-50 dark:hover:bg-[#131A2A]'
+                            !notif.readAt ? 'bg-[rgba(255,122,0,0.06)] dark:bg-[rgba(255,122,0,0.10)] hover:bg-[rgba(255,122,0,0.12)]' : 'hover:bg-slate-50 dark:hover:bg-[#161E2D]'
                           }`}
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5 mb-1">
                               {!notif.readAt && (
-                                <span className="h-2 w-2 rounded-full bg-[#7C6CF2] dark:bg-[#8B7CF6] shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-[#FF7A00] shrink-0" />
                               )}
                               <p className="text-xs font-semibold text-slate-800 dark:text-[#F8FAFC] truncate">{notif.title}</p>
                             </div>
@@ -451,7 +453,7 @@ export const AppLayout = () => {
                             <button
                               onClick={() => markReadMutation.mutate(notif.id)}
                               title="Mark as read"
-                              className="p-1 rounded-lg text-slate-400 hover:text-[#7C6CF2] dark:hover:text-[#8B7CF6] hover:bg-white dark:hover:bg-[#192235] transition-colors shrink-0"
+                              className="p-1 rounded-lg text-slate-400 hover:text-[#FF7A00] hover:bg-white dark:hover:bg-[#161E2D] transition-colors shrink-0 cursor-pointer"
                             >
                               <Check size={14} />
                             </button>
@@ -461,11 +463,11 @@ export const AppLayout = () => {
                     )}
                   </div>
 
-                  <div className="p-2.5 border-t border-slate-100 dark:border-[rgba(148,163,184,0.12)] bg-slate-50/50 dark:bg-[#131A2A] flex items-center justify-between text-xs">
+                  <div className="p-2.5 border-t border-[#E5E7EB] dark:border-[#263247] bg-slate-50/50 dark:bg-[#161E2D] flex items-center justify-between text-xs">
                     <NavLink
                       to="/app/reminders"
                       onClick={() => setNotificationOpen(false)}
-                      className="text-[11px] font-semibold text-[#7C6CF2] dark:text-[#8B7CF6] hover:text-[#6B5AE0] dark:hover:text-[#9D91FF] flex items-center gap-1 transition-colors"
+                      className="text-[11px] font-semibold text-[#FF7A00] hover:text-[#EA6700] flex items-center gap-1 transition-colors"
                     >
                       Reminders & Schedule
                       <ChevronRight size={13} />
@@ -485,9 +487,9 @@ export const AppLayout = () => {
             {/* Quick Profile Link */}
             <NavLink
               to="/app/settings"
-              className="h-10 flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-xl border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+              className="h-10 flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-xl border border-[#E5E7EB] dark:border-[#263247] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
             >
-              <div className="h-6 w-6 rounded-md bg-[#7C6CF2] text-white text-[11px] font-bold flex items-center justify-center">
+              <div className="h-6 w-6 rounded-md bg-[#FF7A00] text-white text-[11px] font-bold flex items-center justify-center">
                 {displayName.charAt(0).toUpperCase()}
               </div>
               <span className="text-xs font-medium text-slate-700 dark:text-[#CBD5E1] hidden md:inline">{displayName.split(' ')[0]}</span>
@@ -502,16 +504,16 @@ export const AppLayout = () => {
           </div>
         </main>
 
-        {/* Subtle PWA Update Banner (Section 28) */}
+        {/* Subtle PWA Update Banner */}
         {hasUpdate && (
-          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#121829] border border-[#7C6CF2]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
+          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#111827] border border-[#FF7A00]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#7C6CF2] animate-pulse" />
-              <span className="text-xs font-semibold text-slate-200">CareerOS update available</span>
+              <span className="h-2 w-2 rounded-full bg-[#FF7A00] animate-pulse" />
+              <span className="text-xs font-semibold text-slate-200">VALARI update available</span>
             </div>
             <button
               onClick={() => pwaService.updateApp()}
-              className="h-8 px-3 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white text-xs font-bold transition shadow-xs"
+              className="h-8 px-3 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-bold transition shadow-xs cursor-pointer"
             >
               Update
             </button>

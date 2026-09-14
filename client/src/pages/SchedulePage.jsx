@@ -162,7 +162,7 @@ export const SchedulePage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <CalendarIcon className="text-[#6C5CE7] dark:text-[#8B7CF6]" size={22} />
+            <CalendarIcon className="text-[#FF7A00]" size={22} />
             <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">SCHEDULE</h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
@@ -175,7 +175,7 @@ export const SchedulePage = () => {
             resetForm();
             setShowAddModal(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#6C5CE7] hover:bg-[#5B4CE0] dark:bg-[#8B7CF6] dark:hover:bg-[#A294FF] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-brand-600/30 cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer self-start sm:self-auto"
         >
           <Plus size={15} />
           <span>Add Block</span>
@@ -183,16 +183,16 @@ export const SchedulePage = () => {
       </div>
 
       {/* Day Selector & Navigation (Section 27) */}
-      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#243044] p-3.5 shadow-card flex items-center justify-between">
+      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-3.5 shadow-card flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrevDay}
-            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#172033] text-slate-600 dark:text-[#CBD5E1] cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#161E2D] text-slate-600 dark:text-[#CBD5E1] cursor-pointer"
           >
             <ChevronLeft size={18} />
           </button>
           <span className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">
-            {formattedDateHeader} {isCurrentDay && <span className="text-[#6C5CE7] dark:text-[#8B7CF6] font-extrabold ml-1">(Today)</span>}
+            {formattedDateHeader} {isCurrentDay && <span className="text-[#FF7A00] font-extrabold ml-1">(Today)</span>}
           </span>
           <button
             onClick={handleNextDay}
@@ -247,7 +247,7 @@ export const SchedulePage = () => {
                           : 'bg-slate-100 text-slate-600 border border-slate-200'
                       }`}
                     >
-                      {b.category}
+                      {b.category === 'CAREEROS' ? 'VALARI' : b.category}
                     </span>
                   </div>
 
@@ -375,7 +375,7 @@ export const SchedulePage = () => {
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white"
                 >
-                  <option value="CAREEROS">CAREEROS</option>
+                  <option value="CAREEROS">VALARI</option>
                   <option value="WORK">WORK</option>
                   <option value="STUDY">STUDY</option>
                   <option value="PERSONAL">PERSONAL</option>

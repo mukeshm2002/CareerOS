@@ -33,7 +33,7 @@ class OnboardingController {
   async complete(req, res, next) {
     try {
       const result = await onboardingService.completeOnboarding(req.user.id, req.body);
-      return sendSuccess(res, result, 'CareerOS successfully configured and initialized', 201);
+      return sendSuccess(res, result, 'VALARI successfully configured and initialized', 201);
     } catch (error) {
       next(error);
     }

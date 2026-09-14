@@ -1,5 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
-  <rect width="192" height="192" rx="42" fill="#080B14"/>
-  <rect x="12" y="12" width="168" height="168" rx="36" fill="#7C6CF2"/>
-  <path d="M56 96L84 124L136 68" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192" fill="none">
+  <defs>
+    <linearGradient id="valariIconGrad192" x1="24" y1="168" x2="168" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#FF7A00"/>
+      <stop offset="60%" stopColor="#FF9E00"/>
+      <stop offset="100%" stopColor="#FFC400"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="48" fill="#090D16"/>
+  <rect x="8" y="8" width="176" height="176" rx="42" fill="#0D121C" stroke="#263247" stroke-width="2"/>
+  <path d="M44 56L86 142C88.4 147 95.6 147 98 142L148 56" stroke="url(#valariIconGrad192)" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M110 100L150 36" stroke="url(#valariIconGrad192)" stroke-width="19" stroke-linecap="round"/>
+  <path d="M116 36H150V70" stroke="url(#valariIconGrad192)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

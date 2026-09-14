@@ -102,7 +102,7 @@ export const GoalsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Target className="text-[#6C5CE7] dark:text-[#8B7CF6]" size={22} />
+            <Target className="text-[#FF7A00]" size={22} />
             <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC]">Career Goals</h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
@@ -113,7 +113,7 @@ export const GoalsPage = () => {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#6C5CE7] hover:bg-[#5B4CE0] dark:bg-[#8B7CF6] dark:hover:bg-[#A294FF] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-brand-600/30 cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
         >
           <Plus size={15} />
           <span>New Goal</span>
@@ -121,7 +121,7 @@ export const GoalsPage = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-[#243044] pb-3 text-xs">
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-[#263247] pb-3 text-xs">
         {['ACTIVE', 'COMPLETED', 'ARCHIVED'].map((tab) => (
           <button
             key={tab}
@@ -129,8 +129,8 @@ export const GoalsPage = () => {
             onClick={() => setActiveTab(tab)}
             className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
               activeTab === tab
-                ? 'bg-[#6C5CE7] dark:bg-[#8B7CF6] text-white shadow-xs'
-                : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#172033]'
+                ? 'bg-[#FF7A00] text-white shadow-xs'
+                : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
             }`}
           >
             {tab.charAt(0) + tab.slice(1).toLowerCase()}
@@ -141,7 +141,7 @@ export const GoalsPage = () => {
       {/* Loading & Error States */}
       {isLoading && (
         <div className="py-12 flex justify-center items-center">
-          <div className="h-7 w-7 border-3 border-[#6C5CE7] dark:border-[#8B7CF6] border-t-transparent rounded-full animate-spin" />
+          <div className="h-7 w-7 border-3 border-[#FF7A00] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
@@ -167,7 +167,7 @@ export const GoalsPage = () => {
           {activeTab === 'ACTIVE' && (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4CE0] dark:bg-[#8B7CF6] dark:hover:bg-[#A294FF] text-white text-xs font-semibold cursor-pointer shadow-sm"
+              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold cursor-pointer shadow-sm"
             >
               <Plus size={14} />
               <span>Create First Goal</span>
@@ -190,11 +190,11 @@ export const GoalsPage = () => {
             return (
               <div
                 key={goal.id}
-                className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#243044] p-6 shadow-card hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
+                className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-6 shadow-card hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md bg-[#F0EEFF] dark:bg-[#211D3A] text-[#6C5CE7] dark:text-[#8B7CF6]">
+                    <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md bg-brand-soft text-[#FF7A00]">
                       {goal.type?.replace('_', ' ')}
                     </span>
                     <span className="text-xs font-bold text-[#16A34A] dark:text-[#22C55E]">{goal.progress || 0}% Done</span>
@@ -212,7 +212,7 @@ export const GoalsPage = () => {
                   </div>
 
                   {/* Progress bar with growth/accent color */}
-                  <div className="w-full bg-slate-100 dark:bg-[#172033] h-2 rounded-full overflow-hidden mb-4">
+                  <div className="w-full bg-slate-100 dark:bg-[#161E2D] h-2 rounded-full overflow-hidden mb-4">
                     <div
                       className="bg-[#22C55E] dark:bg-[#34D399] h-full rounded-full transition-all duration-300"
                       style={{ width: `${goal.progress || 0}%` }}
@@ -220,7 +220,7 @@ export const GoalsPage = () => {
                   </div>
 
                   {/* Next action placeholder */}
-                  <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-xl border border-slate-200/60 dark:border-[#243044] text-xs mb-4">
+                  <div className="p-3 bg-slate-50 dark:bg-[#161E2D] rounded-xl border border-slate-200/60 dark:border-[#263247] text-xs mb-4">
                     <span className="text-slate-400 dark:text-[#64748B] font-medium">Next Action: </span>
                     <span className="font-semibold text-slate-800 dark:text-[#F8FAFC]">
                       {goal.notes || 'Define milestone and daily focus action'}
@@ -229,7 +229,7 @@ export const GoalsPage = () => {
                 </div>
 
                 {/* Actions Bar */}
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-[#243044]">
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-[#263247]">
                   <div className="flex items-center gap-1.5">
                     {goal.status === 'ACTIVE' && (
                       <button
@@ -247,7 +247,7 @@ export const GoalsPage = () => {
                         type="button"
                         onClick={() => handleStatusChange(goal.id, 'ACTIVE')}
                         title="Resume Goal"
-                        className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-[#6C5CE7] dark:hover:text-[#8B7CF6] hover:bg-[#F0EEFF] dark:hover:bg-[#211D3A] rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-[#FF7A00] hover:bg-brand-soft rounded-lg transition-colors cursor-pointer"
                       >
                         <PlayCircle size={16} />
                       </button>
@@ -269,7 +269,7 @@ export const GoalsPage = () => {
                         type="button"
                         onClick={() => handleStatusChange(goal.id, 'ARCHIVED')}
                         title="Archive Goal"
-                        className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-slate-700 dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#172033] rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-slate-700 dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#161E2D] rounded-lg transition-colors cursor-pointer"
                       >
                         <Archive size={16} />
                       </button>
@@ -278,7 +278,7 @@ export const GoalsPage = () => {
 
                   <Link
                     to={`/app/goals/${goal.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] hover:text-[#5B4CE0] dark:hover:text-[#A294FF]"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700]"
                   >
                     <span>Open</span>
                     <ArrowRight size={14} />

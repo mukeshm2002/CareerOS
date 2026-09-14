@@ -214,7 +214,7 @@ export const SettingsPage = () => {
   const handleInstallPwa = async () => {
     const result = await pwaService.promptInstall();
     if (result.outcome === 'accepted') {
-      showNotification('CareerOS added to home screen!');
+      showNotification('VALARI added to home screen!');
     }
   };
 
@@ -361,7 +361,7 @@ export const SettingsPage = () => {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2">
-          <Settings className="text-[#6C5CE7] dark:text-[#8B7CF6]" size={22} />
+          <Settings className="text-[#FF7A00]" size={22} />
           <h1 className="text-xl font-bold text-slate-900 dark:text-[#F8FAFC]">Workspace Settings</h1>
         </div>
         <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
@@ -396,11 +396,11 @@ export const SettingsPage = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   isActive
-                    ? 'bg-[#F0EEFF] dark:bg-[#211D3A] text-[#6C5CE7] dark:text-[#8B7CF6] border border-[#6C5CE7]/30 dark:border-[#8B7CF6]/30 shadow-xs'
-                    : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#172033] hover:text-slate-900 dark:hover:text-[#F8FAFC]'
+                    ? 'bg-brand-soft text-[#FF7A00] border border-[#FF7A00]/25 shadow-xs'
+                    : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D] hover:text-slate-900 dark:hover:text-[#F8FAFC]'
                 }`}
               >
-                <Icon size={16} className={isActive ? 'text-[#6C5CE7] dark:text-[#8B7CF6]' : 'text-slate-400 dark:text-[#64748B]'} />
+                <Icon size={16} className={isActive ? 'text-[#FF7A00]' : 'text-slate-400 dark:text-[#64748B]'} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -498,7 +498,7 @@ export const SettingsPage = () => {
                     <button
                       type="button"
                       onClick={() => setShowTzPicker(true)}
-                      className="px-3 py-1.5 bg-[#7C6CF2]/10 hover:bg-[#7C6CF2]/15 text-[#7C6CF2] dark:text-[#A99CFF] rounded-lg text-xs font-semibold transition shrink-0"
+                      className="px-3 py-1.5 bg-brand-soft hover:bg-[#FF7A00]/20 text-[#FF7A00] rounded-lg text-xs font-semibold transition shrink-0"
                     >
                       Change timezone
                     </button>
@@ -640,7 +640,7 @@ export const SettingsPage = () => {
                 Daily Routine & Rhythm Overview
               </h2>
               <p className="text-xs text-slate-500">
-                Configure your daily energy windows. CareerOS schedules focused sessions around these parameters.
+                Configure your daily energy windows. VALARI schedules focused sessions around these parameters.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -800,7 +800,7 @@ export const SettingsPage = () => {
               <div className="pt-5 border-t border-slate-200 dark:border-[#28324A] space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <Smartphone size={16} className="text-[#7C6CF2] dark:text-[#8B7CF6]" />
+                    <Smartphone size={16} className="text-[#FF7A00]" />
                     <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Push Notifications on This Device</h3>
                   </div>
                   <span className={`self-start sm:self-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -824,13 +824,13 @@ export const SettingsPage = () => {
 
                 <p className="text-xs text-slate-500 dark:text-[#94A3B8] leading-relaxed">
                   Push notifications depend on OS/browser notification permissions and delivery policies.
-                  They provide timely check-in prompts even when CareerOS is inactive.
+                  They provide timely check-in prompts even when VALARI is inactive.
                 </p>
 
                 {pushStatus.permission === 'denied' && (
                   <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs text-rose-700 dark:text-rose-400 flex items-start gap-2">
                     <AlertCircle size={15} className="shrink-0 mt-0.5" />
-                    <span>Notifications blocked in browser settings. Please click the site settings or padlock icon in your browser address bar to allow notifications for CareerOS.</span>
+                    <span>Notifications blocked in browser settings. Please click the site settings or padlock icon in your browser address bar to allow notifications for VALARI.</span>
                   </div>
                 )}
 
@@ -861,7 +861,7 @@ export const SettingsPage = () => {
                       type="button"
                       onClick={handleEnablePush}
                       disabled={pushLoading || !pushStatus.supported || pushStatus.permission === 'denied'}
-                      className="h-9 px-4 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50 shadow-xs"
+                      className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50 shadow-xs"
                     >
                       <Bell size={13} />
                       <span>{pushLoading ? 'Enabling...' : 'Enable Push Notifications'}</span>
@@ -905,34 +905,34 @@ export const SettingsPage = () => {
               <div className="pt-5 border-t border-slate-200 dark:border-[#28324A] space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Download size={16} className="text-[#7C6CF2] dark:text-[#8B7CF6]" />
+                    <Download size={16} className="text-[#FF7A00]" />
                     <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">App Installation</h3>
                   </div>
                   {isPwaInstalled ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
                       <Check size={11} />
-                      <span>CareerOS is installed</span>
+                      <span>VALARI is installed</span>
                     </span>
                   ) : null}
                 </div>
 
                 {isPwaInstalled ? (
                   <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-                    CareerOS is installed on your device. You are running in standalone app mode.
+                    VALARI is installed on your device. You are running in standalone app mode.
                   </p>
                 ) : (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl">
                     <div>
-                      <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Install CareerOS</p>
+                      <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Install VALARI</p>
                       <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
-                        Add CareerOS to your home screen for faster access and standalone app experience.
+                        Add VALARI to your home screen for faster access and standalone app experience.
                       </p>
                     </div>
                     {canInstallPwa ? (
                       <button
                         type="button"
                         onClick={handleInstallPwa}
-                        className="h-9 px-4 rounded-xl bg-[#7C6CF2] hover:bg-[#6C5CE7] text-white text-xs font-semibold shrink-0 transition"
+                        className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shrink-0 transition"
                       >
                         Install
                       </button>
@@ -1035,7 +1035,7 @@ export const SettingsPage = () => {
                 Interface Appearance
               </h2>
               <p className="text-xs text-slate-500">
-                Choose your visual theme preference for CareerOS.
+                Choose your visual theme preference for VALARI.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -1052,8 +1052,8 @@ export const SettingsPage = () => {
                     }}
                     className={`p-4 rounded-xl border text-left transition-all ${
                       preferences.theme === themeName
-                        ? 'border-[#6C5CE7] dark:border-[#8B7CF6] bg-[#F0EEFF] dark:bg-[#211D3A] ring-1 ring-[#6C5CE7] dark:ring-[#8B7CF6] text-[#6C5CE7] dark:text-[#8B7CF6]'
-                        : 'border-slate-200 dark:border-[#243044] hover:bg-slate-50 dark:hover:bg-[#172033] text-slate-700 dark:text-[#CBD5E1]'
+                        ? 'border-[#FF7A00] bg-brand-soft ring-1 ring-[#FF7A00] text-[#FF7A00]'
+                        : 'border-slate-200 dark:border-[#263247] hover:bg-slate-50 dark:hover:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1]'
                     }`}
                   >
                     <p className="text-xs font-bold">{themeName}</p>
@@ -1095,7 +1095,7 @@ export const SettingsPage = () => {
               <div className="pt-4 border-t border-slate-100">
                 <h3 className="text-xs font-bold text-slate-800">Account Deletion Policy</h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  CareerOS preserves historical focus sessions, weekly review snapshots, and evidence records to maintain factual career integrity. Full self-service account deletion will be available after v1.
+                  VALARI preserves historical focus sessions, weekly review snapshots, and evidence records to maintain factual career integrity. Full self-service account deletion will be available after v1.
                 </p>
               </div>
             </div>

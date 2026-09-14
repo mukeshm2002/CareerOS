@@ -24,11 +24,11 @@ export const Step7Review = ({
   return (
     <div className="space-y-6">
       <div className="text-left">
-        <h2 className="text-xl md:text-2xl font-bold text-slate-900">
-          Review & Create Your CareerOS
+        <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-[#F8FAFC]">
+          Review & Launch VALARI
         </h2>
-        <p className="text-xs md:text-sm text-slate-500 mt-1">
-          Everything is aligned. Confirm your system setup to launch your personal career OS.
+        <p className="text-xs md:text-sm text-slate-500 dark:text-[#94A3B8] mt-1">
+          Everything is aligned. Confirm your system setup to launch your VALARI workspace.
         </p>
       </div>
 
@@ -135,14 +135,14 @@ export const Step7Review = ({
           type="button"
           disabled={isSubmitting}
           onClick={onSubmit}
-          className="flex items-center gap-2 py-3 px-6 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition-all shadow-sm shadow-brand-600/30 disabled:opacity-50 cursor-pointer"
+          className="flex items-center gap-2 py-3 px-6 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] text-white font-bold text-xs transition-all shadow-sm shadow-[#FF7A00]/30 disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? (
             <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <Sparkles size={16} />
           )}
-          <span>Create My CareerOS</span>
+          <span>Launch VALARI</span>
         </button>
       </div>
     </div>

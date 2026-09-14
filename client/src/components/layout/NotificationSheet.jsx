@@ -63,7 +63,7 @@ export const NotificationSheet = ({ isOpen, onClose, unreadCount }) => {
           <div className="flex items-center gap-2">
             <h2 className="font-bold text-sm text-slate-900 dark:text-[#F8FAFC]">Notifications</h2>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-[rgba(124,108,242,0.12)] text-[#7C6CF2] dark:text-[#8B7CF6] text-[11px] font-semibold border border-[rgba(124,108,242,0.25)]">
+              <span className="px-2 py-0.5 rounded-full bg-brand-soft text-[#FF7A00] text-[11px] font-semibold border border-[#FF7A00]/25">
                 {unreadCount} new
               </span>
             )}
@@ -74,7 +74,7 @@ export const NotificationSheet = ({ isOpen, onClose, unreadCount }) => {
               <button
                 onClick={() => markAllReadMutation.mutate()}
                 disabled={markAllReadMutation.isPending}
-                className="text-xs font-semibold text-[#7C6CF2] dark:text-[#8B7CF6] hover:text-[#6B5AE0] dark:hover:text-[#9D91FF] flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#192235] transition"
+                className="text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700] flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#192235] transition"
               >
                 <CheckCheck size={14} />
                 <span>Mark read</span>
@@ -107,13 +107,13 @@ export const NotificationSheet = ({ isOpen, onClose, unreadCount }) => {
               <div
                 key={notif.id}
                 className={`p-4 transition-colors flex items-start justify-between gap-3 ${
-                  !notif.readAt ? 'bg-[rgba(124,108,242,0.06)] dark:bg-[rgba(124,108,242,0.12)]' : 'bg-white dark:bg-[#111827]'
+                  !notif.readAt ? 'bg-brand-soft/40 dark:bg-brand-soft/20' : 'bg-white dark:bg-[#111827]'
                 }`}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     {!notif.readAt && (
-                      <span className="h-2 w-2 rounded-full bg-[#7C6CF2] dark:bg-[#8B7CF6] shrink-0" />
+                      <span className="h-2 w-2 rounded-full bg-[#FF7A00] shrink-0" />
                     )}
                     <p className="text-xs font-semibold text-slate-900 dark:text-[#F8FAFC] truncate">
                       {notif.title}
@@ -136,7 +136,7 @@ export const NotificationSheet = ({ isOpen, onClose, unreadCount }) => {
                   <button
                     onClick={() => markReadMutation.mutate(notif.id)}
                     title="Mark as read"
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#7C6CF2] dark:hover:text-[#8B7CF6] hover:bg-white dark:hover:bg-[#192235] border border-slate-200 dark:border-[rgba(148,163,184,0.14)] transition shrink-0"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#FF7A00] hover:bg-white dark:hover:bg-[#192235] border border-slate-200 dark:border-[rgba(148,163,184,0.14)] transition shrink-0"
                   >
                     <Check size={14} />
                   </button>
@@ -151,7 +151,7 @@ export const NotificationSheet = ({ isOpen, onClose, unreadCount }) => {
           <NavLink
             to="/app/reminders"
             onClick={onClose}
-            className="text-xs font-medium text-[#7C6CF2] dark:text-[#8B7CF6] hover:text-[#6B5AE0] dark:hover:text-[#9D91FF] flex items-center gap-1"
+            className="text-xs font-medium text-[#FF7A00] hover:text-[#EA6700] flex items-center gap-1"
           >
             Manage Reminders
             <ChevronRight size={13} />

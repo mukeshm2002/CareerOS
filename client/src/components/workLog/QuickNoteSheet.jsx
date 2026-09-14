@@ -79,7 +79,7 @@ export const QuickNoteSheet = ({ isOpen, onClose, initialData, onSaveSuccess }) 
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[rgba(148,163,184,0.14)] flex items-center justify-between shrink-0 bg-slate-50/60 dark:bg-[#131A2A]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#7C6CF2]/10 text-[#7C6CF2] dark:text-[#8B7CF6]">
+            <div className="p-2 rounded-xl bg-brand-soft text-[#FF7A00]">
               <FileText size={18} />
             </div>
             <div>
@@ -119,7 +119,7 @@ export const QuickNoteSheet = ({ isOpen, onClose, initialData, onSaveSuccess }) 
                 value={workedOn}
                 onChange={(e) => setWorkedOn(e.target.value)}
                 placeholder="e.g. Built automated test suite for reminder scheduler"
-                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2] transition resize-none leading-relaxed"
+                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00] transition resize-none leading-relaxed"
               />
             </div>
 
@@ -133,7 +133,7 @@ export const QuickNoteSheet = ({ isOpen, onClose, initialData, onSaveSuccess }) 
                 value={learned}
                 onChange={(e) => setLearned(e.target.value)}
                 placeholder="e.g. Learned how IANA timezone offset calculations handle daylight-saving transitions"
-                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2] transition resize-none leading-relaxed"
+                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00] transition resize-none leading-relaxed"
               />
             </div>
 
@@ -147,7 +147,7 @@ export const QuickNoteSheet = ({ isOpen, onClose, initialData, onSaveSuccess }) 
                 value={blockers}
                 onChange={(e) => setBlockers(e.target.value)}
                 placeholder="e.g. Waiting on third-party webhook confirmation / DNS propogation"
-                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2] transition resize-none leading-relaxed"
+                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00] transition resize-none leading-relaxed"
               />
             </div>
 
@@ -161,7 +161,7 @@ export const QuickNoteSheet = ({ isOpen, onClose, initialData, onSaveSuccess }) 
                 value={nextStep}
                 onChange={(e) => setNextStep(e.target.value)}
                 placeholder="e.g. Deploy to staging, verify mobile layout at 390px"
-                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#7C6CF2] transition resize-none leading-relaxed"
+                className="w-full p-3 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00] transition resize-none leading-relaxed"
               />
             </div>
           </div>
@@ -178,7 +178,7 @@ export const QuickNoteSheet = ({ isOpen, onClose, initialData, onSaveSuccess }) 
             <button
               type="submit"
               disabled={saving}
-              className="h-11 px-6 rounded-xl bg-[#7C6CF2] hover:bg-[#8B7CF6] active:scale-98 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-[#7C6CF2]/20 transition disabled:opacity-50"
+              className="h-11 px-6 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-98 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-[#FF7A00]/20 transition disabled:opacity-50"
             >
               {saving ? (
                 <>

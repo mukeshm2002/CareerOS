@@ -275,7 +275,7 @@ export const MyDayPage = () => {
         </p>
         <button
           onClick={() => refetchToday()}
-          className="h-11 px-6 bg-[#6C5CE7] hover:bg-[#5B4CE0] dark:bg-[#8B7CF6] dark:hover:bg-[#A294FF] active:scale-95 text-white rounded-xl text-xs font-semibold shadow-sm transition"
+          className="h-11 px-6 bg-[#FF7A00] hover:bg-[#EA6700] dark:hover:bg-[#FF8A1F] active:scale-95 text-white rounded-xl text-xs font-semibold shadow-sm transition cursor-pointer"
         >
           Try Again
         </button>
@@ -363,9 +363,9 @@ export const MyDayPage = () => {
         </p>
       </div>
 
-      {/* 2. Today's Main Focus Card — Hero Component (Section 11, 12, 13) */}
-      <div className="bg-white dark:bg-[#121829] rounded-[18px] border border-[#6C5CE7]/30 dark:border-[#8B7CF6]/40 p-5 sm:p-6 shadow-xs transition-all">
-        {/* State A: Active Focus In Progress (Section 14) */}
+      {/* 2. Today's Main Focus Card — Hero Component */}
+      <div className="bg-white dark:bg-[#111827] rounded-[18px] border border-[#FF7A00]/25 dark:border-[#FF7A00]/30 p-5 sm:p-6 shadow-xs transition-all">
+        {/* State A: Active Focus In Progress */}
         {activeSession ? (
           <div className="space-y-5 text-center py-2">
             <div className="flex items-center justify-center gap-2">
@@ -413,7 +413,7 @@ export const MyDayPage = () => {
                 <button
                   onClick={() => resumeFocusMutation.mutate(activeSession.id)}
                   disabled={resumeFocusMutation.isPending}
-                  className="h-[48px] px-6 rounded-xl bg-[#16A34A] hover:bg-[#15803d] dark:bg-[#22C55E] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition"
+                  className="h-[48px] px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition cursor-pointer"
                 >
                   <Play size={16} strokeWidth={2} />
                   <span>Resume</span>
@@ -422,7 +422,7 @@ export const MyDayPage = () => {
                 <button
                   onClick={() => pauseFocusMutation.mutate(activeSession.id)}
                   disabled={pauseFocusMutation.isPending}
-                  className="h-[48px] px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#181F34] dark:hover:bg-[#1D2540] active:scale-95 text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs flex items-center gap-2 border border-slate-200 dark:border-[#28324A] transition"
+                  className="h-[48px] px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1A2434] active:scale-95 text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs flex items-center gap-2 border border-slate-200 dark:border-[#263247] transition cursor-pointer"
                 >
                   <Pause size={16} strokeWidth={2} />
                   <span>Pause</span>
@@ -431,7 +431,7 @@ export const MyDayPage = () => {
 
               <button
                 onClick={() => setShowFinishModal(true)}
-                className="h-[48px] px-6 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition"
+                className="h-[48px] px-6 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] active:scale-95 text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition cursor-pointer"
               >
                 <CheckCircle2 size={16} strokeWidth={2} />
                 <span>Finish Session</span>
@@ -443,7 +443,7 @@ export const MyDayPage = () => {
                     cancelFocusMutation.mutate(activeSession.id);
                   }
                 }}
-                className="h-[48px] px-4 rounded-xl text-slate-400 hover:text-[#EF4444] dark:hover:text-[#F87171] text-xs font-medium transition"
+                className="h-[48px] px-4 rounded-xl text-slate-400 hover:text-[#EF4444] dark:hover:text-[#F87171] text-xs font-medium transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -453,13 +453,13 @@ export const MyDayPage = () => {
           /* State B: Ready to Focus */
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] uppercase tracking-wider bg-[#EFEDFF] dark:bg-[#272344] px-3 py-1 rounded-full border border-[#6C5CE7]/20 dark:border-[#8B7CF6]/30">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] uppercase tracking-wider bg-[#FFF1D6] dark:bg-[rgba(255,122,0,0.12)] px-3 py-1 rounded-full border border-[#FF7A00]/25 dark:border-[#FF7A00]/30">
                 <Target size={14} strokeWidth={2} />
                 TODAY'S FOCUS
               </span>
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-medium py-1 px-2 rounded-lg hover:bg-brand-50 dark:hover:bg-[#272344] transition-colors"
+                className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold py-1 px-2 rounded-lg hover:bg-[#FFF1D6] dark:hover:bg-[rgba(255,122,0,0.12)] transition-colors cursor-pointer"
               >
                 Change focus
               </button>
@@ -473,26 +473,26 @@ export const MyDayPage = () => {
               {/* Maximum 3 metadata chips: Goal, Duration, Priority/Due */}
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 {currentMainTask.goal && (
-                  <span className="font-medium text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#181F34] px-2.5 py-1 rounded-lg">
+                  <span className="font-medium text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#161E2D] px-2.5 py-1 rounded-lg">
                     {currentMainTask.goal.title}
                   </span>
                 )}
-                <span className="font-medium text-slate-600 dark:text-[#CBD5E1] bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                <span className="font-medium text-slate-600 dark:text-[#CBD5E1] bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] px-2.5 py-1 rounded-lg flex items-center gap-1">
                   <Clock size={12} className="text-slate-400 dark:text-[#94A3B8]" />
                   {currentMainTask.estimatedMinutes || 30} min
                 </span>
-                <span className="font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] bg-[#EFEDFF] dark:bg-[#272344] px-2.5 py-1 rounded-lg">
+                <span className="font-semibold text-[#FF7A00] bg-[#FFF1D6] dark:bg-[rgba(255,122,0,0.12)] px-2.5 py-1 rounded-lg">
                   {currentMainTask.priority || 'HIGH'} PRIORITY
                 </span>
               </div>
             </div>
 
-            {/* Primary Action Button (50-52px height, full width on mobile) */}
+            {/* Primary Action Button: Solid Brand Orange */}
             <div className="pt-2">
               <button
                 onClick={handleStartFocus}
                 disabled={startFocusMutation.isPending}
-                className="w-full h-[52px] rounded-[14px] bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-xs transition duration-200"
+                className="w-full h-[52px] rounded-[14px] bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm shadow-[#FF7A00]/25 transition duration-200 cursor-pointer"
               >
                 <Play size={17} strokeWidth={2} />
                 <span>Start Focus</span>
@@ -512,13 +512,13 @@ export const MyDayPage = () => {
             <div className="flex justify-center gap-3 pt-2">
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="h-11 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] text-white text-xs font-semibold shadow-xs transition"
+                className="h-11 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
               >
                 Choose Focus
               </button>
               <Link
                 to="/app/goals"
-                className="h-11 px-4 rounded-xl bg-slate-100 dark:bg-[#181F34] hover:bg-slate-200 dark:hover:bg-[#1D2540] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold flex items-center transition"
+                className="h-11 px-4 rounded-xl bg-slate-100 dark:bg-[#161E2D] hover:bg-slate-200 dark:hover:bg-[#1A2434] text-slate-700 dark:text-[#CBD5E1] text-xs font-semibold flex items-center transition"
               >
                 View Plan
               </Link>
@@ -527,17 +527,17 @@ export const MyDayPage = () => {
         )}
       </div>
 
-      {/* 3. Up Next (Section 15) & Schedule Grid on Desktop */}
+      {/* 3. Up Next & Schedule Grid on Desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Up Next Card */}
-        <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-4 sm:p-5 space-y-3.5 shadow-xs">
+        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 space-y-3.5 shadow-xs">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
               UP NEXT
             </h3>
             <Link
               to="/app/tasks"
-              className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-semibold flex items-center gap-0.5 hover:underline"
+              className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold flex items-center gap-0.5 hover:underline"
             >
               View all tasks
               <ChevronRight size={14} strokeWidth={2} />
@@ -545,7 +545,7 @@ export const MyDayPage = () => {
           </div>
 
           {upNextList.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-[#28324A]">
+            <div className="divide-y divide-slate-100 dark:divide-[#263247]">
               {upNextList.map((t) => (
                 <div
                   key={t.id}
@@ -553,11 +553,11 @@ export const MyDayPage = () => {
                   className="flex items-center justify-between py-3 first:pt-0 last:pb-0 cursor-pointer group transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0 pr-3">
-                    <span className="h-3.5 w-3.5 rounded-full border border-slate-300 dark:border-slate-600 group-hover:border-[#6C5CE7] dark:group-hover:border-[#8B7CF6] shrink-0 transition-colors" />
+                    <span className="h-3.5 w-3.5 rounded-full border border-slate-300 dark:border-slate-600 group-hover:border-[#FF7A00] shrink-0 transition-colors" />
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#6C5CE7] dark:group-hover:text-[#8B7CF6] transition-colors">{t.title}</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#FF7A00] transition-colors">{t.title}</p>
                       <p className="text-xs text-slate-400 dark:text-[#94A3B8] truncate mt-0.5">
-                        {t.goal?.title || 'Career Task'} · {t.estimatedMinutes || 30} min
+                        {t.goal?.title || 'Growth Task'} · {t.estimatedMinutes || 30} min
                       </p>
                     </div>
                   </div>
@@ -572,15 +572,15 @@ export const MyDayPage = () => {
           )}
         </div>
 
-        {/* 4. Today's Schedule (Section 16) */}
-        <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-4 sm:p-5 space-y-3.5 shadow-xs">
+        {/* 4. Today's Schedule */}
+        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 space-y-3.5 shadow-xs">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
               TODAY'S SCHEDULE
             </h3>
             <Link
               to="/app/schedule"
-              className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-semibold flex items-center gap-0.5 hover:underline"
+              className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold flex items-center gap-0.5 hover:underline"
             >
               Schedule
               <ChevronRight size={14} strokeWidth={2} />
@@ -588,7 +588,7 @@ export const MyDayPage = () => {
           </div>
 
           {scheduleItems.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-[#28324A]">
+            <div className="divide-y divide-slate-100 dark:divide-[#263247]">
               {scheduleItems.map((block, idx) => (
                 <div
                   key={block.id}
@@ -597,12 +597,12 @@ export const MyDayPage = () => {
                   <span className="font-mono text-xs font-medium text-slate-500 dark:text-[#94A3B8] w-16 shrink-0">
                     {block.startTime}
                   </span>
-                  <span className={`h-2 w-2 rounded-full shrink-0 ${idx === 0 ? 'bg-[#6C5CE7] dark:bg-[#8B7CF6]' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                  <span className={`h-2 w-2 rounded-full shrink-0 ${idx === 0 ? 'bg-[#FF7A00]' : 'bg-slate-300 dark:bg-slate-700'}`} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate">{block.title}</p>
                   </div>
                   <span className="text-[11px] text-slate-400 dark:text-[#64748B] font-medium shrink-0">
-                    {block.category || 'Career'}
+                    {block.category === 'CAREEROS' ? 'VALARI' : (block.category || 'Growth')}
                   </span>
                 </div>
               ))}
@@ -613,15 +613,15 @@ export const MyDayPage = () => {
         </div>
       </div>
 
-      {/* 5. Quick Weekly Progress (Section 17) */}
-      <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-4 sm:p-5 space-y-3.5 shadow-xs">
+      {/* 5. Quick Weekly Progress */}
+      <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 space-y-3.5 shadow-xs">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-semibold text-slate-400 dark:text-[#64748B] uppercase tracking-wider">
             THIS WEEK
           </h3>
           <Link
             to="/app/progress"
-            className="text-xs text-[#6C5CE7] hover:text-[#5B4BD8] dark:text-[#8B7CF6] dark:hover:text-[#9D91FF] font-semibold flex items-center gap-0.5 hover:underline"
+            className="text-xs text-[#FF7A00] hover:text-[#EA6700] font-semibold flex items-center gap-0.5 hover:underline"
           >
             View progress
             <ChevronRight size={14} strokeWidth={2} />
@@ -629,7 +629,7 @@ export const MyDayPage = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-3 text-center pt-1">
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181F34] border border-slate-100 dark:border-[#28324A]">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-100 dark:border-[#263247]">
             <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
               {formatMinutes(weekly?.totalFocusMinutes || 0)}
             </span>
@@ -638,7 +638,7 @@ export const MyDayPage = () => {
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181F34] border border-slate-100 dark:border-[#28324A]">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-100 dark:border-[#263247]">
             <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
               {weekly?.tasksCompleted || 0}
             </span>
@@ -647,7 +647,7 @@ export const MyDayPage = () => {
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181F34] border border-slate-100 dark:border-[#28324A]">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-100 dark:border-[#263247]">
             <span className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-[#F8FAFC] block">
               {weekly?.activeDays || 0}
             </span>
@@ -658,11 +658,11 @@ export const MyDayPage = () => {
         </div>
       </div>
 
-      {/* 5b. Today's Notes / Career Journal (Phase 2B Step 1) */}
-      <div className="bg-white dark:bg-[#121829] border border-slate-200/80 dark:border-[#28324A] rounded-2xl p-5 space-y-3.5 shadow-xs">
+      {/* 5b. Today's Notes / VALARI Journal */}
+      <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-5 space-y-3.5 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileText size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
+            <FileText size={16} className="text-[#FF7A00]" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-[#CBD5E1]">
               Today's Notes
             </h3>
@@ -670,7 +670,7 @@ export const MyDayPage = () => {
           <div className="flex items-center gap-3">
             <Link
               to="/app/work-log"
-              className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] hover:text-[#6C5CE7] dark:hover:text-[#8B7CF6] flex items-center gap-0.5 transition"
+              className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] hover:text-[#FF7A00] flex items-center gap-0.5 transition"
             >
               <span>Journal</span>
               <ChevronRight size={13} />
@@ -679,7 +679,7 @@ export const MyDayPage = () => {
               <button
                 type="button"
                 onClick={() => setShowNoteSheet(true)}
-                className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#181F34] dark:hover:bg-[#28324A] text-slate-700 dark:text-[#F8FAFC] font-semibold text-xs transition flex items-center gap-1.5"
+                className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1A2434] text-slate-700 dark:text-[#F8FAFC] font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer"
               >
                 <Edit3 size={13} />
                 <span>Edit</span>
@@ -696,14 +696,14 @@ export const MyDayPage = () => {
             <button
               type="button"
               onClick={() => setShowNoteSheet(true)}
-              className="h-10 px-4 rounded-xl bg-[#6C5CE7] hover:bg-[#5A4AD1] text-white font-semibold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs shrink-0"
+              className="h-10 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
             >
               <Plus size={14} />
               <span>+ Add today's note</span>
             </button>
           </div>
         ) : (
-          <div className="space-y-3 pt-1 text-xs divide-y divide-slate-100 dark:divide-[#28324A]/40">
+          <div className="space-y-3 pt-1 text-xs divide-y divide-slate-100 dark:divide-[#263247]/60">
             {currentWorkLog.workedOn && (
               <div className="space-y-0.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#64748B] block">
@@ -736,7 +736,7 @@ export const MyDayPage = () => {
             )}
             {currentWorkLog.nextStep && (
               <div className="pt-2 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6] block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] block">
                   Next
                 </span>
                 <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line">
@@ -748,12 +748,12 @@ export const MyDayPage = () => {
         )}
       </div>
 
-      {/* 6. Daily Review / End Day Card (Section 18 — Calm feel) */}
-      <div className="bg-[#F4F2FF] dark:bg-[#181F34] border border-slate-200/80 dark:border-[#28324A] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+      {/* 6. Daily Review / End Day Card */}
+      <div className="bg-[#FFF8EE] dark:bg-[#161E2D] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Moon size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6]">
+            <Moon size={16} className="text-[#FF7A00]" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#FF7A00]">
               END YOUR DAY
             </h3>
           </div>
@@ -764,7 +764,7 @@ export const MyDayPage = () => {
 
         <button
           onClick={() => setShowReviewModal(true)}
-          className="h-11 px-5 rounded-xl bg-white dark:bg-[#121829] border border-slate-200 dark:border-[#28324A] text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs hover:bg-slate-50 dark:hover:bg-[#1D2540] active:scale-95 transition shrink-0 shadow-xs"
+          className="h-11 px-5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-slate-800 dark:text-[#F8FAFC] font-semibold text-xs hover:bg-slate-50 dark:hover:bg-[#1A2434] active:scale-95 transition shrink-0 shadow-xs cursor-pointer"
         >
           Daily Review
         </button>
@@ -773,14 +773,14 @@ export const MyDayPage = () => {
       {/* MODAL: Choose Main Focus Task */}
       {showChooseModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-white dark:bg-[#121829] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#28324A] p-5 shadow-2xl space-y-4 max-h-[80vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+          <div className="w-full sm:max-w-md bg-white dark:bg-[#111827] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#263247] p-5 shadow-2xl space-y-4 max-h-[80vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
             {/* Sheet Handle */}
-            <div className="w-12 h-1 bg-slate-200 dark:bg-[#28324A] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A] pb-3">
+            <div className="w-12 h-1 bg-slate-200 dark:bg-[#263247] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#263247] pb-3">
               <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Choose Today's Main Focus</h3>
               <button
                 onClick={() => setShowChooseModal(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -797,8 +797,8 @@ export const MyDayPage = () => {
                   onClick={() => handleSelectDifferentTask(t.id)}
                   className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between min-h-[48px] ${
                     t.id === currentMainTask?.id
-                      ? 'border-[#6C5CE7] bg-[#EFEDFF] dark:border-[#8B7CF6] dark:bg-[#272344]'
-                      : 'border-slate-200 dark:border-[#28324A] hover:border-slate-300 dark:hover:border-[#37435E] bg-slate-50/50 dark:bg-[#181F34]/50'
+                      ? 'border-[#FF7A00] bg-[#FFF1D6] dark:border-[#FF7A00] dark:bg-[rgba(255,122,0,0.14)]'
+                      : 'border-slate-200 dark:border-[#263247] hover:border-slate-300 dark:hover:border-[#33435C] bg-slate-50/50 dark:bg-[#161E2D]/50'
                   }`}
                 >
                   <div className="space-y-0.5 min-w-0 pr-2">
@@ -807,7 +807,7 @@ export const MyDayPage = () => {
                       {t.priority} • {t.estimatedMinutes || 30} mins
                     </p>
                   </div>
-                  {t.id === currentMainTask?.id && <Check size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />}
+                  {t.id === currentMainTask?.id && <Check size={16} className="text-[#FF7A00]" />}
                 </div>
               ))}
             </div>
@@ -818,14 +818,14 @@ export const MyDayPage = () => {
       {/* MODAL: Finish Focus Session */}
       {showFinishModal && activeSession && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-white dark:bg-[#121829] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#28324A] p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+          <div className="w-full sm:max-w-md bg-white dark:bg-[#111827] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#263247] p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
             {/* Sheet Handle */}
-            <div className="w-12 h-1 bg-slate-200 dark:bg-[#28324A] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A] pb-3">
+            <div className="w-12 h-1 bg-slate-200 dark:bg-[#263247] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#263247] pb-3">
               <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Finish Focus Session</h3>
               <button
                 onClick={() => setShowFinishModal(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -837,14 +837,14 @@ export const MyDayPage = () => {
             </div>
 
             <div className="space-y-2 text-xs">
-              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-[#28324A] cursor-pointer hover:bg-slate-50 dark:hover:bg-[#181F34] transition min-h-[48px]">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-[#263247] cursor-pointer hover:bg-slate-50 dark:hover:bg-[#161E2D] transition min-h-[48px]">
                 <input
                   type="radio"
                   name="taskOutcome"
                   value="COMPLETED"
                   checked={taskOutcome === 'COMPLETED'}
                   onChange={(e) => setTaskOutcome(e.target.value)}
-                  className="text-[#6C5CE7] dark:text-[#8B7CF6] focus:ring-[#6C5CE7]"
+                  className="text-[#FF7A00] focus:ring-[#FF7A00]"
                 />
                 <div>
                   <span className="font-semibold text-slate-800 dark:text-[#F8FAFC] block">Yes, completed</span>
@@ -852,14 +852,14 @@ export const MyDayPage = () => {
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-[#28324A] cursor-pointer hover:bg-slate-50 dark:hover:bg-[#181F34] transition min-h-[48px]">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-[#263247] cursor-pointer hover:bg-slate-50 dark:hover:bg-[#161E2D] transition min-h-[48px]">
                 <input
                   type="radio"
                   name="taskOutcome"
                   value="NOT_YET"
                   checked={taskOutcome === 'NOT_YET'}
                   onChange={(e) => setTaskOutcome(e.target.value)}
-                  className="text-[#6C5CE7] dark:text-[#8B7CF6] focus:ring-[#6C5CE7]"
+                  className="text-[#FF7A00] focus:ring-[#FF7A00]"
                 />
                 <div>
                   <span className="font-semibold text-slate-800 dark:text-[#F8FAFC] block">Not yet</span>
@@ -877,14 +877,14 @@ export const MyDayPage = () => {
                 value={sessionNotes}
                 onChange={(e) => setSessionNotes(e.target.value)}
                 placeholder="What did you get done?"
-                className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-[#28324A]">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-[#263247]">
               <button
                 onClick={() => setShowFinishModal(false)}
-                className="h-11 px-4 rounded-xl text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#181F34] text-xs font-semibold"
+                className="h-11 px-4 rounded-xl text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D] text-xs font-semibold cursor-pointer"
               >
                 Back
               </button>
@@ -896,7 +896,7 @@ export const MyDayPage = () => {
                   })
                 }
                 disabled={finishFocusMutation.isPending}
-                className="h-11 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] text-white text-xs font-semibold shadow-xs transition"
+                className="h-11 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
               >
                 Save Session
               </button>
@@ -908,17 +908,17 @@ export const MyDayPage = () => {
       {/* MODAL: Daily Review */}
       {showReviewModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg bg-white dark:bg-[#121829] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#28324A] p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+          <div className="w-full sm:max-w-lg bg-white dark:bg-[#111827] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[#263247] p-5 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
             {/* Sheet Handle */}
-            <div className="w-12 h-1 bg-slate-200 dark:bg-[#28324A] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#28324A] pb-3">
+            <div className="w-12 h-1 bg-slate-200 dark:bg-[#263247] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#263247] pb-3">
               <div className="flex items-center gap-2">
-                <Moon size={16} className="text-[#6C5CE7] dark:text-[#8B7CF6]" />
+                <Moon size={16} className="text-[#FF7A00]" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Daily Review</h3>
               </div>
               <button
                 onClick={() => setShowReviewModal(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] rounded-lg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -932,11 +932,11 @@ export const MyDayPage = () => {
             )}
 
             <div className="space-y-3.5 overflow-y-auto flex-1 pr-1 text-xs">
-              {/* Contextual Daily Work Notes (Phase 2B Step 1) */}
+              {/* Contextual Daily Work Notes */}
               {hasWorkNote && (
-                <div className="p-3.5 bg-violet-50/70 dark:bg-[#7C6CF2]/10 border border-violet-200/80 dark:border-[#7C6CF2]/30 rounded-xl space-y-2 text-xs">
+                <div className="p-3.5 bg-[#FFF8EE] dark:bg-[rgba(255,122,0,0.10)] border border-[#FF7A00]/25 dark:border-[#FF7A00]/30 rounded-xl space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#6C5CE7] dark:text-[#8B7CF6] flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] flex items-center gap-1.5">
                       <FileText size={12} />
                       <span>TODAY'S WORK</span>
                     </span>
@@ -946,7 +946,7 @@ export const MyDayPage = () => {
                         setShowReviewModal(false);
                         setShowNoteSheet(true);
                       }}
-                      className="text-[10px] font-semibold text-[#6C5CE7] dark:text-[#8B7CF6] hover:underline"
+                      className="text-[10px] font-semibold text-[#FF7A00] hover:underline cursor-pointer"
                     >
                       Edit Note
                     </button>
@@ -987,7 +987,7 @@ export const MyDayPage = () => {
                   value={completedSummary}
                   onChange={(e) => setCompletedSummary(e.target.value)}
                   placeholder="e.g. Finished JWT authentication tests"
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
                 />
               </div>
 
@@ -1000,7 +1000,7 @@ export const MyDayPage = () => {
                   value={learnedSummary}
                   onChange={(e) => setLearnedSummary(e.target.value)}
                   placeholder="e.g. Refresh token rotation prevents replay attacks"
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
                 />
               </div>
 
@@ -1013,7 +1013,7 @@ export const MyDayPage = () => {
                   value={blockerSummary}
                   onChange={(e) => setBlockerSummary(e.target.value)}
                   placeholder="e.g. Need CORS headers configured"
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
                 />
               </div>
 
@@ -1024,7 +1024,7 @@ export const MyDayPage = () => {
                 <select
                   value={tomorrowTaskId}
                   onChange={(e) => setTomorrowTaskId(e.target.value)}
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#6C5CE7] dark:focus:ring-[#8B7CF6]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
                 >
                   <option value="">-- Select Priority --</option>
                   {incompleteTasks.map((t) => (
@@ -1043,10 +1043,10 @@ export const MyDayPage = () => {
                       type="button"
                       key={opt.value}
                       onClick={() => setEnergyLevel(opt.value)}
-                      className={`h-10 px-1 rounded-xl text-[11px] font-semibold transition ${
+                      className={`h-10 px-1 rounded-xl text-[11px] font-semibold transition cursor-pointer ${
                         energyLevel === opt.value
-                          ? 'bg-[#6C5CE7] dark:bg-[#8B7CF6] text-white shadow-xs'
-                          : 'bg-slate-100 dark:bg-[#181F34] hover:bg-slate-200 dark:hover:bg-[#28324A] text-slate-600 dark:text-[#CBD5E1]'
+                          ? 'bg-[#FF7A00] text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-[#161E2D] hover:bg-slate-200 dark:hover:bg-[#263247] text-slate-600 dark:text-[#CBD5E1]'
                       }`}
                     >
                       {opt.label}
@@ -1056,7 +1056,7 @@ export const MyDayPage = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#28324A]">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#263247]">
               <button
                 onClick={() =>
                   saveReviewMutation.mutate({
@@ -1069,7 +1069,7 @@ export const MyDayPage = () => {
                   })
                 }
                 disabled={saveReviewMutation.isPending}
-                className="h-11 px-4 rounded-xl text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#181F34] hover:bg-slate-200 dark:hover:bg-[#28324A] text-xs font-semibold"
+                className="h-11 px-4 rounded-xl text-slate-700 dark:text-[#CBD5E1] bg-slate-100 dark:bg-[#161E2D] hover:bg-slate-200 dark:hover:bg-[#263247] text-xs font-semibold cursor-pointer"
               >
                 Save Draft
               </button>
@@ -1086,7 +1086,7 @@ export const MyDayPage = () => {
                   })
                 }
                 disabled={saveReviewMutation.isPending}
-                className="h-11 px-5 rounded-xl bg-[#6C5CE7] hover:bg-[#5B4BD8] active:bg-[#4C3FC7] dark:bg-[#8B7CF6] dark:hover:bg-[#9D91FF] text-white text-xs font-semibold shadow-xs transition"
+                className="h-11 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
               >
                 Close Day
               </button>

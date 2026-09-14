@@ -11,6 +11,7 @@ import { Step5Routine } from '../features/onboarding/components/Step5Routine';
 import { Step6Skills } from '../features/onboarding/components/Step6Skills';
 import { Step7Review } from '../features/onboarding/components/Step7Review';
 import { AlertCircle } from 'lucide-react';
+import { ValariLogo } from '../components/common/ValariLogo';
 
 export const OnboardingPage = () => {
   const navigate = useNavigate();
@@ -237,24 +238,21 @@ export const OnboardingPage = () => {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between p-4 md:p-8">
       {/* Top Header */}
       <header className="max-w-3xl mx-auto w-full flex items-center justify-between py-2">
-        <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shadow-brand-500/30">
-            C
-          </div>
-          <span className="font-bold text-slate-900 tracking-tight">CareerOS</span>
+        <div className="flex items-center gap-2">
+          <ValariLogo size="sm" showWordmark={true} />
         </div>
 
-        <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-          Personal Career Operating System
+        <span className="text-xs font-semibold text-slate-500 dark:text-[#94A3B8] bg-slate-100 dark:bg-[#161E2D] px-3 py-1 rounded-full">
+          Personal Growth System
         </span>
       </header>
 
       {/* Main Container Card */}
-      <div className="max-w-2xl mx-auto w-full bg-white border border-slate-200/80 rounded-2xl shadow-card p-6 md:p-10 my-4">
+      <div className="max-w-2xl mx-auto w-full bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl shadow-card p-6 md:p-10 my-4">
         {step > 1 && <StepProgressBar currentStep={step} totalSteps={7} />}
 
         {errorMessage && (
-          <div className="mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-red-50 border border-red-100 text-red-700 text-xs">
+          <div className="mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-700 dark:text-[#F87171] text-xs">
             <AlertCircle size={15} className="shrink-0 mt-0.5" />
             <span>{errorMessage}</span>
           </div>
@@ -324,8 +322,8 @@ export const OnboardingPage = () => {
       </div>
 
       {/* Footer */}
-      <footer className="text-center text-xs text-slate-400 py-3">
-        CareerOS © 2026 • Your Personal Career Operating System
+      <footer className="text-center text-xs text-slate-400 dark:text-[#64748B] py-3">
+        VALARI © 2026 • Your Personal Growth & Career System
       </footer>
     </div>
   );

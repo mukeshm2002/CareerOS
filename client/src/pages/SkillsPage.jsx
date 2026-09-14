@@ -356,7 +356,7 @@ export const SkillsPage = () => {
 
           <div className="space-y-1">
             <h2 className="text-base font-bold text-slate-900">
-              CareerOS doesn't know your skill gaps yet.
+              VALARI doesn't know your skill gaps yet.
             </h2>
             <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
               Add your current competencies and target benchmarks to generate an actionable gap matrix.
