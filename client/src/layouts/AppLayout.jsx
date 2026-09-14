@@ -38,7 +38,7 @@ import { detectBrowserTimezone } from '../utils/timezones';
 import { pwaService } from '../services/pwaService';
 import { BottomNav } from '../components/layout/BottomNav';
 import { MobileHeader } from '../components/layout/MobileHeader';
-import { VazhariLogo } from '../components/common/VazhariLogo';
+import { BrandLogo } from '../components/common/BrandLogo';
 
 const navigationGroups = [
   {
@@ -222,9 +222,9 @@ export const AppLayout = () => {
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0B0F17] border-r border-[#E5E7EB] dark:border-[#253044] select-none">
       {/* Desktop Brand Header: [VAZHARI symbol] VAZHARI / Personal Growth System */}
-      <div className="p-5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between">
-        <NavLink to="/app/today" className="flex items-center">
-          <VazhariLogo size="sm" variant="icon-wordmark" showTagline={true} taglineText="Personal Growth System" />
+      <div className="h-20 px-5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between shrink-0">
+        <NavLink to="/app/today" className="flex items-center min-w-0">
+          <BrandLogo size="md" variant="icon-wordmark" showTagline={true} taglineText="Personal Growth System" />
         </NavLink>
         {mobileMenuOpen && (
           <button
@@ -315,7 +315,7 @@ export const AppLayout = () => {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#0B0F17]">
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden md:flex md:w-64 md:flex-col shrink-0">
+      <aside className="hidden md:flex md:w-64 md:flex-col shrink-0 overflow-hidden">
         {sidebarContent}
       </aside>
 

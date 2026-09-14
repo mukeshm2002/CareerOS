@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
 import { ArrowRight, Lock, Mail, User, AlertCircle } from 'lucide-react';
-import { VazhariLogo } from '../components/common/VazhariLogo';
+import { AuthBrandHeader } from '../components/auth/AuthBrandHeader';
 
 export const RegisterPage = () => {
   const [fullName, setFullName] = useState('');
@@ -42,14 +42,7 @@ export const RegisterPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#0B0F17] px-4 py-12">
       <div className="w-full max-w-md">
         {/* Official Brand Header */}
-        <div className="text-center mb-6">
-          <div className="flex justify-center mb-2">
-            <VazhariLogo variant="lockup" size="md" />
-          </div>
-          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-2">
-            Plan your growth. Take action. Track progress.
-          </p>
-        </div>
+        <AuthBrandHeader />
 
         {/* Register Card */}
         <div className="bg-white dark:bg-[#111827] rounded-xl border border-[#E5E7EB] dark:border-[#253044] p-7 md:p-8">
