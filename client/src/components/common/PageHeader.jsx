@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * Reusable Standard Page Header Component
- * Standardized across all VAZHARI modules for visual consistency and responsive hierarchy.
+ * Standardized across all EYTHU modules for visual consistency and responsive hierarchy.
  * 
  * Mobile:
  *   - Icon + Title (24-26px / 700)

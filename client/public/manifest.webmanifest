@@ -1,12 +1,12 @@
 {
-  "name": "VAZHARI — Personal Growth System",
-  "short_name": "VAZHARI",
-  "description": "VAZHARI — Personal Growth System by TamZode Technology.",
+  "name": "EYTHU — Personal Growth System",
+  "short_name": "EYTHU",
+  "description": "EYTHU — Personal Growth System by TamZode Technology. Plan. Act. Achieve.",
   "start_url": "/app/today",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#FF7A00",
+  "theme_color": "#2A7A3B",
   "background_color": "#0B0F17",
   "icons": [
     {

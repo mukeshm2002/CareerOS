@@ -1,5 +1,5 @@
 /**
- * VAZHARI Theme Utility
+ * EYTHU Theme Utility
  * Handles Light, Dark, and System theme switching with persistent localStorage
  */
 

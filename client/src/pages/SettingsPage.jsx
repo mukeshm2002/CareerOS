@@ -31,7 +31,7 @@ import { applyTheme } from '../utils/theme';
 import { formatFriendlyTimezone, detectBrowserTimezone } from '../utils/timezones';
 import { TimezonePickerModal } from '../components/common/TimezonePickerModal';
 import { PageHeader } from '../components/common/PageHeader';
-import { VazhariLogo } from '../components/common/VazhariLogo';
+import { EythuBrand } from '../components/common/VazhariLogo';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -217,7 +217,7 @@ export const SettingsPage = () => {
   const handleInstallPwa = async () => {
     const result = await pwaService.promptInstall();
     if (result.outcome === 'accepted') {
-      showNotification('VAZHARI added to home screen!');
+      showNotification('EYTHU added to home screen!');
     }
   };
 
@@ -639,7 +639,7 @@ export const SettingsPage = () => {
                 Daily Routine & Rhythm Overview
               </h2>
               <p className="text-xs text-slate-500">
-                Configure your daily energy windows. VAZHARI schedules focused sessions around these parameters.
+                Configure your daily energy windows. EYTHU schedules focused sessions around these parameters.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -823,13 +823,13 @@ export const SettingsPage = () => {
 
                 <p className="text-xs text-slate-500 dark:text-[#94A3B8] leading-relaxed">
                   Push notifications depend on OS/browser notification permissions and delivery policies.
-                  They provide timely check-in prompts even when VAZHARI is inactive.
+                  They provide timely check-in prompts even when EYTHU is inactive.
                 </p>
 
                 {pushStatus.permission === 'denied' && (
                   <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs text-rose-700 dark:text-rose-400 flex items-start gap-2">
                     <AlertCircle size={15} className="shrink-0 mt-0.5" />
-                    <span>Notifications blocked in browser settings. Please click the site settings or padlock icon in your browser address bar to allow notifications for VAZHARI.</span>
+                    <span>Notifications blocked in browser settings. Please click the site settings or padlock icon in your browser address bar to allow notifications for EYTHU.</span>
                   </div>
                 )}
 
@@ -910,21 +910,21 @@ export const SettingsPage = () => {
                   {isPwaInstalled ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
                       <Check size={11} />
-                      <span>VAZHARI is installed</span>
+                      <span>EYTHU is installed</span>
                     </span>
                   ) : null}
                 </div>
 
                 {isPwaInstalled ? (
                   <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-                    VAZHARI is installed on your device. You are running in standalone app mode.
+                    EYTHU is installed on your device. You are running in standalone app mode.
                   </p>
                 ) : (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-50 dark:bg-[#181F34] border border-slate-200 dark:border-[#28324A] rounded-xl">
                     <div>
-                      <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Install VAZHARI</p>
+                      <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Install EYTHU</p>
                       <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
-                        Add VAZHARI to your home screen for faster access and standalone app experience.
+                        Add EYTHU to your home screen for faster access and standalone app experience.
                       </p>
                     </div>
                     {canInstallPwa ? (
@@ -1034,7 +1034,7 @@ export const SettingsPage = () => {
                 Interface Appearance
               </h2>
               <p className="text-xs text-slate-500">
-                Choose your visual theme preference for VAZHARI.
+                Choose your visual theme preference for EYTHU.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -1094,7 +1094,7 @@ export const SettingsPage = () => {
               <div className="pt-4 border-t border-slate-100">
                 <h3 className="text-xs font-bold text-slate-800">Account Deletion Policy</h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  VAZHARI preserves historical focus sessions, weekly review snapshots, and evidence records to maintain factual career integrity. Full self-service account deletion will be available after v1.
+                  EYTHU preserves historical focus sessions, weekly review snapshots, and evidence records to maintain factual career integrity. Full self-service account deletion will be available after v1.
                 </p>
               </div>
             </div>
@@ -1104,11 +1104,11 @@ export const SettingsPage = () => {
           {activeTab === 'about' && (
             <div className="space-y-6">
               <h2 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC] border-b border-slate-100 dark:border-[#263247] pb-2">
-                About VAZHARI
+                About EYTHU
               </h2>
 
               <div className="p-6 bg-slate-50 dark:bg-[#161E2D] border border-slate-200/80 dark:border-[#263247] rounded-2xl flex flex-col items-center text-center space-y-4">
-                <VazhariLogo variant="lockup" size="md" />
+                <EythuBrand variant="lockup" size="md" />
                 <p className="text-xs text-slate-500 dark:text-[#94A3B8] max-w-sm leading-relaxed">
                   Your structured personal growth system to plan, execute, and build momentum.
                 </p>
@@ -1117,7 +1117,7 @@ export const SettingsPage = () => {
               <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl divide-y divide-slate-100 dark:divide-[#263247] overflow-hidden text-xs">
                 <div className="p-4 flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Product</span>
-                  <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">VAZHARI</span>
+                  <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">EYTHU</span>
                 </div>
                 <div className="p-4 flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Tagline</span>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Bow: diamond/leaf-shaped arc -->
+  <path
+    d="M12 32 C12 18 24 8 32 8 C40 8 52 18 52 32 C52 46 40 56 32 56 C24 56 12 46 12 32 Z"
+    stroke="#2A7A3B"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <!-- Arrow shaft -->
+  <line x1="10" y1="32" x2="54" y2="32" stroke="#2A7A3B" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Arrow head -->
+  <polyline
+    points="46,24 54,32 46,40"
+    stroke="#2A7A3B"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <!-- Arrow nock (tail notch) -->
+  <polyline
+    points="14,26 10,32 14,38"
+    stroke="#2A7A3B"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

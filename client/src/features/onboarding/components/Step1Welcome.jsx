@@ -1,12 +1,12 @@
 import React from 'react';
 import { Compass, ArrowRight } from 'lucide-react';
-import { VazhariLogo } from '../../../components/common/VazhariLogo';
+import { EythuBrand } from '../../../components/common/BrandLogo';
 
 export const Step1Welcome = ({ onNext }) => {
   return (
     <div className="text-center space-y-6 py-4">
       <div className="flex justify-center">
-        <VazhariLogo variant="lockup" size="lg" />
+        <EythuBrand variant="lockup" size="lg" />
       </div>
 
       <div className="space-y-2 max-w-lg mx-auto">
@@ -19,7 +19,7 @@ export const Step1Welcome = ({ onNext }) => {
       </div>
 
       <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200/70 dark:border-[#263247] max-w-md mx-auto text-left space-y-2">
-        <p className="text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">The VAZHARI Workflow:</p>
+        <p className="text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">The EYTHU Workflow:</p>
         <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-[#FF7A00] font-medium">
           <span>Goal</span>
           <span>→</span>

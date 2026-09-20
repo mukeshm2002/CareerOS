@@ -25,10 +25,10 @@ export const Step7Review = ({
     <div className="space-y-6">
       <div className="text-left">
         <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-[#F8FAFC]">
-          Review & Launch VAZHARI
+          Review & Launch EYTHU
         </h2>
         <p className="text-xs md:text-sm text-slate-500 dark:text-[#94A3B8] mt-1">
-          Everything is aligned. Confirm your system setup to launch your VAZHARI workspace.
+          Everything is aligned. Confirm your system setup to launch your EYTHU workspace.
         </p>
       </div>
 
@@ -142,7 +142,7 @@ export const Step7Review = ({
           ) : (
             <Sparkles size={16} />
           )}
-          <span>Launch VAZHARI</span>
+          <span>Launch EYTHU</span>
         </button>
       </div>
     </div>

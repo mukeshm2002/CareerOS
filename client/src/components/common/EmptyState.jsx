@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 /**
  * Reusable Compact Empty State Component
- * Standardized across all VAZHARI modules to prevent oversized, viewport-dominating empty cards.
+ * Standardized across all EYTHU modules to prevent oversized, viewport-dominating empty cards.
  * Compact height target: ~240–300px.
  */
 export const EmptyState = ({

@@ -1,5 +1,5 @@
 /**
- * VAZHARI Progressive Web App — Service Worker
+ * EYTHU Progressive Web App — Service Worker
  *
  * Responsibilities:
  * 1. Static asset & offline fallback caching
@@ -9,7 +9,7 @@
  * NOTE: Authenticated API responses and personal data are NEVER cached in this service worker.
  */
 
-const CACHE_NAME = 'vazhari-static-v1';
+const CACHE_NAME = 'eythu-static-v2';
 const STATIC_ASSETS = [
   '/',
   '/offline.html',
@@ -89,11 +89,11 @@ self.addEventListener('push', (event) => {
     try {
       data = event.data.json();
     } catch (err) {
-      data = { title: 'VAZHARI Reminder', body: event.data.text() };
+      data = { title: 'EYTHU Reminder', body: event.data.text() };
     }
   }
 
-  const title = data.title || 'VAZHARI Reminder';
+  const title = data.title || 'EYTHU Reminder';
   const options = {
     body: data.body || 'Time for your scheduled focus.',
     icon: '/icons/icon-192x192.png',
@@ -103,7 +103,7 @@ self.addEventListener('push', (event) => {
       type: data.type || 'REMINDER',
       notificationId: data.notificationId || null,
     },
-    tag: data.notificationId || 'vazhari-reminder',
+    tag: data.notificationId || 'eythu-reminder',
     renotify: true,
   };
 
@@ -124,7 +124,7 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // If a VAZHARI window is already open, focus it and navigate
+      // If an EYTHU window is already open, focus it and navigate
       for (const client of windowClients) {
         if (client.url && 'focus' in client) {
           client.navigate(targetPath);

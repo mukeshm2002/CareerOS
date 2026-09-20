@@ -47,9 +47,9 @@ export const RegisterPage = () => {
         {/* Register Card */}
         <div className="bg-white dark:bg-[#111827] rounded-xl border border-[#E5E7EB] dark:border-[#253044] p-7 md:p-8">
           <div className="mb-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-[#F8FAFC]">Build your VAZHARI workspace</h2>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-[#F8FAFC]">Build your EYTHU workspace</h2>
             <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1">
-              Start structuring your goals, priorities, and daily execution system.
+              Start turning your goals into structured action and measurable progress.
             </p>
           </div>
 

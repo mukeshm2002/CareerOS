@@ -11,7 +11,7 @@ export const NotFoundPage = () => {
       <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">404</h1>
       <p className="text-base font-semibold text-slate-700 mt-1">Page Not Found</p>
       <p className="text-xs text-slate-500 max-w-sm mt-1.5 leading-relaxed">
-        The destination you navigated to does not exist in this VAZHARI workspace.
+        The destination you navigated to does not exist in this EYTHU workspace.
       </p>
       <Link
         to="/app"

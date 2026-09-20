@@ -213,7 +213,7 @@ export const AppLayout = () => {
     if (path.includes('/app/reviews')) return 'Reviews';
     if (path.includes('/app/reminders')) return 'Reminders';
     if (path.includes('/app/settings')) return 'Settings';
-    return 'VAZHARI';
+    return 'EYTHU';
   };
 
   const displayName = user?.fullName || 'User';
@@ -221,7 +221,7 @@ export const AppLayout = () => {
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0B0F17] border-r border-[#E5E7EB] dark:border-[#253044] select-none">
-      {/* Desktop Brand Header: [VAZHARI symbol] VAZHARI / Personal Growth System */}
+      {/* Desktop Brand Header: [EYTHU symbol] EYTHU / Personal Growth System */}
       <div className="h-20 px-5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between shrink-0">
         <NavLink to="/app/today" className="flex items-center min-w-0">
           <BrandLogo size="md" variant="icon-wordmark" showTagline={true} taglineText="Personal Growth System" />
@@ -267,7 +267,7 @@ export const AppLayout = () => {
                         size={17}
                         className={`shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#FF7A00]'
+                            ? 'text-[#2A7A3B] dark:text-[#34A854]'
                             : 'text-[#64748B] dark:text-[#94A3B8]'
                         }`}
                       />
@@ -349,7 +349,7 @@ export const AppLayout = () => {
 
             {/* Breadcrumb / Title */}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-[#64748B] font-semibold hidden sm:inline">VAZHARI</span>
+              <span className="text-[#64748B] font-semibold hidden sm:inline">EYTHU</span>
               <ChevronRight size={14} className="text-[#64748B] hidden sm:inline" />
               <span className="text-slate-900 dark:text-[#F8FAFC] font-bold text-base">{getPageTitle()}</span>
             </div>
@@ -370,10 +370,10 @@ export const AppLayout = () => {
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#64748B]" />
               <input
                 type="text"
-                placeholder="Search VAZHARI..."
+                placeholder="Search EYTHU..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#253044] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#FF7A00] focus:border-[#FF7A00] transition-all"
+                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#253044] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B] focus:border-[#2A7A3B] transition-all"
               />
             </div>
 
@@ -515,10 +515,10 @@ export const AppLayout = () => {
 
         {/* Subtle PWA Update Banner */}
         {hasUpdate && (
-          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#111827] border border-[#FF7A00]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
+          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#111827] border border-[#2A7A3B]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#FF7A00] animate-pulse" />
-              <span className="text-xs font-semibold text-slate-200">VAZHARI update available</span>
+              <span className="h-2 w-2 rounded-full bg-[#2A7A3B] animate-pulse" />
+              <span className="text-xs font-semibold text-slate-200">EYTHU update available</span>
             </div>
             <button
               onClick={() => pwaService.updateApp()}

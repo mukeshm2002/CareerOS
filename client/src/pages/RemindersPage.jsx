@@ -212,7 +212,7 @@ export const RemindersPage = () => {
       <PageHeader
         icon={Bell}
         title="Reminders"
-        subtitle="Stay aware without constantly checking VAZHARI."
+        subtitle="Stay aware without constantly checking EYTHU."
         action={
           <button
             onClick={handleOpenCreate}
@@ -429,7 +429,7 @@ export const RemindersPage = () => {
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                   >
-                    <option value="DAILY_CAREEROS_REVIEW">VAZHARI Daily Check-in</option>
+                    <option value="DAILY_CAREEROS_REVIEW">EYTHU Daily Check-in</option>
                     <option value="DAILY_SHUTDOWN">Daily Shutdown</option>
                     <option value="WEEKLY_CAREER_REVIEW">Weekly Review</option>
                     <option value="TASK_DUE">Task Due</option>

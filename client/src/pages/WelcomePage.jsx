@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { VazhariLogo } from '../components/common/VazhariLogo';
+import { EythuBrand } from '../components/common/BrandLogo';
 
 export const WelcomePage = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F17] text-[#111827] dark:text-[#F8FAFC] flex flex-col justify-between px-6 py-8 sm:py-12 max-w-md mx-auto select-none">
-      {/* Top: VAZHARI branding */}
+      {/* Top: EYTHU branding */}
       <header className="pt-2">
-        <VazhariLogo size="sm" variant="icon-wordmark" />
+        <EythuBrand size="sm" variant="icon-wordmark" />
       </header>
 
       {/* Center: Calm Product Entrance */}
@@ -45,7 +45,7 @@ export const WelcomePage = () => {
       {/* Bottom: Creator Endorsement */}
       <footer className="pb-2 text-center">
         <p className="text-xs text-[#64748B] dark:text-[#64748B] font-normal">
-          VAZHARI — A product by TamZode Technology
+          EYTHU — A product by TamZode Technology
         </p>
       </footer>
     </div>

@@ -3,53 +3,76 @@
 @tailwind utilities;
 
 :root {
-  /* Official VAZHARI Brand Color Tokens */
-  --vazhari-black: #101318;
-  --vazhari-charcoal: #1B1F26;
-  --vazhari-orange: #FF7A00;
-  --vazhari-amber: #FF9500;
-  --vazhari-gold: #FFC400;
-  --vazhari-bg: #F7F8FA;
-  --vazhari-surface: #FFFFFF;
-  --vazhari-text: #111827;
-  --vazhari-muted: #64748B;
+  /* Official EYTHU Brand Color Tokens */
+  --eythu-black: #101318;
+  --eythu-charcoal: #1B1F26;
+  --eythu-green: #2A7A3B;
+  --eythu-green-hover: #22653A;
+  --eythu-green-pressed: #1A5030;
+  --eythu-green-soft: rgba(42, 122, 59, 0.10);
+  --eythu-bg: #F7F8FA;
+  --eythu-surface: #FFFFFF;
+  --eythu-text: #111827;
+  --eythu-muted: #64748B;
 
-  /* Backward Compatibility Aliases */
-  --valari-black: var(--vazhari-black);
-  --valari-charcoal: var(--vazhari-charcoal);
-  --valari-orange: var(--vazhari-orange);
-  --valari-amber: var(--vazhari-amber);
-  --valari-gold: var(--vazhari-gold);
-  --valari-bg: var(--vazhari-bg);
-  --valari-surface: var(--vazhari-surface);
-  --valari-text: var(--vazhari-text);
-  --valari-muted: var(--vazhari-muted);
+  /* Backward Compatibility Aliases (do not remove — used by existing components) */
+  --vazhari-black: var(--eythu-black);
+  --vazhari-charcoal: var(--eythu-charcoal);
+  --vazhari-orange: var(--eythu-green);
+  --vazhari-amber: var(--eythu-green-hover);
+  --vazhari-gold: var(--eythu-green);
+  --vazhari-bg: var(--eythu-bg);
+  --vazhari-surface: var(--eythu-surface);
+  --vazhari-text: var(--eythu-text);
+  --vazhari-muted: var(--eythu-muted);
 
-  /* VAZHARI Semantic Tokens - Light Mode */
-  --bg-app: var(--vazhari-bg);
+  --valari-black: var(--eythu-black);
+  --valari-charcoal: var(--eythu-charcoal);
+  --valari-orange: var(--eythu-green);
+  --valari-amber: var(--eythu-green-hover);
+  --valari-gold: var(--eythu-green);
+  --valari-bg: var(--eythu-bg);
+  --valari-surface: var(--eythu-surface);
+  --valari-text: var(--eythu-text);
+  --valari-muted: var(--eythu-muted);
+
+  /* EYTHU Semantic Tokens - Light Mode */
+  --bg-app: var(--eythu-bg);
   --bg-sidebar: #FFFFFF;
   --surface-1: #FFFFFF;
-  --surface-2: #FFF8EE;
+  --surface-2: #F0F7F2;
   --surface-card: #FFFFFF;
-  --surface-hover: #FFF8EE;
-  --text-primary: var(--vazhari-text);
+  --surface-hover: #F0F7F2;
+  --text-primary: var(--eythu-text);
   --text-secondary: #475569;
-  --text-muted: var(--vazhari-muted);
+  --text-muted: var(--eythu-muted);
   --text-subtle: #94A3B8;
   --border-subtle: #E5E7EB;
   --border-strong: #CBD5E1;
 
   /* Brand Colors */
-  --brand-orange: var(--vazhari-orange);
-  --brand-orange-hover: #EA6700;
-  --brand-yellow: var(--vazhari-gold);
-  --brand-amber: var(--vazhari-amber);
-  --brand-soft: #FFF1D6;
+  --brand-primary: var(--eythu-green);
+  --brand-primary-hover: var(--eythu-green-hover);
+  --brand-primary-pressed: var(--eythu-green-pressed);
+  --brand-primary-soft: rgba(42, 122, 59, 0.10);
+  --brand-primary-muted: rgba(42, 122, 59, 0.06);
 
-  --accent: #FF7A00;
-  --accent-hover: #EA6700;
-  --accent-soft: #FFF1D6;
-  --accent-border: rgba(255, 122, 0, 0.28);
+  --brand-black: var(--eythu-black);
+  --brand-surface-dark: var(--eythu-charcoal);
+  --brand-surface: var(--eythu-surface);
+  --brand-border: rgba(42, 122, 59, 0.28);
+
+  /* Legacy brand aliases — kept for backward compat */
+  --brand-orange: var(--eythu-green);
+  --brand-orange-hover: var(--eythu-green-hover);
+  --brand-yellow: var(--eythu-green);
+  --brand-amber: var(--eythu-green-hover);
+  --brand-soft: rgba(42, 122, 59, 0.10);
+
+  --accent: var(--eythu-green);
+  --accent-hover: var(--eythu-green-hover);
+  --accent-soft: rgba(42, 122, 59, 0.10);
+  --accent-border: rgba(42, 122, 59, 0.28);
 
   --success: #22C55E;
   --success-soft: rgba(34, 197, 94, 0.10);
@@ -58,18 +81,18 @@
   --card-shadow: 0 4px 20px rgba(17, 24, 39, 0.05);
 
   /* Legacy & Tailwind Theme Variables */
-  --color-primary: #FF7A00;
-  --color-primary-hover: #EA6700;
-  --color-primary-pressed: #D95F00;
-  --color-primary-soft: #FFF1D6;
-  --color-primary-soft-strong: rgba(255, 122, 0, 0.22);
-  --color-accent: #FF7A00;
-  --color-accent-soft: #FFF1D6;
+  --color-primary: var(--eythu-green);
+  --color-primary-hover: var(--eythu-green-hover);
+  --color-primary-pressed: var(--eythu-green-pressed);
+  --color-primary-soft: rgba(42, 122, 59, 0.10);
+  --color-primary-soft-strong: rgba(42, 122, 59, 0.22);
+  --color-accent: var(--eythu-green);
+  --color-accent-soft: rgba(42, 122, 59, 0.10);
   --color-background: var(--bg-app);
   --color-sidebar: var(--bg-sidebar);
   --color-surface: var(--surface-1);
   --color-card: var(--surface-2);
-  --color-surface-secondary: #FFF8EE;
+  --color-surface-secondary: #F0F7F2;
   --color-surface-elevated: #FFFFFF;
   --color-surface-hover: var(--surface-hover);
   --color-text-primary: var(--text-primary);
@@ -86,7 +109,7 @@
 }
 
 .dark {
-  /* VAZHARI Semantic Tokens - Dark Mode */
+  /* EYTHU Semantic Tokens - Dark Mode */
   --bg-app: #0B0F17;
   --bg-sidebar: #0B0F17;
   --surface-1: #111827;
@@ -102,16 +125,25 @@
   --border-strong: #33435C;
 
   /* Brand Colors */
-  --brand-orange: #FF7A00;
-  --brand-orange-hover: #EA6700;
-  --brand-yellow: #FFC400;
-  --brand-amber: #FFB000;
-  --brand-soft: rgba(255, 122, 0, 0.12);
+  --brand-primary: #34A854;
+  --brand-primary-hover: #2A8A44;
+  --brand-primary-pressed: #22723A;
+  --brand-primary-soft: rgba(52, 168, 84, 0.12);
+  --brand-primary-muted: rgba(52, 168, 84, 0.07);
 
-  --accent: #FF7A00;
-  --accent-hover: #EA6700;
-  --accent-soft: rgba(255, 122, 0, 0.12);
-  --accent-border: rgba(255, 122, 0, 0.28);
+  --brand-border: rgba(52, 168, 84, 0.28);
+
+  /* Legacy brand aliases */
+  --brand-orange: #34A854;
+  --brand-orange-hover: #2A8A44;
+  --brand-yellow: #34A854;
+  --brand-amber: #2A8A44;
+  --brand-soft: rgba(52, 168, 84, 0.12);
+
+  --accent: #34A854;
+  --accent-hover: #2A8A44;
+  --accent-soft: rgba(52, 168, 84, 0.12);
+  --accent-border: rgba(52, 168, 84, 0.28);
 
   --success: #22C55E;
   --success-soft: rgba(34, 197, 94, 0.10);
@@ -120,13 +152,13 @@
   --card-shadow: none;
 
   /* Legacy & Tailwind Theme Variables */
-  --color-primary: #FF7A00;
-  --color-primary-hover: #EA6700;
-  --color-primary-pressed: #D95F00;
-  --color-primary-soft: rgba(255, 122, 0, 0.12);
-  --color-primary-soft-strong: rgba(255, 122, 0, 0.22);
-  --color-accent: #FF7A00;
-  --color-accent-soft: rgba(255, 122, 0, 0.12);
+  --color-primary: #34A854;
+  --color-primary-hover: #2A8A44;
+  --color-primary-pressed: #22723A;
+  --color-primary-soft: rgba(52, 168, 84, 0.12);
+  --color-primary-soft-strong: rgba(52, 168, 84, 0.22);
+  --color-accent: #34A854;
+  --color-accent-soft: rgba(52, 168, 84, 0.12);
   --color-background: var(--bg-app);
   --color-sidebar: var(--bg-sidebar);
   --color-surface: var(--surface-1);
@@ -273,6 +305,12 @@
   transition: all 160ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.focus-ring-brand:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-app), 0 0 0 4px var(--accent);
+}
+
+/* Legacy alias — kept for backward compat */
 .focus-ring-orange:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--bg-app), 0 0 0 4px var(--accent);

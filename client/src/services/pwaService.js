@@ -1,5 +1,5 @@
 /**
- * VAZHARI Progressive Web App Client Service
+ * EYTHU Progressive Web App Client Service
  *
  * Handles:
  * - Service worker registration
