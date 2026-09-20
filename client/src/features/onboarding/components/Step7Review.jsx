@@ -135,7 +135,7 @@ export const Step7Review = ({
           type="button"
           disabled={isSubmitting}
           onClick={onSubmit}
-          className="flex items-center gap-2 py-3 px-6 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] text-white font-bold text-xs transition-all shadow-sm shadow-[#FF7A00]/30 disabled:opacity-50 cursor-pointer"
+          className="flex items-center gap-2 py-3 px-6 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:bg-[#1A5030] text-white font-bold text-xs transition-all shadow-sm shadow-[#2A7A3B]/25 disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? (
             <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

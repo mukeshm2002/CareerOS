@@ -168,7 +168,7 @@ export const RoadmapPage = () => {
               <select
                 value={selectedGoalId || ''}
                 onChange={(e) => handleGoalChange(e.target.value)}
-                className="appearance-none bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-slate-800 dark:text-[#F8FAFC] text-xs font-semibold py-2 pl-3.5 pr-8 rounded-xl shadow-xs focus:ring-2 focus:ring-[#FF7A00] focus:outline-hidden cursor-pointer"
+                className="appearance-none bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-slate-800 dark:text-[#F8FAFC] text-xs font-semibold py-2 pl-3.5 pr-8 rounded-xl shadow-xs focus:ring-2 focus:ring-[#2A7A3B] focus:outline-hidden cursor-pointer"
               >
                 {goals.map((g) => (
                   <option key={g.id} value={g.id}>

@@ -128,7 +128,7 @@ export const CommunicationPage = () => {
           <button
             type="button"
             onClick={() => setShowSetupModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
           >
             <Plus size={15} />
             <span>Set Practice</span>
@@ -192,7 +192,7 @@ export const CommunicationPage = () => {
                       })
                     }
                     disabled={updateTaskStatusMutation.isPending}
-                    className="flex-1 py-2 px-3 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
+                    className="flex-1 py-2 px-3 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
                   >
                     Mark Done
                   </button>
@@ -209,7 +209,7 @@ export const CommunicationPage = () => {
               <button
                 type="button"
                 onClick={() => setShowSetupModal(true)}
-                className="w-full py-2 px-3 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
+                className="w-full py-2 px-3 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
               >
                 Set Practice
               </button>
@@ -258,7 +258,7 @@ export const CommunicationPage = () => {
           <div className="pt-4 mt-4 border-t border-slate-100 dark:border-[#263247]">
             <a
               href="/app/goals"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700]"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2A7A3B] hover:text-[#22653A]"
             >
               <span>{currentGoal ? 'Manage in Goals' : 'Create Goal'}</span>
               <ArrowRight size={14} />
@@ -300,10 +300,10 @@ export const CommunicationPage = () => {
                 'Speak about what you worked on today for 10 minutes without switching languages.'
               )
             }
-            className="p-3.5 rounded-xl border border-slate-200 dark:border-[#263247] hover:border-[#FF7A00] bg-slate-50/50 dark:bg-[#161E2D] hover:bg-[#FFF7EF] dark:hover:bg-[rgba(255,122,0,0.06)] text-left transition-all cursor-pointer group"
+            className="p-3.5 rounded-xl border border-slate-200 dark:border-[#263247] hover:border-[#2A7A3B] bg-slate-50/50 dark:bg-[#161E2D] hover:bg-[#F0FDF4] dark:hover:bg-[rgba(42,122,59,0.06)] text-left transition-all cursor-pointer group"
           >
-            <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-[#F8FAFC] font-semibold text-xs group-hover:text-[#FF7A00]">
-              <Mic size={14} className="text-[#FF7A00]" />
+            <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-[#F8FAFC] font-semibold text-xs group-hover:text-[#2A7A3B]">
+              <Mic size={14} className="text-[#2A7A3B]" />
               <span>English Speaking</span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">10 min spontaneous recap</p>
@@ -318,10 +318,10 @@ export const CommunicationPage = () => {
                 'Write a crisp summary of a technical decision or work deliverable.'
               )
             }
-            className="p-3.5 rounded-xl border border-slate-200 dark:border-[#263247] hover:border-[#FF7A00] bg-slate-50/50 dark:bg-[#161E2D] hover:bg-[#FFF7EF] dark:hover:bg-[rgba(255,122,0,0.06)] text-left transition-all cursor-pointer group"
+            className="p-3.5 rounded-xl border border-slate-200 dark:border-[#263247] hover:border-[#2A7A3B] bg-slate-50/50 dark:bg-[#161E2D] hover:bg-[#F0FDF4] dark:hover:bg-[rgba(42,122,59,0.06)] text-left transition-all cursor-pointer group"
           >
-            <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-[#F8FAFC] font-semibold text-xs group-hover:text-[#FF7A00]">
-              <PenTool size={14} className="text-[#FF7A00]" />
+            <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-[#F8FAFC] font-semibold text-xs group-hover:text-[#2A7A3B]">
+              <PenTool size={14} className="text-[#2A7A3B]" />
               <span>Professional Writing</span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">15 min structured synthesis</p>
@@ -336,10 +336,10 @@ export const CommunicationPage = () => {
                 'Practice presenting your project demo or ideas aloud with clear structure.'
               )
             }
-            className="p-3.5 rounded-xl border border-slate-200 dark:border-[#263247] hover:border-[#FF7A00] bg-slate-50/50 dark:bg-[#161E2D] hover:bg-[#FFF7EF] dark:hover:bg-[rgba(255,122,0,0.06)] text-left transition-all cursor-pointer group"
+            className="p-3.5 rounded-xl border border-slate-200 dark:border-[#263247] hover:border-[#2A7A3B] bg-slate-50/50 dark:bg-[#161E2D] hover:bg-[#F0FDF4] dark:hover:bg-[rgba(42,122,59,0.06)] text-left transition-all cursor-pointer group"
           >
-            <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-[#F8FAFC] font-semibold text-xs group-hover:text-[#FF7A00]">
-              <Volume2 size={14} className="text-[#FF7A00]" />
+            <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-[#F8FAFC] font-semibold text-xs group-hover:text-[#2A7A3B]">
+              <Volume2 size={14} className="text-[#2A7A3B]" />
               <span>Presentation Prep</span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">10 min pitch rehearsal</p>
@@ -401,7 +401,7 @@ export const CommunicationPage = () => {
                   type="text"
                   value={quickTitle}
                   onChange={(e) => setQuickTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -415,7 +415,7 @@ export const CommunicationPage = () => {
                   max="60"
                   value={quickMinutes}
                   onChange={(e) => setQuickMinutes(parseInt(e.target.value, 10) || 10)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -427,7 +427,7 @@ export const CommunicationPage = () => {
                   rows="2"
                   value={quickDesc}
                   onChange={(e) => setQuickDesc(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -443,7 +443,7 @@ export const CommunicationPage = () => {
                   type="button"
                   onClick={() => handleQuickSetup(quickTitle, quickMinutes, quickDesc)}
                   disabled={createTaskMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   {createTaskMutation.isPending ? 'Saving...' : 'Set Practice'}
                 </button>

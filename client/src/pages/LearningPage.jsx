@@ -157,7 +157,7 @@ export const LearningPage = () => {
         action={
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New Path</span>
@@ -177,7 +177,7 @@ export const LearningPage = () => {
         </div>
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
           <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Learning Minutes</div>
-          <div className="text-2xl font-bold text-[#FF7A00] mt-1">{summary.learningMinutes}m</div>
+          <div className="text-2xl font-bold text-[#2A7A3B] mt-1">{summary.learningMinutes}m</div>
         </div>
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
           <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Skills Being Developed</div>

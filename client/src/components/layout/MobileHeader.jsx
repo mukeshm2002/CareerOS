@@ -41,7 +41,7 @@ export const MobileHeader = () => {
           >
             <Bell size={19} strokeWidth={1.75} />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 min-w-4 h-4 px-1 rounded-full bg-[#FF7A00] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0B0F17]">
+              <span className="absolute top-2 right-2 min-w-4 h-4 px-1 rounded-full bg-[#2A7A3B] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0B0F17]">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -53,7 +53,7 @@ export const MobileHeader = () => {
             className="h-10 w-10 flex items-center justify-center rounded-lg transition cursor-pointer"
             aria-label="User Profile Menu"
           >
-            <div className="h-8 w-8 rounded-full bg-[#FF7A00] text-white font-semibold text-xs flex items-center justify-center">
+            <div className="h-8 w-8 rounded-full bg-[#2A7A3B] text-white font-semibold text-xs flex items-center justify-center">
               {initial}
             </div>
           </button>

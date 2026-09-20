@@ -121,7 +121,7 @@ export const WorkLogHistoryPage = () => {
             action={
               <button
                 onClick={handleNewToday}
-                className="h-10 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm shadow-[#FF7A00]/25 transition active:scale-95 shrink-0 cursor-pointer"
+                className="h-10 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm shadow-[#2A7A3B]/25 transition active:scale-95 shrink-0 cursor-pointer"
               >
                 {hasTodayLog ? (
                   <>
@@ -173,7 +173,7 @@ export const WorkLogHistoryPage = () => {
 
           {isHistoryLoading ? (
             <div className="p-12 flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-[#94A3B8]">
-              <Loader2 size={24} className="animate-spin text-[#FF7A00]" />
+              <Loader2 size={24} className="animate-spin text-[#2A7A3B]" />
               <p className="text-xs">Loading journal...</p>
             </div>
           ) : isHistoryError ? (
@@ -210,7 +210,7 @@ export const WorkLogHistoryPage = () => {
                     key={log.id}
                     className={`bg-white dark:bg-[#111827] border ${
                       isToday
-                        ? 'border-[#FF7A00]/40 shadow-sm'
+                        ? 'border-[#2A7A3B]/40 shadow-sm'
                         : 'border-slate-200/80 dark:border-[#263247]'
                     } rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xs transition`}
                   >
@@ -221,7 +221,7 @@ export const WorkLogHistoryPage = () => {
                           <span
                             className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                               isToday
-                                ? 'bg-[#FF7A00] text-white'
+                                ? 'bg-[#2A7A3B] text-white'
                                 : 'bg-slate-100 dark:bg-[#161E2D] text-slate-600 dark:text-[#94A3B8]'
                             }`}
                           >
@@ -281,7 +281,7 @@ export const WorkLogHistoryPage = () => {
 
                       {log.nextStep && (
                         <div className="pt-2.5 space-y-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] block">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#2A7A3B] dark:text-[#4ADE80] block">
                             Next
                           </span>
                           <p className="text-slate-700 dark:text-[#CBD5E1] whitespace-pre-line leading-relaxed">

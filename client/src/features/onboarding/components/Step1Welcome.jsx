@@ -20,7 +20,7 @@ export const Step1Welcome = ({ onNext }) => {
 
       <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200/70 dark:border-[#263247] max-w-md mx-auto text-left space-y-2">
         <p className="text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">The EYTHU Workflow:</p>
-        <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-[#FF7A00] font-medium">
+        <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-[#2A7A3B] font-medium">
           <span>Goal</span>
           <span>→</span>
           <span>Roadmap</span>
@@ -39,7 +39,7 @@ export const Step1Welcome = ({ onNext }) => {
         <button
           type="button"
           onClick={onNext}
-          className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] text-white font-semibold text-sm transition-all shadow-sm shadow-[#FF7A00]/30 cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:bg-[#1A5030] text-white font-semibold text-sm transition-all shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
         >
           <span>Get Started</span>
           <ArrowRight size={16} />

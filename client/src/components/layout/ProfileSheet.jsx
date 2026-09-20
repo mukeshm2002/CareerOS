@@ -56,7 +56,7 @@ export const ProfileSheet = ({ isOpen, onClose }) => {
         {/* User Card Header */}
         <div className="p-5 border-b border-slate-100 dark:border-[rgba(148,163,184,0.14)] flex items-start justify-between bg-slate-50/70 dark:bg-[#131A2A]">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-[#FF7A00] text-white font-bold text-lg flex items-center justify-center shadow-md shadow-[#FF7A00]/20">
+            <div className="h-12 w-12 rounded-2xl bg-[#2A7A3B] text-white font-bold text-lg flex items-center justify-center shadow-md shadow-[#2A7A3B]/20">
               {initial}
             </div>
             <div>

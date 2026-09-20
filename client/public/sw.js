@@ -9,12 +9,17 @@
  * NOTE: Authenticated API responses and personal data are NEVER cached in this service worker.
  */
 
-const CACHE_NAME = 'eythu-static-v2';
+const CACHE_NAME = 'eythu-static-v4';
 const STATIC_ASSETS = [
   '/',
   '/offline.html',
   '/manifest.webmanifest',
+  '/favicon.ico',
+  '/favicon.svg',
   '/favicon.png',
+  '/favicon-32x32.png',
+  '/favicon-16x16.png',
+  '/apple-touch-icon.png',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
   '/icons/icon-maskable-512x512.png',

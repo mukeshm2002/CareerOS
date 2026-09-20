@@ -173,7 +173,7 @@ export const TasksPage = () => {
         action={
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
           >
             <Plus size={15} />
             <span>Add Task</span>
@@ -224,7 +224,7 @@ export const TasksPage = () => {
               onClick={() => setFilterTab(tab.key)}
               className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                  ? 'bg-[#2A7A3B]/10 text-[#2A7A3B] dark:bg-[rgba(42,122,59,0.18)] dark:text-[#4ADE80] border border-[#2A7A3B]/25'
                   : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
               }`}
             >

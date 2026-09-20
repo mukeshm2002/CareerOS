@@ -285,7 +285,7 @@ export const AppLayout = () => {
       <div className="p-3 border-t border-[#E5E7EB] dark:border-[#253044] bg-[#F8FAFC] dark:bg-[#0B0F17]">
         <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#253044]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="h-7 w-7 rounded-lg bg-[#FF7A00] text-white font-bold text-xs flex items-center justify-center shrink-0">
+            <div className="h-7 w-7 rounded-lg bg-[#2A7A3B] text-white font-bold text-xs flex items-center justify-center shrink-0">
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -383,7 +383,7 @@ export const AppLayout = () => {
                 onClick={() => setNotificationOpen((prev) => !prev)}
                 className={`relative h-10 w-10 flex items-center justify-center rounded-xl transition-colors ${
                   notificationOpen
-                    ? 'bg-[rgba(255,122,0,0.12)] text-[#FF7A00]'
+                    ? 'bg-[rgba(42,122,59,0.12)] text-[#2A7A3B]'
                     : 'text-slate-500 dark:text-[#CBD5E1] hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)]'
                 }`}
                 title="Notifications"
@@ -391,7 +391,7 @@ export const AppLayout = () => {
               >
                 <Bell size={18} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#FF7A00] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0B0F17] shadow-xs">
+                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#2A7A3B] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0B0F17] shadow-xs">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -404,7 +404,7 @@ export const AppLayout = () => {
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-[#F8FAFC]">Notifications</span>
                       {unreadCount > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-[rgba(255,122,0,0.14)] text-[#FF7A00] text-[10px] font-semibold">
+                        <span className="px-2 py-0.5 rounded-full bg-[rgba(42,122,59,0.14)] text-[#2A7A3B] text-[10px] font-semibold">
                           {unreadCount} new
                         </span>
                       )}
@@ -413,7 +413,7 @@ export const AppLayout = () => {
                       <button
                         onClick={() => markAllReadMutation.mutate()}
                         disabled={markAllReadMutation.isPending}
-                        className="text-[11px] font-semibold text-[#FF7A00] hover:text-[#EA6700] flex items-center gap-1 transition-colors"
+                        className="text-[11px] font-semibold text-[#2A7A3B] hover:text-[#22653A] flex items-center gap-1 transition-colors"
                       >
                         <CheckCheck size={13} />
                         Mark all read
@@ -437,13 +437,13 @@ export const AppLayout = () => {
                         <div
                           key={notif.id}
                           className={`p-3.5 transition-colors flex items-start justify-between gap-3 ${
-                            !notif.readAt ? 'bg-[rgba(255,122,0,0.06)] dark:bg-[rgba(255,122,0,0.10)] hover:bg-[rgba(255,122,0,0.12)]' : 'hover:bg-slate-50 dark:hover:bg-[#161E2D]'
+                            !notif.readAt ? 'bg-[rgba(42,122,59,0.06)] dark:bg-[rgba(42,122,59,0.10)] hover:bg-[rgba(42,122,59,0.12)]' : 'hover:bg-slate-50 dark:hover:bg-[#161E2D]'
                           }`}
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5 mb-1">
                               {!notif.readAt && (
-                                <span className="h-2 w-2 rounded-full bg-[#FF7A00] shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-[#2A7A3B] shrink-0" />
                               )}
                               <p className="text-xs font-semibold text-slate-800 dark:text-[#F8FAFC] truncate">{notif.title}</p>
                             </div>
@@ -462,7 +462,7 @@ export const AppLayout = () => {
                             <button
                               onClick={() => markReadMutation.mutate(notif.id)}
                               title="Mark as read"
-                              className="p-1 rounded-lg text-slate-400 hover:text-[#FF7A00] hover:bg-white dark:hover:bg-[#161E2D] transition-colors shrink-0 cursor-pointer"
+                              className="p-1 rounded-lg text-slate-400 hover:text-[#2A7A3B] hover:bg-white dark:hover:bg-[#161E2D] transition-colors shrink-0 cursor-pointer"
                             >
                               <Check size={14} />
                             </button>
@@ -476,7 +476,7 @@ export const AppLayout = () => {
                     <NavLink
                       to="/app/reminders"
                       onClick={() => setNotificationOpen(false)}
-                      className="text-[11px] font-semibold text-[#FF7A00] hover:text-[#EA6700] flex items-center gap-1 transition-colors"
+                      className="text-[11px] font-semibold text-[#2A7A3B] hover:text-[#22653A] flex items-center gap-1 transition-colors"
                     >
                       Reminders & Schedule
                       <ChevronRight size={13} />
@@ -498,7 +498,7 @@ export const AppLayout = () => {
               to="/app/settings"
               className="h-10 flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-xl border border-[#E5E7EB] dark:border-[#263247] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
             >
-              <div className="h-6 w-6 rounded-md bg-[#FF7A00] text-white text-[11px] font-bold flex items-center justify-center">
+              <div className="h-6 w-6 rounded-md bg-[#2A7A3B] text-white text-[11px] font-bold flex items-center justify-center">
                 {displayName.charAt(0).toUpperCase()}
               </div>
               <span className="text-xs font-medium text-slate-700 dark:text-[#CBD5E1] hidden md:inline">{displayName.split(' ')[0]}</span>
@@ -522,7 +522,7 @@ export const AppLayout = () => {
             </div>
             <button
               onClick={() => pwaService.updateApp()}
-              className="h-8 px-3 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-bold transition shadow-xs cursor-pointer"
+              className="h-8 px-3 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-bold transition shadow-xs cursor-pointer"
             >
               Update
             </button>

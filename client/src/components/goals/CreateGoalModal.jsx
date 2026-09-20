@@ -125,7 +125,7 @@ const CustomSelect = ({ label, value, options, onChange, placeholder = 'Select o
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50 dark:bg-[#151D2B] border border-slate-200 dark:border-[#253044] rounded-xl text-xs sm:text-sm text-slate-900 dark:text-[#F8FAFC] hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:border-[#FF7A00] transition-colors cursor-pointer text-left"
+        className="w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50 dark:bg-[#151D2B] border border-slate-200 dark:border-[#253044] rounded-xl text-xs sm:text-sm text-slate-900 dark:text-[#F8FAFC] hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:border-[#2A7A3B] transition-colors cursor-pointer text-left"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -154,14 +154,14 @@ const CustomSelect = ({ label, value, options, onChange, placeholder = 'Select o
                 }}
                 className={`w-full flex items-center justify-between px-3.5 py-2 text-xs text-left cursor-pointer transition-colors ${
                   isSelected
-                    ? 'bg-[#FF7A00]/10 text-[#FF7A00] font-semibold'
+                    ? 'bg-[#2A7A3B]/10 text-[#2A7A3B] font-semibold'
                     : 'text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#1F293D]'
                 }`}
                 role="option"
                 aria-selected={isSelected}
               >
                 <span>{opt.label}</span>
-                {isSelected && <Check size={14} className="text-[#FF7A00] shrink-0" />}
+                {isSelected && <Check size={14} className="text-[#2A7A3B] shrink-0" />}
               </button>
             );
           })}
@@ -411,7 +411,7 @@ export const CreateGoalModal = ({
                       onClick={() => handleAreaSelect(area.id)}
                       className={`w-full flex items-center justify-between p-3.5 sm:p-4 rounded-xl border text-left transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-[#FF7A00] bg-[rgba(255,122,0,0.06)]'
+                          ? 'border-[#2A7A3B] bg-[rgba(42,122,59,0.06)]'
                           : 'border-[#253044] bg-[#151D2B] hover:border-slate-700'
                       }`}
                     >
@@ -419,7 +419,7 @@ export const CreateGoalModal = ({
                         <div
                           className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                             isSelected
-                              ? 'bg-[#FF7A00]/15 text-[#FF7A00]'
+                              ? 'bg-[#2A7A3B]/15 text-[#2A7A3B]'
                               : 'bg-[#111827] text-[#94A3B8] border border-[#253044]'
                           }`}
                         >
@@ -444,7 +444,7 @@ export const CreateGoalModal = ({
                         <div
                           className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
                             isSelected
-                              ? 'border-[#FF7A00] bg-[#FF7A00]'
+                              ? 'border-[#2A7A3B] bg-[#2A7A3B]'
                               : 'border-[#253044] bg-[#111827]'
                           }`}
                         >
@@ -461,23 +461,23 @@ export const CreateGoalModal = ({
           )}
 
           {/* ======================================================
-              STEP 2: DEFINE THE OUTCOME
+              STEP 2: DEFINE THE GOAL
           ====================================================== */}
           {step === 2 && (
             <div className="space-y-4">
               <div>
                 <h3 className="text-sm font-semibold text-[#F8FAFC]">
-                  What do you want to achieve?
+                  Define your {AREAS.find((a) => a.id === selectedArea)?.title} goal
                 </h3>
                 <p className="text-xs text-[#94A3B8] mt-1">
-                  Define the specific result and target timeline for this {AREA_LABELS[selectedArea].toLowerCase()} goal.
+                  Be specific about what you want to accomplish.
                 </p>
               </div>
 
               {/* Goal Title */}
               <div>
                 <label className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
-                  Goal <span className="text-[#FF7A00]">*</span>
+                  Goal <span className="text-[#2A7A3B]">*</span>
                 </label>
                 <input
                   type="text"
@@ -492,7 +492,7 @@ export const CreateGoalModal = ({
                       ? 'e.g. Complete 30-min morning workout 4x weekly'
                       : 'e.g. Read 15 pages of non-fiction daily'
                   }
-                  className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#FF7A00] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#2A7A3B] transition-colors"
                   autoFocus
                 />
               </div>
@@ -522,7 +522,7 @@ export const CreateGoalModal = ({
                           className={`py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                             isSelected
                               ? p === 'HIGH'
-                                ? 'bg-[#FF7A00]/15 text-[#FF7A00] border border-[#FF7A00]/30'
+                                ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
                                 : 'bg-[#253044] text-[#F8FAFC]'
                               : 'text-[#94A3B8] hover:text-[#F8FAFC]'
                           }`}
@@ -545,7 +545,7 @@ export const CreateGoalModal = ({
                     type="date"
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] focus:outline-none focus:border-[#FF7A00] transition-colors [color-scheme:dark]"
+                    className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B] transition-colors [color-scheme:dark]"
                   />
                 </div>
               </div>
@@ -561,7 +561,7 @@ export const CreateGoalModal = ({
                     value={targetRole}
                     onChange={(e) => setTargetRole(e.target.value)}
                     placeholder="e.g. Senior Full Stack Engineer"
-                    className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#FF7A00] transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#2A7A3B] transition-colors"
                   />
                 </div>
               )}
@@ -592,7 +592,7 @@ export const CreateGoalModal = ({
                   value={why}
                   onChange={(e) => setWhy(e.target.value)}
                   placeholder="Why is this goal important to you right now?"
-                  className="w-full px-3.5 py-2 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#FF7A00] transition-colors resize-none"
+                  className="w-full px-3.5 py-2 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#2A7A3B] transition-colors resize-none"
                 />
               </div>
 
@@ -610,7 +610,7 @@ export const CreateGoalModal = ({
                       value={weeklyCommitment}
                       onChange={(e) => setWeeklyCommitment(e.target.value)}
                       placeholder="5"
-                      className="w-full pl-3.5 pr-24 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#FF7A00] transition-colors"
+                      className="w-full pl-3.5 pr-24 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#2A7A3B] transition-colors"
                     />
                     <span className="absolute right-3.5 text-xs text-[#94A3B8] pointer-events-none">
                       hrs / week
@@ -627,7 +627,7 @@ export const CreateGoalModal = ({
                     value={firstMilestone}
                     onChange={(e) => setFirstMilestone(e.target.value)}
                     placeholder="e.g. Complete foundational syllabus"
-                    className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#FF7A00] transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#2A7A3B] transition-colors"
                   />
                 </div>
               </div>
@@ -642,7 +642,7 @@ export const CreateGoalModal = ({
                   value={firstAction}
                   onChange={(e) => setFirstAction(e.target.value)}
                   placeholder="e.g. Research initial curriculum or block calendar"
-                  className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#FF7A00] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-[#151D2B] border border-[#253044] rounded-xl text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#2A7A3B] transition-colors"
                 />
               </div>
 
@@ -650,7 +650,7 @@ export const CreateGoalModal = ({
               <div className="pt-2 border-t border-[#253044]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Bell size={15} className="text-[#FF7A00]" />
+                    <Bell size={15} className="text-[#2A7A3B]" />
                     <span className="text-xs font-semibold text-[#F8FAFC]">
                       Schedule check-in reminder
                     </span>
@@ -662,7 +662,7 @@ export const CreateGoalModal = ({
                       onChange={(e) => setReminderEnabled(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-9 h-5 bg-[#253044] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#FF7A00]"></div>
+                    <div className="w-9 h-5 bg-[#253044] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#2A7A3B]"></div>
                   </label>
                 </div>
 
@@ -675,7 +675,7 @@ export const CreateGoalModal = ({
                       <select
                         value={reminderFrequency}
                         onChange={(e) => setReminderFrequency(e.target.value)}
-                        className="w-full px-2.5 py-1.5 bg-[#111827] border border-[#253044] rounded-lg text-xs text-[#F8FAFC] focus:outline-none focus:border-[#FF7A00] cursor-pointer"
+                        className="w-full px-2.5 py-1.5 bg-[#111827] border border-[#253044] rounded-lg text-xs text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B] cursor-pointer"
                       >
                         <option value="DAILY">Daily</option>
                         <option value="WEEKDAYS">Weekdays</option>
@@ -691,7 +691,7 @@ export const CreateGoalModal = ({
                         type="time"
                         value={reminderTime}
                         onChange={(e) => setReminderTime(e.target.value)}
-                        className="w-full px-2.5 py-1.5 bg-[#111827] border border-[#253044] rounded-lg text-xs text-[#F8FAFC] focus:outline-none focus:border-[#FF7A00] [color-scheme:dark]"
+                        className="w-full px-2.5 py-1.5 bg-[#111827] border border-[#253044] rounded-lg text-xs text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B] [color-scheme:dark]"
                       />
                     </div>
 
@@ -702,7 +702,7 @@ export const CreateGoalModal = ({
                       <select
                         value={reminderChannel}
                         onChange={(e) => setReminderChannel(e.target.value)}
-                        className="w-full px-2.5 py-1.5 bg-[#111827] border border-[#253044] rounded-lg text-xs text-[#F8FAFC] focus:outline-none focus:border-[#FF7A00] cursor-pointer"
+                        className="w-full px-2.5 py-1.5 bg-[#111827] border border-[#253044] rounded-lg text-xs text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B] cursor-pointer"
                       >
                         <option value="IN_APP">In-App</option>
                         <option value="PUSH">Push</option>
@@ -740,7 +740,7 @@ export const CreateGoalModal = ({
           ====================================================== */}
           {step === 'SUCCESS' && (
             <div className="py-4 text-center space-y-5">
-              <div className="w-12 h-12 mx-auto rounded-full bg-[#FF7A00]/15 border border-[#FF7A00]/30 flex items-center justify-center text-[#FF7A00]">
+              <div className="w-12 h-12 mx-auto rounded-full bg-[#2A7A3B]/15 border border-[#2A7A3B]/30 flex items-center justify-center text-[#2A7A3B]">
                 <CheckCircle2 size={26} />
               </div>
 
@@ -773,7 +773,7 @@ export const CreateGoalModal = ({
               <button
                 type="button"
                 onClick={handleNextFromStep1}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#FF7A00]/25 transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#2A7A3B]/25 transition-colors cursor-pointer"
               >
                 Continue
               </button>
@@ -792,7 +792,7 @@ export const CreateGoalModal = ({
               <button
                 type="button"
                 onClick={handleNextFromStep2}
-                className="px-6 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#FF7A00]/25 transition-colors cursor-pointer"
+                className="px-6 py-2.5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#2A7A3B]/25 transition-colors cursor-pointer"
               >
                 Continue
               </button>
@@ -813,7 +813,7 @@ export const CreateGoalModal = ({
                 type="button"
                 onClick={handleCreateGoal}
                 disabled={isSubmitting}
-                className="px-6 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#FF7A00]/25 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2.5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#2A7A3B]/25 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <span>Creating...</span>
@@ -837,7 +837,7 @@ export const CreateGoalModal = ({
                       onClose();
                       navigate('/app/today');
                     }}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#FF7A00]/25 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#2A7A3B]/25 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <span>Start now</span>
                     <ArrowRight size={14} />
@@ -865,7 +865,7 @@ export const CreateGoalModal = ({
                         navigate(`/app/goals/${createdGoal.id}`);
                       }
                     }}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#FF7A00]/25 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs sm:text-sm font-semibold shadow-sm shadow-[#2A7A3B]/25 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <Plus size={14} />
                     <span>Add first action</span>

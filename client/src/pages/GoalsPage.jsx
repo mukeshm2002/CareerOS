@@ -77,7 +77,7 @@ export const GoalsPage = () => {
           <button
             type="button"
             onClick={handleOpenModal}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
           >
             <Plus size={15} />
             <span>New Goal</span>
@@ -103,7 +103,7 @@ export const GoalsPage = () => {
                 onClick={() => setSelectedArea(area.id)}
                 className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer text-xs ${
                   isSelected
-                    ? 'bg-white dark:bg-[#0D121C] text-[#FF7A00] shadow-xs'
+                    ? 'bg-white dark:bg-[#0D121C] text-[#2A7A3B] shadow-xs'
                     : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#F8FAFC]'
                 }`}
               >
@@ -124,7 +124,7 @@ export const GoalsPage = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer text-xs ${
                   isActive
-                    ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                    ? 'bg-brand-soft text-[#2A7A3B] dark:bg-[rgba(42,122,59,0.15)] dark:text-[#4ADE80] border border-[#2A7A3B]/25'
                     : 'text-slate-500 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
                 }`}
               >
@@ -138,7 +138,7 @@ export const GoalsPage = () => {
       {/* Loading & Error States */}
       {isLoading && (
         <div className="py-12 flex justify-center items-center">
-          <div className="h-7 w-7 border-3 border-[#FF7A00] border-t-transparent rounded-full animate-spin" />
+          <div className="h-7 w-7 border-3 border-[#2A7A3B] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
@@ -260,7 +260,7 @@ export const GoalsPage = () => {
                         type="button"
                         onClick={() => handleStatusChange(goal.id, 'ACTIVE')}
                         title="Resume Goal"
-                        className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-[#FF7A00] hover:bg-brand-soft rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-[#2A7A3B] hover:bg-brand-soft rounded-lg transition-colors cursor-pointer"
                       >
                         <PlayCircle size={16} />
                       </button>
@@ -291,7 +291,7 @@ export const GoalsPage = () => {
 
                   <Link
                     to={`/app/goals/${goal.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700]"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2A7A3B] hover:text-[#22653A]"
                   >
                     <span>Open</span>
                     <ArrowRight size={14} />

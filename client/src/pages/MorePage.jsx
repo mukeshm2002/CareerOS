@@ -127,7 +127,7 @@ export const MorePage = () => {
       {(canInstall || isStandalone) && (
         <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 shadow-xs flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-brand-soft border border-[#FF7A00]/20 text-[#FF7A00] flex items-center justify-center shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-brand-soft border border-[#2A7A3B]/20 text-[#2A7A3B] flex items-center justify-center shrink-0">
               <Download size={18} strokeWidth={2} />
             </div>
             <div className="min-w-0">
@@ -150,7 +150,7 @@ export const MorePage = () => {
           ) : (
             <button
               onClick={() => pwaService.promptInstall()}
-              className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-xs transition active:scale-95 shrink-0 shadow-xs"
+              className="h-9 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white font-semibold text-xs transition active:scale-95 shrink-0 shadow-xs"
             >
               Install
             </button>
@@ -175,7 +175,7 @@ export const MorePage = () => {
                     className="flex items-center justify-between min-h-[52px] px-4 py-3 hover:bg-slate-50 dark:hover:bg-[#161E2D] transition active:bg-slate-100 dark:active:bg-[#1A2434] group"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="h-9 w-9 rounded-xl bg-slate-100 dark:bg-[#161E2D] text-slate-600 dark:text-[#CBD5E1] group-hover:text-[#FF7A00] dark:group-hover:text-[#FF8A1F] flex items-center justify-center shrink-0 transition-colors">
+                      <div className="h-9 w-9 rounded-xl bg-slate-100 dark:bg-[#161E2D] text-slate-600 dark:text-[#CBD5E1] group-hover:text-[#2A7A3B] dark:group-hover:text-[#34A854] flex items-center justify-center shrink-0 transition-colors">
                         <Icon size={18} strokeWidth={1.8} />
                       </div>
                       <div className="min-w-0">
@@ -197,7 +197,7 @@ export const MorePage = () => {
       {/* Brand Ownership Footer */}
       <div className="pt-4 pb-8 text-center select-none">
         <p className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">EYTHU</p>
-        <p className="text-[11px] font-semibold text-[#FF7A00] mt-0.5">Personal Growth System</p>
+        <p className="text-[11px] font-semibold text-[#2A7A3B] mt-0.5">Personal Growth System</p>
         <p className="text-[11px] text-slate-400 dark:text-[#64748B] mt-1">
           A product by TamZode Technology
         </p>

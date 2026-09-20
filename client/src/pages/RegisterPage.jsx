@@ -73,7 +73,7 @@ export const RegisterPage = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Morgan"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/25 focus:border-[#FF7A00] focus:bg-white dark:focus:bg-[#111827] transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]/20 focus:border-[#2A7A3B] focus:bg-white dark:focus:bg-[#111827] transition-all"
                 />
               </div>
             </div>
@@ -90,7 +90,7 @@ export const RegisterPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@domain.com"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/25 focus:border-[#FF7A00] focus:bg-white dark:focus:bg-[#111827] transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]/20 focus:border-[#2A7A3B] focus:bg-white dark:focus:bg-[#111827] transition-all"
                 />
               </div>
             </div>
@@ -108,7 +108,7 @@ export const RegisterPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/25 focus:border-[#FF7A00] focus:bg-white dark:focus:bg-[#111827] transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]/20 focus:border-[#2A7A3B] focus:bg-white dark:focus:bg-[#111827] transition-all"
                 />
               </div>
             </div>
@@ -116,7 +116,7 @@ export const RegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] text-white font-semibold text-sm transition-all shadow-sm shadow-[#FF7A00]/25 disabled:opacity-50 cursor-pointer"
+              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:bg-[#1A5030] text-white font-semibold text-sm transition-all shadow-sm shadow-[#2A7A3B]/20 disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -132,7 +132,7 @@ export const RegisterPage = () => {
           <div className="mt-6 pt-5 border-t border-slate-100 dark:border-[#263247] text-center">
             <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
               Already have an account?{' '}
-              <Link to="/login" className="font-semibold text-[#FF7A00] hover:text-[#EA6700]">
+              <Link to="/login" className="font-semibold text-[#2A7A3B] hover:text-[#22653A]">
                 Sign In
               </Link>
             </p>

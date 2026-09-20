@@ -23,7 +23,7 @@ export const EmptyState = ({
     >
       {/* Icon */}
       {Icon && (
-        <div className="w-11 h-11 rounded-xl bg-brand-soft border border-[#FF7A00]/20 text-[#FF7A00] flex items-center justify-center mx-auto mb-3 shrink-0">
+        <div className="w-11 h-11 rounded-xl bg-brand-soft border border-[#2A7A3B]/20 text-[#2A7A3B] flex items-center justify-center mx-auto mb-3 shrink-0">
           <Icon size={22} strokeWidth={2} />
         </div>
       )}
@@ -48,7 +48,7 @@ export const EmptyState = ({
               <Link
                 to={primaryAction.to}
                 onClick={primaryAction.onClick}
-                className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-95 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition"
+                className="h-9 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:scale-95 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition"
               >
                 {primaryAction.icon && <primaryAction.icon size={14} />}
                 <span>{primaryAction.label}</span>
@@ -57,7 +57,7 @@ export const EmptyState = ({
               <button
                 type="button"
                 onClick={primaryAction.onClick}
-                className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-95 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                className="h-9 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:scale-95 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
               >
                 {primaryAction.icon && <primaryAction.icon size={14} />}
                 <span>{primaryAction.label}</span>

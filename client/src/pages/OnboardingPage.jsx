@@ -317,7 +317,7 @@ export const OnboardingPage = () => {
                     onClick={() => toggleArea(area.id)}
                     className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 ${
                       isSelected
-                        ? 'bg-[#151D2B] border-[#FF7A00]/60'
+                        ? 'bg-[#151D2B] border-[#2A7A3B]/70'
                         : 'bg-[#111827] border-[#253044] hover:border-[#33435C]'
                     }`}
                   >
@@ -325,7 +325,7 @@ export const OnboardingPage = () => {
                       <div
                         className={`p-2 rounded-lg shrink-0 mt-0.5 ${
                           isSelected
-                            ? 'bg-[#FF7A00]/15 text-[#FF7A00]'
+                            ? 'bg-[#2A7A3B]/15 text-[#4ADE80]'
                             : 'bg-[#151D2B] text-[#94A3B8]'
                         }`}
                       >
@@ -340,7 +340,7 @@ export const OnboardingPage = () => {
                     <div
                       className={`h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                         isSelected
-                          ? 'bg-[#FF7A00] text-white'
+                          ? 'bg-[#2A7A3B] text-white'
                           : 'border border-[#253044] bg-[#0B0F17]'
                       }`}
                     >
@@ -354,7 +354,7 @@ export const OnboardingPage = () => {
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="w-full h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+              className="w-full h-12 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
             >
               <span>Continue</span>
               <ArrowRight size={16} />
@@ -384,13 +384,13 @@ export const OnboardingPage = () => {
                     onClick={() => togglePriority(priority.id)}
                     className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 ${
                       isSelected
-                        ? 'bg-[#151D2B] border-[#FF7A00]/60'
+                        ? 'bg-[#151D2B] border-[#2A7A3B]/70'
                         : 'bg-[#111827] border-[#253044] hover:border-[#33435C]'
                     }`}
                   >
                     <div className="space-y-0.5 pr-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00]">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#4ADE80]">
                           {priority.area}
                         </span>
                       </div>
@@ -401,7 +401,7 @@ export const OnboardingPage = () => {
                     <div
                       className={`h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-1 transition-colors ${
                         isSelected
-                          ? 'bg-[#FF7A00] text-white'
+                          ? 'bg-[#2A7A3B] text-white'
                           : 'border border-[#253044] bg-[#0B0F17]'
                       }`}
                     >
@@ -423,7 +423,7 @@ export const OnboardingPage = () => {
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="flex-1 h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+                className="flex-1 h-12 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
               >
                 <span>Continue</span>
                 <ArrowRight size={16} />
@@ -454,7 +454,7 @@ export const OnboardingPage = () => {
                     onClick={() => setDailyCommitment(opt.minutes)}
                     className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-[#151D2B] border-[#FF7A00]/60'
+                        ? 'bg-[#151D2B] border-[#2A7A3B]/70'
                         : 'bg-[#111827] border-[#253044] hover:border-[#33435C]'
                     }`}
                   >
@@ -462,7 +462,7 @@ export const OnboardingPage = () => {
                       <div className="flex items-center gap-2">
                         <h4 className="text-sm font-semibold text-[#F8FAFC]">{opt.title}</h4>
                         {opt.badge && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] bg-[#FF7A00]/15 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#4ADE80] bg-[#2A7A3B]/15 px-2 py-0.5 rounded-full">
                             {opt.badge}
                           </span>
                         )}
@@ -474,7 +474,7 @@ export const OnboardingPage = () => {
                     <div
                       className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                         isSelected
-                          ? 'border-2 border-[#FF7A00] bg-[#FF7A00]'
+                          ? 'border-2 border-[#2A7A3B] bg-[#2A7A3B]'
                           : 'border border-[#253044] bg-[#0B0F17]'
                       }`}
                     >
@@ -496,7 +496,7 @@ export const OnboardingPage = () => {
               <button
                 type="button"
                 onClick={() => setStep(4)}
-                className="flex-1 h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+                className="flex-1 h-12 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
               >
                 <span>Review Workspace</span>
                 <ArrowRight size={16} />
@@ -542,7 +542,7 @@ export const OnboardingPage = () => {
                 <span className="text-[#64748B] uppercase font-semibold text-[10px] tracking-wider">
                   Daily Commitment
                 </span>
-                <span className="text-[#FF7A00] font-semibold text-xs flex items-center gap-1">
+                <span className="text-[#4ADE80] font-semibold text-xs flex items-center gap-1">
                   <Clock size={12} />
                   {dailyCommitment} min / day
                 </span>
@@ -557,7 +557,7 @@ export const OnboardingPage = () => {
                     const found = Object.values(DYNAMIC_PRIORITIES).flat().find((p) => p.id === pId);
                     return (
                       <li key={pId} className="flex items-center gap-2 text-xs">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#FF7A00]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#2A7A3B]" />
                         <span className="truncate text-[#F8FAFC]">{found?.title || pId}</span>
                       </li>
                     );
@@ -571,7 +571,7 @@ export const OnboardingPage = () => {
                 type="button"
                 onClick={handleFinish}
                 disabled={isCompleting}
-                className="w-full h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer disabled:opacity-50"
+                className="w-full h-12 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center gap-2 transition shadow-xs cursor-pointer disabled:opacity-50"
               >
                 {isCompleting ? (
                   <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

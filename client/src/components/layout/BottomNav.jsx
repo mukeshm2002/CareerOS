@@ -78,7 +78,7 @@ export const BottomNav = () => {
               aria-current={active ? 'page' : undefined}
               className={`flex flex-col items-center justify-center h-full py-1 transition-colors select-none ${
                 active
-                  ? 'text-[#FF7A00]'
+                  ? 'text-[#2A7A3B]'
                   : 'text-[#64748B] dark:text-[#94A3B8] hover:text-[#111827] dark:hover:text-[#F8FAFC]'
               }`}
             >
@@ -86,12 +86,12 @@ export const BottomNav = () => {
                 <Icon
                   size={20}
                   strokeWidth={active ? 2.2 : 1.75}
-                  className={active ? 'text-[#FF7A00]' : 'text-[#64748B] dark:text-[#94A3B8]'}
+                  className={active ? 'text-[#2A7A3B]' : 'text-[#64748B] dark:text-[#94A3B8]'}
                 />
               </div>
               <span
                 className={`text-[11px] tracking-tight mt-1 leading-none ${
-                  active ? 'font-semibold text-[#FF7A00]' : 'font-medium text-[#64748B] dark:text-[#94A3B8]'
+                  active ? 'font-semibold text-[#2A7A3B]' : 'font-medium text-[#64748B] dark:text-[#94A3B8]'
                 }`}
               >
                 {item.label}
@@ -99,7 +99,7 @@ export const BottomNav = () => {
               {/* Subtle active indicator dot */}
               <span
                 className={`h-1 w-1 rounded-full mt-1 transition-all ${
-                  active ? 'bg-[#FF7A00] opacity-100' : 'bg-transparent opacity-0'
+                  active ? 'bg-[#2A7A3B] opacity-100' : 'bg-transparent opacity-0'
                 }`}
               />
             </NavLink>

@@ -216,7 +216,7 @@ export const ProjectsPage = () => {
         action={
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New Project</span>
@@ -236,7 +236,7 @@ export const ProjectsPage = () => {
         </div>
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
           <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Portfolio Ready</div>
-          <div className="text-2xl font-bold text-[#FF7A00] mt-1">{summary.portfolioReady}</div>
+          <div className="text-2xl font-bold text-[#2A7A3B] mt-1">{summary.portfolioReady}</div>
         </div>
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-2xl p-4 shadow-xs">
           <div className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Evidence Items</div>
@@ -261,7 +261,7 @@ export const ProjectsPage = () => {
                 onClick={() => setStatusFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#FFF3E4] text-[#FF7A00] dark:bg-[rgba(255,122,0,0.15)] dark:text-[#FF9D42] border border-[#FF7A00]/25'
+                    ? 'bg-brand-soft text-[#2A7A3B] dark:bg-[rgba(42,122,59,0.15)] dark:text-[#4ADE80] border border-[#2A7A3B]/25'
                     : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
                 }`}
               >
@@ -278,7 +278,7 @@ export const ProjectsPage = () => {
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-xs text-slate-800 dark:text-[#F8FAFC] rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+            className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] text-xs text-slate-800 dark:text-[#F8FAFC] rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
           />
         </div>
       </div>

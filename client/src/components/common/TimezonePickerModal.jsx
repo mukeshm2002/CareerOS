@@ -92,7 +92,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[rgba(148,163,184,0.14)] flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-[#131A2A]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-brand-soft text-[#FF7A00]">
+            <div className="p-2 rounded-xl bg-brand-soft text-[#2A7A3B]">
               <Globe size={18} />
             </div>
             <div>
@@ -123,7 +123,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search timezone, city, or country..."
-              className="w-full pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#FF7A00] transition"
+              className="w-full pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-[#131A2A] border border-slate-200 dark:border-[rgba(148,163,184,0.18)] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B] transition"
             />
             {searchQuery && (
               <button
@@ -142,7 +142,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
           {suggestedTimezones.length > 0 && (
             <div className="space-y-1 pb-1">
               <div className="px-2.5 pt-1 pb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-[#64748B]">
-                <Sparkles size={12} className="text-[#FF7A00]" />
+                <Sparkles size={12} className="text-[#2A7A3B]" />
                 <span>Suggested</span>
               </div>
               {suggestedTimezones.map((item) => {
@@ -153,7 +153,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
                     onClick={() => handleSelect(item.iana)}
                     className={`w-full min-h-[46px] px-3 py-2 rounded-xl flex items-center justify-between text-left transition-colors ${
                       isSelected
-                        ? 'bg-brand-soft text-[#FF7A00] border border-[#FF7A00]/25'
+                        ? 'bg-brand-soft text-[#2A7A3B] border border-[#2A7A3B]/25'
                         : 'hover:bg-slate-50 dark:hover:bg-[#131A2A] text-slate-700 dark:text-[#CBD5E1]'
                     }`}
                   >
@@ -161,7 +161,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
                       <div className="flex items-center gap-2">
                         <span className="text-xs sm:text-sm font-semibold">{item.name}</span>
                         {item.tag && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-brand-soft text-[#FF7A00] font-medium">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-brand-soft text-[#2A7A3B] font-medium">
                             {item.tag}
                           </span>
                         )}
@@ -171,7 +171,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
                       </span>
                     </div>
                     {isSelected && (
-                      <Check size={16} className="text-[#FF7A00] shrink-0" />
+                      <Check size={16} className="text-[#2A7A3B] shrink-0" />
                     )}
                   </button>
                 );
@@ -199,7 +199,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
                     onClick={() => handleSelect(tz.value)}
                     className={`w-full min-h-[46px] px-3 py-2 rounded-xl flex items-center justify-between text-left transition-colors ${
                       isSelected
-                        ? 'bg-brand-soft text-[#FF7A00] border border-[#FF7A00]/25'
+                        ? 'bg-brand-soft text-[#2A7A3B] border border-[#2A7A3B]/25'
                         : 'hover:bg-slate-50 dark:hover:bg-[#131A2A] text-slate-700 dark:text-[#CBD5E1]'
                     }`}
                   >
@@ -210,7 +210,7 @@ export const TimezonePickerModal = ({ isOpen, onClose, selectedTimezone, onSelec
                       </p>
                     </div>
                     {isSelected && (
-                      <Check size={16} className="text-[#FF7A00] shrink-0" />
+                      <Check size={16} className="text-[#2A7A3B] shrink-0" />
                     )}
                   </button>
                 );

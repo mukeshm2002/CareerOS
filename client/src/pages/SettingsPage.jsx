@@ -395,11 +395,11 @@ export const SettingsPage = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   isActive
-                    ? 'bg-brand-soft text-[#FF7A00] border border-[#FF7A00]/25 shadow-xs'
+                    ? 'bg-brand-soft text-[#2A7A3B] dark:text-[#4ADE80] border border-[#2A7A3B]/25 shadow-xs'
                     : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161E2D] hover:text-slate-900 dark:hover:text-[#F8FAFC]'
                 }`}
               >
-                <Icon size={16} className={isActive ? 'text-[#FF7A00]' : 'text-slate-400 dark:text-[#64748B]'} />
+                <Icon size={16} className={isActive ? 'text-[#2A7A3B] dark:text-[#4ADE80]' : 'text-slate-400 dark:text-[#64748B]'} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -497,7 +497,7 @@ export const SettingsPage = () => {
                     <button
                       type="button"
                       onClick={() => setShowTzPicker(true)}
-                      className="px-3 py-1.5 bg-brand-soft hover:bg-[#FF7A00]/20 text-[#FF7A00] rounded-lg text-xs font-semibold transition shrink-0"
+                      className="px-3 py-1.5 bg-brand-soft hover:bg-[#2A7A3B]/20 text-[#2A7A3B] dark:text-[#4ADE80] rounded-lg text-xs font-semibold transition shrink-0"
                     >
                       Change timezone
                     </button>
@@ -623,7 +623,7 @@ export const SettingsPage = () => {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/20 disabled:opacity-50 cursor-pointer"
                 >
                   <Save size={15} />
                   <span>{saving ? 'Saving...' : 'Save Preferences'}</span>
@@ -799,7 +799,7 @@ export const SettingsPage = () => {
               <div className="pt-5 border-t border-slate-200 dark:border-[#28324A] space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <Smartphone size={16} className="text-[#FF7A00]" />
+                    <Smartphone size={16} className="text-[#2A7A3B] dark:text-[#4ADE80]" />
                     <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Push Notifications on This Device</h3>
                   </div>
                   <span className={`self-start sm:self-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -860,7 +860,7 @@ export const SettingsPage = () => {
                       type="button"
                       onClick={handleEnablePush}
                       disabled={pushLoading || !pushStatus.supported || pushStatus.permission === 'denied'}
-                      className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50 shadow-xs"
+                      className="h-9 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50 shadow-xs shadow-[#2A7A3B]/20"
                     >
                       <Bell size={13} />
                       <span>{pushLoading ? 'Enabling...' : 'Enable Push Notifications'}</span>
@@ -904,7 +904,7 @@ export const SettingsPage = () => {
               <div className="pt-5 border-t border-slate-200 dark:border-[#28324A] space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Download size={16} className="text-[#FF7A00]" />
+                    <Download size={16} className="text-[#2A7A3B] dark:text-[#4ADE80]" />
                     <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">App Installation</h3>
                   </div>
                   {isPwaInstalled ? (
@@ -931,7 +931,7 @@ export const SettingsPage = () => {
                       <button
                         type="button"
                         onClick={handleInstallPwa}
-                        className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shrink-0 transition"
+                        className="h-9 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold shrink-0 transition shadow-xs shadow-[#2A7A3B]/20"
                       >
                         Install
                       </button>
@@ -1051,7 +1051,7 @@ export const SettingsPage = () => {
                     }}
                     className={`p-4 rounded-xl border text-left transition-all ${
                       preferences.theme === themeName
-                        ? 'border-[#FF7A00] bg-brand-soft ring-1 ring-[#FF7A00] text-[#FF7A00]'
+                        ? 'border-[#2A7A3B] bg-brand-soft ring-1 ring-[#2A7A3B] text-[#2A7A3B] dark:text-[#4ADE80]'
                         : 'border-slate-200 dark:border-[#263247] hover:bg-slate-50 dark:hover:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1]'
                     }`}
                   >
@@ -1121,7 +1121,7 @@ export const SettingsPage = () => {
                 </div>
                 <div className="p-4 flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Tagline</span>
-                  <span className="font-semibold text-[#FF7A00]">Personal Growth System</span>
+                  <span className="font-semibold text-[#2A7A3B] dark:text-[#4ADE80]">Personal Growth System</span>
                 </div>
                 <div className="p-4 flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-[#94A3B8]">Version</span>

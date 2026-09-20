@@ -127,7 +127,7 @@ export const HealthPage = () => {
           <button
             type="button"
             onClick={() => setShowSetupModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#FF7A00]/25 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
           >
             <Plus size={15} />
             <span>Set Routine</span>
@@ -191,7 +191,7 @@ export const HealthPage = () => {
                       })
                     }
                     disabled={updateTaskStatusMutation.isPending}
-                    className="flex-1 py-2 px-3 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
+                    className="flex-1 py-2 px-3 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
                   >
                     Mark Done
                   </button>
@@ -208,7 +208,7 @@ export const HealthPage = () => {
               <button
                 type="button"
                 onClick={() => setShowSetupModal(true)}
-                className="w-full py-2 px-3 bg-[#FF7A00] hover:bg-[#EA6700] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
+                className="w-full py-2 px-3 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
               >
                 Set Routine
               </button>
@@ -257,7 +257,7 @@ export const HealthPage = () => {
           <div className="pt-4 mt-4 border-t border-slate-100 dark:border-[#263247]">
             <a
               href="/app/goals"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700]"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2A7A3B] hover:text-[#22653A]"
             >
               <span>{currentGoal ? 'Manage in Goals' : 'Create Routine'}</span>
               <ArrowRight size={14} />
@@ -396,7 +396,7 @@ export const HealthPage = () => {
                   type="text"
                   value={quickTitle}
                   onChange={(e) => setQuickTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -410,7 +410,7 @@ export const HealthPage = () => {
                   max="120"
                   value={quickMinutes}
                   onChange={(e) => setQuickMinutes(parseInt(e.target.value, 10) || 20)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -422,7 +422,7 @@ export const HealthPage = () => {
                   rows="2"
                   value={quickDesc}
                   onChange={(e) => setQuickDesc(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -438,7 +438,7 @@ export const HealthPage = () => {
                   type="button"
                   onClick={() => handleQuickSetup(quickTitle, quickMinutes, quickDesc)}
                   disabled={createTaskMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   {createTaskMutation.isPending ? 'Saving...' : 'Set Routine'}
                 </button>

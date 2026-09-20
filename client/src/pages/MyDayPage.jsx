@@ -311,7 +311,7 @@ export const MyDayPage = () => {
         </p>
         <button
           onClick={() => refetchToday()}
-          className="h-11 px-6 bg-[#FF7A00] hover:bg-[#EA6700] dark:hover:bg-[#FF8A1F] active:scale-95 text-white rounded-xl text-xs font-semibold shadow-sm transition cursor-pointer"
+          className="h-11 px-6 bg-[#2A7A3B] hover:bg-[#22653A] dark:hover:bg-[#34A854] active:scale-95 text-white rounded-xl text-xs font-semibold shadow-sm shadow-[#2A7A3B]/20 transition cursor-pointer"
         >
           Try Again
         </button>
@@ -461,7 +461,7 @@ export const MyDayPage = () => {
 
               <button
                 onClick={() => setShowFinishModal(true)}
-                className="h-9 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer"
+                className="h-9 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs shadow-[#2A7A3B]/20"
               >
                 <CheckCircle2 size={14} />
                 <span>Finish</span>
@@ -483,13 +483,13 @@ export const MyDayPage = () => {
           /* State B: Ready to Focus */
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#FF7A00] uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#2A7A3B] dark:text-[#4ADE80] uppercase tracking-wider">
                 <Target size={13} strokeWidth={2} />
                 TODAY'S FOCUS
               </span>
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="text-xs text-[#94A3B8] hover:text-[#FF7A00] font-medium transition cursor-pointer"
+                className="text-xs text-[#94A3B8] hover:text-[#2A7A3B] dark:hover:text-[#4ADE80] font-medium transition cursor-pointer"
               >
                 Change focus
               </button>
@@ -510,7 +510,7 @@ export const MyDayPage = () => {
                   <Clock size={11} />
                   {currentMainTask.estimatedMinutes || 30}m
                 </span>
-                <span className="text-[#FF7A00] bg-[#FF7A00]/10 px-2 py-0.5 rounded-md font-semibold text-[10px]">
+                <span className="text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md font-semibold text-[10px]">
                   {currentMainTask.priority || 'HIGH'}
                 </span>
               </div>
@@ -520,7 +520,7 @@ export const MyDayPage = () => {
               <button
                 onClick={handleStartFocus}
                 disabled={startFocusMutation.isPending}
-                className="h-10 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-[0.99] text-white font-semibold text-xs flex items-center gap-2 shadow-xs transition cursor-pointer"
+                className="h-10 px-5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:scale-[0.99] text-white font-semibold text-xs flex items-center gap-2 shadow-xs shadow-[#2A7A3B]/20 transition cursor-pointer"
               >
                 <Play size={14} strokeWidth={2.2} />
                 <span>Start Focus</span>
@@ -530,7 +530,7 @@ export const MyDayPage = () => {
         ) : (
           /* State C: No focus selected */
           <div className="space-y-2 py-1">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#FF7A00] uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#2A7A3B] dark:text-[#4ADE80] uppercase tracking-wider">
               <Target size={13} strokeWidth={2} />
               <span>TODAY'S FOCUS</span>
             </div>
@@ -545,7 +545,7 @@ export const MyDayPage = () => {
             <div className="pt-1.5">
               <button
                 onClick={() => setShowChooseModal(true)}
-                className="h-10 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-95 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                className="h-10 px-4 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:scale-95 text-white text-xs font-semibold shadow-xs shadow-[#2A7A3B]/20 transition cursor-pointer"
               >
                 Set today's focus
               </button>
@@ -565,7 +565,7 @@ export const MyDayPage = () => {
           </h2>
           <Link
             to="/app/tasks"
-            className="text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700] transition"
+            className="text-xs font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline transition"
           >
             View all
           </Link>
@@ -580,9 +580,9 @@ export const MyDayPage = () => {
                 className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 cursor-pointer group transition-colors"
               >
                 <div className="flex items-center gap-2.5 min-w-0 pr-3">
-                  <span className="h-3 w-3 rounded-full border border-slate-300 dark:border-[#33435C] group-hover:border-[#FF7A00] shrink-0 transition-colors" />
+                  <span className="h-3 w-3 rounded-full border border-slate-300 dark:border-[#33435C] group-hover:border-[#2A7A3B] shrink-0 transition-colors" />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#FF7A00] transition-colors">
+                    <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate group-hover:text-[#2A7A3B] dark:group-hover:text-[#4ADE80] transition-colors">
                       {t.title}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-[#94A3B8] truncate">
@@ -614,7 +614,7 @@ export const MyDayPage = () => {
           </h2>
           <Link
             to="/app/schedule"
-            className="text-xs font-semibold text-[#FF7A00] hover:text-[#EA6700] transition"
+            className="text-xs font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline transition"
           >
             Open
           </Link>
@@ -630,7 +630,7 @@ export const MyDayPage = () => {
                 <span className="font-mono text-xs font-medium text-slate-500 dark:text-[#94A3B8] w-14 shrink-0">
                   {block.startTime}
                 </span>
-                <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${idx === 0 ? 'bg-[#FF7A00]' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${idx === 0 ? 'bg-[#2A7A3B]' : 'bg-slate-300 dark:bg-slate-700'}`} />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-slate-800 dark:text-[#F8FAFC] truncate">
                     {block.title}
@@ -750,7 +750,7 @@ export const MyDayPage = () => {
                     type="button"
                     onClick={() => completeBalanceTaskMutation.mutate(commTask.id)}
                     disabled={completeBalanceTaskMutation.isPending}
-                    className="flex-1 h-8 px-3 rounded-lg bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold transition cursor-pointer"
+                    className="flex-1 h-8 px-3 rounded-lg bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold transition cursor-pointer"
                   >
                     Start Practice
                   </button>
@@ -827,7 +827,7 @@ export const MyDayPage = () => {
                     type="button"
                     onClick={() => completeBalanceTaskMutation.mutate(healthTask.id)}
                     disabled={completeBalanceTaskMutation.isPending}
-                    className="flex-1 h-8 px-3 rounded-lg bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold transition cursor-pointer"
+                    className="flex-1 h-8 px-3 rounded-lg bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold transition cursor-pointer"
                   >
                     Mark Done
                   </button>
@@ -862,12 +862,12 @@ export const MyDayPage = () => {
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044] rounded-xl p-4 flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94A3B8] flex items-center gap-1.5">
-              <FileText size={13} className="text-[#FF7A00]" />
+              <FileText size={13} className="text-[#2A7A3B] dark:text-[#4ADE80]" />
               <span>TODAY'S NOTE</span>
             </span>
             <Link
               to="/app/work-log"
-              className="text-[11px] font-semibold text-[#FF7A00] hover:text-[#EA6700]"
+              className="text-[11px] font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline"
             >
               Journal
             </Link>
@@ -897,7 +897,7 @@ export const MyDayPage = () => {
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#253044] rounded-xl p-4 flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94A3B8] flex items-center gap-1.5">
-              <Moon size={13} className="text-[#FF7A00]" />
+              <Moon size={13} className="text-[#2A7A3B] dark:text-[#4ADE80]" />
               <span>END YOUR DAY</span>
             </span>
           </div>
@@ -942,7 +942,7 @@ export const MyDayPage = () => {
                   onClick={() => handleSelectDifferentTask(t.id)}
                   className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between min-h-[48px] ${
                     t.id === currentMainTask?.id
-                      ? 'border-[#FF7A00] bg-[#FFF1D6] dark:border-[#FF7A00] dark:bg-[rgba(255,122,0,0.14)]'
+                      ? 'border-[#2A7A3B] bg-[#2A7A3B]/10 dark:border-[#2A7A3B] dark:bg-[rgba(42,122,59,0.18)]'
                       : 'border-slate-200 dark:border-[#263247] hover:border-slate-300 dark:hover:border-[#33435C] bg-slate-50/50 dark:bg-[#161E2D]/50'
                   }`}
                 >
@@ -952,7 +952,7 @@ export const MyDayPage = () => {
                       {t.priority} • {t.estimatedMinutes || 30} mins
                     </p>
                   </div>
-                  {t.id === currentMainTask?.id && <Check size={16} className="text-[#FF7A00]" />}
+                  {t.id === currentMainTask?.id && <Check size={16} className="text-[#2A7A3B] dark:text-[#4ADE80]" />}
                 </div>
               ))}
             </div>
@@ -989,7 +989,7 @@ export const MyDayPage = () => {
                   value="COMPLETED"
                   checked={taskOutcome === 'COMPLETED'}
                   onChange={(e) => setTaskOutcome(e.target.value)}
-                  className="text-[#FF7A00] focus:ring-[#FF7A00]"
+                  className="text-[#2A7A3B] focus:ring-[#2A7A3B]"
                 />
                 <div>
                   <span className="font-semibold text-slate-800 dark:text-[#F8FAFC] block">Yes, completed</span>
@@ -1004,7 +1004,7 @@ export const MyDayPage = () => {
                   value="NOT_YET"
                   checked={taskOutcome === 'NOT_YET'}
                   onChange={(e) => setTaskOutcome(e.target.value)}
-                  className="text-[#FF7A00] focus:ring-[#FF7A00]"
+                  className="text-[#2A7A3B] focus:ring-[#2A7A3B]"
                 />
                 <div>
                   <span className="font-semibold text-slate-800 dark:text-[#F8FAFC] block">Not yet</span>
@@ -1022,7 +1022,7 @@ export const MyDayPage = () => {
                 value={sessionNotes}
                 onChange={(e) => setSessionNotes(e.target.value)}
                 placeholder="What did you get done?"
-                className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
               />
             </div>
 
@@ -1041,7 +1041,7 @@ export const MyDayPage = () => {
                   })
                 }
                 disabled={finishFocusMutation.isPending}
-                className="h-11 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                className="h-11 px-5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:bg-[#1A5030] dark:hover:bg-[#34A854] text-white text-xs font-semibold shadow-xs shadow-[#2A7A3B]/20 transition cursor-pointer"
               >
                 Save Session
               </button>
@@ -1058,7 +1058,7 @@ export const MyDayPage = () => {
             <div className="w-12 h-1 bg-slate-200 dark:bg-[#263247] rounded-full mx-auto -mt-1 mb-1 sm:hidden shrink-0" />
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#263247] pb-3">
               <div className="flex items-center gap-2">
-                <Moon size={16} className="text-[#FF7A00]" />
+                <Moon size={16} className="text-[#2A7A3B] dark:text-[#4ADE80]" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Daily Review</h3>
               </div>
               <button
@@ -1079,9 +1079,9 @@ export const MyDayPage = () => {
             <div className="space-y-3.5 overflow-y-auto flex-1 pr-1 text-xs">
               {/* Contextual Daily Work Notes */}
               {hasWorkNote && (
-                <div className="p-3.5 bg-[#FFF8EE] dark:bg-[rgba(255,122,0,0.10)] border border-[#FF7A00]/25 dark:border-[#FF7A00]/30 rounded-xl space-y-2 text-xs">
+                <div className="p-3.5 bg-emerald-50/50 dark:bg-[rgba(42,122,59,0.10)] border border-[#2A7A3B]/25 dark:border-[#2A7A3B]/30 rounded-xl space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF7A00] flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#2A7A3B] dark:text-[#4ADE80] flex items-center gap-1.5">
                       <FileText size={12} />
                       <span>TODAY'S WORK</span>
                     </span>
@@ -1091,7 +1091,7 @@ export const MyDayPage = () => {
                         setShowReviewModal(false);
                         setShowNoteSheet(true);
                       }}
-                      className="text-[10px] font-semibold text-[#FF7A00] hover:underline cursor-pointer"
+                      className="text-[10px] font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline cursor-pointer"
                     >
                       Edit Note
                     </button>
@@ -1132,7 +1132,7 @@ export const MyDayPage = () => {
                   value={completedSummary}
                   onChange={(e) => setCompletedSummary(e.target.value)}
                   placeholder="e.g. Finished JWT authentication tests"
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1148,7 +1148,7 @@ export const MyDayPage = () => {
                       onClick={() => setCommPracticed(true)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                         commPracticed
-                          ? 'bg-[#FF7A00] text-white shadow-xs'
+                          ? 'bg-[#2A7A3B] text-white shadow-xs'
                           : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
                       }`}
                     >
@@ -1208,7 +1208,7 @@ export const MyDayPage = () => {
                   value={learnedSummary}
                   onChange={(e) => setLearnedSummary(e.target.value)}
                   placeholder="e.g. Refresh token rotation prevents replay attacks"
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1221,7 +1221,7 @@ export const MyDayPage = () => {
                   value={blockerSummary}
                   onChange={(e) => setBlockerSummary(e.target.value)}
                   placeholder="e.g. Need CORS headers configured"
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1232,7 +1232,7 @@ export const MyDayPage = () => {
                 <select
                   value={tomorrowTaskId}
                   onChange={(e) => setTomorrowTaskId(e.target.value)}
-                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full h-11 px-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 >
                   <option value="">-- Select Priority --</option>
                   {incompleteTasks.map((t) => (
@@ -1253,7 +1253,7 @@ export const MyDayPage = () => {
                       onClick={() => setEnergyLevel(opt.value)}
                       className={`h-10 px-1 rounded-xl text-[11px] font-semibold transition cursor-pointer ${
                         energyLevel === opt.value
-                          ? 'bg-[#FF7A00] text-white shadow-xs'
+                          ? 'bg-[#2A7A3B] text-white shadow-xs'
                           : 'bg-slate-100 dark:bg-[#161E2D] hover:bg-slate-200 dark:hover:bg-[#263247] text-slate-600 dark:text-[#CBD5E1]'
                       }`}
                     >
@@ -1294,7 +1294,7 @@ export const MyDayPage = () => {
                   })
                 }
                 disabled={saveReviewMutation.isPending}
-                className="h-11 px-5 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:bg-[#D95F00] dark:hover:bg-[#FF8A1F] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                className="h-11 px-5 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:bg-[#1A5030] dark:hover:bg-[#34A854] text-white text-xs font-semibold shadow-xs shadow-[#2A7A3B]/20 transition cursor-pointer"
               >
                 Close Day
               </button>
@@ -1344,7 +1344,7 @@ export const MyDayPage = () => {
                   type="text"
                   value={commTitle}
                   onChange={(e) => setCommTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1358,7 +1358,7 @@ export const MyDayPage = () => {
                   max="60"
                   value={commMinutes}
                   onChange={(e) => setCommMinutes(parseInt(e.target.value, 10) || 10)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1370,7 +1370,7 @@ export const MyDayPage = () => {
                   rows="2"
                   value={commDesc}
                   onChange={(e) => setCommDesc(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1393,7 +1393,7 @@ export const MyDayPage = () => {
                     })
                   }
                   disabled={createBalanceTaskMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold shadow-sm shadow-[#2A7A3B]/20 transition-all cursor-pointer"
                 >
                   {createBalanceTaskMutation.isPending ? 'Saving...' : 'Set Practice'}
                 </button>
@@ -1431,7 +1431,7 @@ export const MyDayPage = () => {
                   type="text"
                   value={healthTitle}
                   onChange={(e) => setHealthTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1445,7 +1445,7 @@ export const MyDayPage = () => {
                   max="120"
                   value={healthMinutes}
                   onChange={(e) => setHealthMinutes(parseInt(e.target.value, 10) || 20)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1457,7 +1457,7 @@ export const MyDayPage = () => {
                   rows="2"
                   value={healthDesc}
                   onChange={(e) => setHealthDesc(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#FF7A00]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B]"
                 />
               </div>
 
@@ -1480,7 +1480,7 @@ export const MyDayPage = () => {
                     })
                   }
                   disabled={createBalanceTaskMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-semibold shadow-sm shadow-[#2A7A3B]/20 transition-all cursor-pointer"
                 >
                   {createBalanceTaskMutation.isPending ? 'Saving...' : 'Set Routine'}
                 </button>

@@ -27,7 +27,7 @@ export const PageHeader = ({
       <div className="space-y-1 min-w-0">
         <div className="flex items-center gap-2.5">
           {Icon && (
-            <div className="w-8 h-8 rounded-lg bg-brand-soft border border-[#FF7A00]/20 text-[#FF7A00] flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-brand-soft border border-[#2A7A3B]/20 text-[#2A7A3B] flex items-center justify-center shrink-0">
               <Icon size={18} strokeWidth={2} />
             </div>
           )}

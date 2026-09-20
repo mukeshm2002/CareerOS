@@ -151,7 +151,7 @@ export const ProgressPage = () => {
                   onClick={() => setPeriod(tab.key)}
                   className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-white dark:bg-[#111827] text-[#FF7A00] shadow-xs border border-slate-200/60 dark:border-[#263247] font-bold'
+                      ? 'bg-white dark:bg-[#111827] text-[#2A7A3B] shadow-xs border border-slate-200/60 dark:border-[#263247] font-bold'
                       : 'text-slate-500 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
@@ -203,7 +203,7 @@ export const ProgressPage = () => {
           </div>
           {weeklySummary && (
             <div className="flex flex-wrap items-center gap-2 text-xs pt-1 sm:pt-0">
-              <span className="px-2.5 py-1 rounded-lg bg-[#FF7A00]/10 text-[#FF7A00] font-semibold">
+              <span className="px-2.5 py-1 rounded-lg bg-[#2A7A3B]/10 text-[#2A7A3B] font-semibold">
                 Career: {weeklySummary.career}
               </span>
               <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold">
@@ -221,10 +221,10 @@ export const ProgressPage = () => {
           <div className="p-4 rounded-xl border border-slate-200/70 dark:border-[#263247] bg-slate-50/50 dark:bg-[#161E2D] space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Briefcase size={15} className="text-[#FF7A00]" />
+                <Briefcase size={15} className="text-[#2A7A3B]" />
                 <span className="text-xs font-bold text-slate-900 dark:text-[#F8FAFC]">CAREER</span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FF7A00]/10 text-[#FF7A00]">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#2A7A3B]/10 text-[#2A7A3B]">
                 {careerSummary.activeGoalsCount || 0} active goals
               </span>
             </div>
@@ -387,7 +387,7 @@ export const ProgressPage = () => {
       <div className="bg-white dark:bg-[#121829] rounded-2xl border border-slate-200/80 dark:border-[#28324A] p-5 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-brand-soft border border-[#FF7A00]/20 text-[#FF7A00]">
+            <div className="p-2 rounded-xl bg-brand-soft border border-[#2A7A3B]/20 text-[#2A7A3B]">
               <BookOpen size={16} />
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">

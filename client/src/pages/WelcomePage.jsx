@@ -26,7 +26,7 @@ export const WelcomePage = () => {
         <div className="space-y-3 pt-2">
           <Link
             to="/register"
-            className="w-full h-12 rounded-xl bg-[#FF7A00] hover:bg-[#EA6700] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center transition shadow-xs"
+            className="w-full h-12 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] active:scale-[0.99] text-white font-semibold text-sm flex items-center justify-center transition shadow-xs shadow-[#2A7A3B]/20"
           >
             Get started
           </Link>
