@@ -72,6 +72,18 @@ class SchedulePlanningService {
           },
         },
         goal: { select: { id: true, title: true } },
+        reminders: {
+          where: { enabled: true, status: { in: ['PENDING', 'SNOOZED'] } },
+          select: {
+            id: true,
+            scheduledAt: true,
+            nextTriggerAt: true,
+            offsetMinutes: true,
+            channel: true,
+            status: true,
+            title: true,
+          },
+        },
       },
     });
 
@@ -185,8 +197,30 @@ class SchedulePlanningService {
       },
     });
 
+    let reminder = null;
+    if (data.reminderOffsetMinutes !== undefined && data.reminderOffsetMinutes !== null && data.reminderOffsetMinutes !== '') {
+      try {
+        const reminderService = require('../reminders/reminder.service');
+        const offset = parseInt(data.reminderOffsetMinutes, 10);
+        reminder = await reminderService.createReminder(userId, {
+          title: title.trim(),
+          sourceType: 'SCHEDULE',
+          sourceId: block.id,
+          linkedScheduleBlockId: block.id,
+          linkedTaskId: taskId || null,
+          offsetMinutes: isNaN(offset) ? 0 : offset,
+          channel: data.reminderChannel || 'IN_APP',
+          fallbackToInApp: data.fallbackToInApp !== false,
+          phoneContactId: data.phoneContactId || null,
+        });
+      } catch (err) {
+        console.error('Failed to create reminder for schedule block:', err);
+      }
+    }
+
     return {
       block,
+      reminder,
       hasOverlap: overlappingBlocks.length > 0,
       overlapWarning:
         overlappingBlocks.length > 0
@@ -249,6 +283,16 @@ class SchedulePlanningService {
       },
     });
 
+    // Recalculate any linked reminders if schedule date or startTime changed
+    if (data.date || data.startTime || data.title) {
+      try {
+        const reminderService = require('../reminders/reminder.service');
+        await reminderService.recalculateLinkedScheduleReminders(userId, updated);
+      } catch (err) {
+        console.error('Failed to recalculate linked schedule reminders:', err);
+      }
+    }
+
     return updated;
   }
 
@@ -264,6 +308,24 @@ class SchedulePlanningService {
       const error = new Error('Schedule block not found');
       error.statusCode = 404;
       throw error;
+    }
+
+    // Cancel pending reminders linked to this schedule block
+    try {
+      await prisma.reminder.updateMany({
+        where: {
+          userId,
+          linkedScheduleBlockId: blockId,
+          status: { in: ['PENDING', 'SNOOZED'] },
+        },
+        data: {
+          status: 'CANCELLED',
+          enabled: false,
+          statusReason: 'Associated schedule block was deleted',
+        },
+      });
+    } catch (err) {
+      console.error('Failed to cancel linked schedule reminders on deletion:', err);
     }
 
     await prisma.scheduleBlock.delete({

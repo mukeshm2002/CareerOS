@@ -1,5 +1,10 @@
 const reminderService = require('../services/reminders/reminder.service');
-const { createReminderSchema, updateReminderSchema } = require('../schemas/reminder.schema');
+const {
+  createReminderSchema,
+  updateReminderSchema,
+  snoozeReminderSchema,
+  updateReminderSettingsSchema,
+} = require('../schemas/reminder.schema');
 const { sendSuccess } = require('../utils/response');
 
 class ReminderController {
@@ -43,6 +48,27 @@ class ReminderController {
     }
   }
 
+  async snoozeReminder(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { minutes } = snoozeReminderSchema.parse(req.body || {});
+      const reminder = await reminderService.snoozeReminder(req.user.id, id, minutes);
+      return sendSuccess(res, { reminder }, `Reminder snoozed for ${minutes} minutes`);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async cancelReminder(req, res, next) {
+    try {
+      const { id } = req.params;
+      const reminder = await reminderService.cancelReminder(req.user.id, id);
+      return sendSuccess(res, { reminder }, 'Reminder cancelled successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async toggleReminder(req, res, next) {
     try {
       const { id } = req.params;
@@ -59,6 +85,25 @@ class ReminderController {
       const { id } = req.params;
       const result = await reminderService.deleteReminder(req.user.id, id);
       return sendSuccess(res, result, 'Reminder deleted successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSettings(req, res, next) {
+    try {
+      const data = await reminderService.getReminderSettings(req.user.id);
+      return sendSuccess(res, data, 'Reminder settings retrieved');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateSettings(req, res, next) {
+    try {
+      const validated = updateReminderSettingsSchema.parse(req.body);
+      const data = await reminderService.updateReminderSettings(req.user.id, validated);
+      return sendSuccess(res, data, 'Reminder settings updated successfully');
     } catch (error) {
       next(error);
     }

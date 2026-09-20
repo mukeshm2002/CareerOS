@@ -16,7 +16,10 @@ import {
   CheckSquare,
   Target,
   X,
+  Bell,
 } from 'lucide-react';
+import ReminderBadge from '../components/reminders/ReminderBadge';
+import ReminderConfigModal from '../components/reminders/ReminderConfigModal';
 
 export const SchedulePage = () => {
   const queryClient = useQueryClient();
@@ -37,6 +40,9 @@ export const SchedulePage = () => {
   const [category, setCategory] = useState('CAREEROS');
   const [taskId, setTaskId] = useState('');
   const [overlapWarning, setOverlapWarning] = useState(null);
+  const [reminderOffset, setReminderOffset] = useState('0');
+  const [reminderChannel, setReminderChannel] = useState('IN_APP');
+  const [blockReminderModal, setBlockReminderModal] = useState(null);
 
   // Query Schedule Blocks for selected date
   const { data: scheduleData, isLoading } = useQuery({
@@ -89,6 +95,8 @@ export const SchedulePage = () => {
     setEndTime('21:30');
     setCategory('CAREEROS');
     setTaskId('');
+    setReminderOffset('0');
+    setReminderChannel('IN_APP');
   };
 
   const handlePrevDay = () => {
@@ -141,6 +149,8 @@ export const SchedulePage = () => {
         endTime,
         category,
         taskId: taskId || null,
+        reminderOffsetMinutes: reminderOffset === '' ? null : parseInt(reminderOffset, 10),
+        reminderChannel,
       });
     }
   };
@@ -233,19 +243,28 @@ export const SchedulePage = () => {
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-xs font-bold text-slate-900">{b.title}</h3>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                        b.category === 'CAREEROS'
-                          ? 'bg-brand-50 text-brand-700 border border-brand-200'
-                          : b.category === 'WORK'
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : b.category === 'PERSONAL'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-slate-100 text-slate-600 border border-slate-200'
-                      }`}
-                    >
-                      {b.category === 'CAREEROS' ? 'EYTHU' : b.category}
-                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {b.reminders && b.reminders.length > 0 && (
+                        <ReminderBadge
+                          reminder={b.reminders[0]}
+                          onSnoozed={() => queryClient.invalidateQueries({ queryKey: ['schedule', selectedDate] })}
+                          onClick={() => setBlockReminderModal(b)}
+                        />
+                      )}
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                          b.category === 'CAREEROS'
+                            ? 'bg-brand-50 text-brand-700 border border-brand-200'
+                            : b.category === 'WORK'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : b.category === 'PERSONAL'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-slate-100 text-slate-600 border border-slate-200'
+                        }`}
+                      >
+                        {b.category === 'CAREEROS' ? 'EYTHU' : b.category}
+                      </span>
+                    </div>
                   </div>
 
                   {b.description && (
@@ -393,6 +412,43 @@ export const SchedulePage = () => {
                 </select>
               </div>
 
+              {/* Reminder Configuration for new block */}
+              {!editingBlock && (
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="font-bold text-slate-700 block mb-1">Reminder</label>
+                      <select
+                        value={reminderOffset}
+                        onChange={(e) => setReminderOffset(e.target.value)}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white"
+                      >
+                        <option value="0">At scheduled time</option>
+                        <option value="5">5 minutes before</option>
+                        <option value="10">10 minutes before</option>
+                        <option value="15">15 minutes before</option>
+                        <option value="30">30 minutes before</option>
+                        <option value="">No reminder</option>
+                      </select>
+                    </div>
+
+                    {reminderOffset !== '' && (
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">Notification</label>
+                        <select
+                          value={reminderChannel}
+                          onChange={(e) => setReminderChannel(e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white"
+                        >
+                          <option value="IN_APP">In App</option>
+                          <option value="VOICE">Voice Call</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
@@ -412,6 +468,30 @@ export const SchedulePage = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Schedule Block Reminder Config Modal */}
+      {blockReminderModal && (
+        <ReminderConfigModal
+          isOpen={Boolean(blockReminderModal)}
+          title={`Reminder: ${blockReminderModal.title}`}
+          sourceType="SCHEDULE"
+          sourceId={blockReminderModal.id}
+          linkedScheduleBlockId={blockReminderModal.id}
+          initialData={{
+            title: blockReminderModal.title,
+            date: selectedDate,
+            startTime: blockReminderModal.startTime,
+            offsetMinutes: blockReminderModal.reminders?.[0]?.offsetMinutes !== undefined ? blockReminderModal.reminders[0].offsetMinutes : 0,
+            channel: blockReminderModal.reminders?.[0]?.channel || 'IN_APP',
+            id: blockReminderModal.reminders?.[0]?.id,
+          }}
+          onClose={() => setBlockReminderModal(null)}
+          onSaved={() => {
+            queryClient.invalidateQueries({ queryKey: ['schedule', selectedDate] });
+            setBlockReminderModal(null);
+          }}
+        />
       )}
     </div>
   );

@@ -2,6 +2,8 @@ const prisma = require('../../config/db');
 const notificationService = require('./notification.service');
 const emailNotificationService = require('./emailNotification.service');
 const reminderService = require('./reminder.service');
+const reminderMessageService = require('./reminderMessage.service');
+const voiceService = require('./voice/voiceService');
 const pushService = require('../push/push.service');
 
 class ReminderSchedulerService {
@@ -44,10 +46,11 @@ class ReminderSchedulerService {
   async processDueReminders(nowOverride = null) {
     const now = nowOverride ? new Date(nowOverride) : new Date();
 
-    // Find enabled reminders that are due
+    // Find enabled reminders that are due and pending/snoozed
     const dueReminders = await prisma.reminder.findMany({
       where: {
         enabled: true,
+        status: { in: ['PENDING', 'SNOOZED'] },
         OR: [
           { nextTriggerAt: { lte: now } },
           { nextTriggerAt: null },
@@ -61,10 +64,12 @@ class ReminderSchedulerService {
           },
         },
         linkedTask: { select: { id: true, title: true, status: true } },
+        linkedScheduleBlock: { select: { id: true, title: true, startTime: true, endTime: true } },
         linkedGoal: { select: { id: true, title: true } },
         linkedJobOpportunity: { select: { id: true, company: true, role: true } },
         linkedFreelanceOpportunity: { select: { id: true, clientName: true, projectName: true } },
         linkedInternshipOpportunity: { select: { id: true, company: true, role: true } },
+        phoneContact: { select: { id: true, normalizedValue: true, maskedValue: true, verified: true } },
       },
     });
 
@@ -75,6 +80,7 @@ class ReminderSchedulerService {
       notificationsCreated: 0,
       emailsDispatched: 0,
       pushDispatched: 0,
+      voiceDispatched: 0,
     };
 
     // Dedup threshold: do not re-trigger within 60 seconds
@@ -83,33 +89,41 @@ class ReminderSchedulerService {
     for (const reminder of dueReminders) {
       if (!reminder.user) continue;
 
-      // 1. Calculate future nextTriggerAt
-      const userTimezone = reminder.timezone || reminder.user.profile?.timezone || 'UTC';
-      const nextTriggerAt = reminderService.computeNextTriggerDate(
-        reminder.time,
-        reminder.dayOfWeek,
-        userTimezone,
-        now
-      );
+      // 1. Calculate future nextTriggerAt for recurring reminders
+      const isOneShot = Boolean(reminder.scheduledAt) || reminder.recurrence === 'ONCE' || reminder.recurrence === 'NONE';
+      const userTimezone = reminder.timezone || reminder.user.profile?.timezone || 'Asia/Kolkata';
+
+      let nextRecurrenceTrigger = null;
+      if (!isOneShot && reminder.time) {
+        nextRecurrenceTrigger = reminderService.computeNextTriggerDate(
+          reminder.time,
+          reminder.dayOfWeek,
+          userTimezone,
+          now
+        );
+      }
 
       // 2. ATOMIC LOCK: Only ONE concurrent process will succeed in updating this record
       const lockAcquired = await prisma.reminder.updateMany({
         where: {
           id: reminder.id,
           enabled: true,
+          status: { in: ['PENDING', 'SNOOZED'] },
           OR: [
             { lastTriggeredAt: null },
             { lastTriggeredAt: { lt: windowThreshold } },
           ],
         },
         data: {
+          status: 'PROCESSING',
           lastTriggeredAt: now,
-          nextTriggerAt,
+          nextTriggerAt: isOneShot ? reminder.nextTriggerAt : nextRecurrenceTrigger,
+          attemptCount: { increment: 1 },
         },
       });
 
       if (lockAcquired.count === 0) {
-        // Another concurrent worker or recent run already locked and processed this reminder
+        // Another concurrent worker or recent run already locked this reminder
         results.skippedDuplicates += 1;
         continue;
       }
@@ -120,107 +134,115 @@ class ReminderSchedulerService {
       const reminderTitle = reminder.title;
       let reminderMessage = reminder.message;
       if (!reminderMessage) {
-        if (reminder.linkedTask) {
-          reminderMessage = `Task due: ${reminder.linkedTask.title}`;
-        } else if (reminder.linkedJobOpportunity) {
-          reminderMessage = `Follow up on role at ${reminder.linkedJobOpportunity.company}`;
-        } else if (reminder.linkedFreelanceOpportunity) {
-          reminderMessage = `Follow up with client ${reminder.linkedFreelanceOpportunity.clientName}`;
-        } else {
-          reminderMessage = `Time for your scheduled ${reminder.type.replace(/_/g, ' ').toLowerCase()}`;
-        }
-      }
-
-      // 4. Create In-App Notification
-      let notifRecord = null;
-      try {
-        notifRecord = await notificationService.createNotification(reminder.userId, {
-          type: reminder.type,
-          title: reminderTitle,
-          message: reminderMessage,
-          entityType: reminder.linkedTaskId
-            ? 'TASK'
-            : reminder.linkedJobOpportunityId || reminder.linkedFreelanceOpportunityId
-            ? 'OPPORTUNITY'
-            : reminder.linkedGoalId
-            ? 'GOAL'
-            : 'REMINDER',
-          entityId:
-            reminder.linkedTaskId ||
-            reminder.linkedJobOpportunityId ||
-            reminder.linkedFreelanceOpportunityId ||
-            reminder.linkedGoalId ||
-            reminder.id,
-          channel: reminder.channel || 'IN_APP',
+        reminderMessage = reminderMessageService.generateNotificationMessage({
+          sourceType: reminder.sourceType,
+          title: reminder.title,
+          offsetMinutes: reminder.offsetMinutes,
         });
-        results.notificationsCreated += 1;
-      } catch (notifErr) {
-        console.error(`[REMINDER NOTIFICATION FAILED for ${reminder.id}]:`, notifErr);
       }
 
-      // 5. Send Transactional Email if enabled in user preferences
-      const emailAllowed =
-        reminder.user.preferences?.emailNotificationsEnabled !== false &&
-        (reminder.channel === 'EMAIL' || reminder.notificationChannel === 'EMAIL' || reminder.user.preferences?.emailNotificationsEnabled);
+      const channel = reminder.channel || reminder.notificationChannel || 'IN_APP';
 
-      if (emailAllowed && reminder.user.email) {
+      // 4. DISPATCH BASED ON CHANNEL
+      if (channel === 'VOICE') {
+        // Voice Call Channel
         try {
-          const renderedEmail = emailNotificationService.renderTemplate(reminder.type, {
-            userName: reminder.user.fullName,
-            taskTitle: reminder.linkedTask?.title,
-            opportunityTitle:
-              reminder.linkedJobOpportunity
-                ? `${reminder.linkedJobOpportunity.role} @ ${reminder.linkedJobOpportunity.company}`
-                : reminder.linkedFreelanceOpportunity
-                ? `${reminder.linkedFreelanceOpportunity.projectName} (${reminder.linkedFreelanceOpportunity.clientName})`
-                : null,
-            message: reminderMessage,
-          });
-
-          await emailNotificationService.sendEmail({
-            to: reminder.user.email,
-            subject: renderedEmail.subject,
-            text: renderedEmail.text,
-            html: renderedEmail.html,
-          });
-
-          results.emailsDispatched += 1;
-        } catch (emailErr) {
-          // Log email delivery failure without breaking reminder processing or rolling back in-app notification
-          console.error(`[EMAIL DELIVERY FAILURE for user ${reminder.user.email}]:`, emailErr.message);
-          if (notifRecord) {
-            await prisma.notification.update({
-              where: { id: notifRecord.id },
-              data: {
-                deliveryStatus: 'FAILED',
-                failureReason: emailErr.message,
-              },
-            }).catch(() => {});
+          const voiceRes = await voiceService.dispatchVoiceReminder(reminder);
+          if (voiceRes.dispatched) {
+            results.voiceDispatched += 1;
           }
+        } catch (voiceErr) {
+          console.error(`[VOICE DISPATCH ERROR on reminder ${reminder.id}]:`, voiceErr);
         }
-      }
+      } else {
+        // In-App / Push / Email Channels
+        let notifRecord = null;
 
-      // 6. Send Browser Push Notification (Phase 2B Step 2)
-      const pushAllowed =
-        reminder.user.preferences?.pushNotificationsEnabled !== false &&
-        (reminder.channel === 'PUSH' || reminder.notificationChannel === 'PUSH');
-
-      if (pushAllowed) {
+        // In-App Notification
         try {
-          const pushResult = await pushService.sendPushToUser(reminder.userId, {
+          notifRecord = await notificationService.createNotification(reminder.userId, {
+            type: reminder.type || 'REMINDER',
             title: reminderTitle,
-            body: reminderMessage,
-            url: '/app/today',
-            type: reminder.type,
-            notificationId: notifRecord?.id || null,
+            message: reminderMessage,
+            entityType: reminder.linkedTaskId
+              ? 'TASK'
+              : reminder.linkedScheduleBlockId
+              ? 'SCHEDULE'
+              : reminder.linkedGoalId
+              ? 'GOAL'
+              : 'REMINDER',
+            entityId:
+              reminder.linkedTaskId ||
+              reminder.linkedScheduleBlockId ||
+              reminder.linkedGoalId ||
+              reminder.id,
+            channel,
           });
-
-          if (pushResult && pushResult.sent > 0) {
-            results.pushDispatched += pushResult.sent;
-          }
-        } catch (pushErr) {
-          console.error(`[PUSH DELIVERY FAILURE for reminder ${reminder.id}]:`, pushErr.message);
+          results.notificationsCreated += 1;
+        } catch (notifErr) {
+          console.error(`[REMINDER NOTIFICATION FAILED for ${reminder.id}]:`, notifErr);
         }
+
+        // Email Notification
+        const emailAllowed =
+          reminder.user.preferences?.emailNotificationsEnabled !== false &&
+          (channel === 'EMAIL' || reminder.user.preferences?.emailNotificationsEnabled);
+
+        if (emailAllowed && reminder.user.email) {
+          try {
+            const renderedEmail = emailNotificationService.renderTemplate(reminder.type || 'REMINDER', {
+              userName: reminder.user.fullName,
+              taskTitle: reminder.linkedTask?.title || reminder.linkedScheduleBlock?.title || reminderTitle,
+              opportunityTitle: reminder.linkedJobOpportunity
+                ? `${reminder.linkedJobOpportunity.role} @ ${reminder.linkedJobOpportunity.company}`
+                : null,
+              message: reminderMessage,
+            });
+
+            await emailNotificationService.sendEmail({
+              to: reminder.user.email,
+              subject: renderedEmail.subject,
+              text: renderedEmail.text,
+              html: renderedEmail.html,
+            });
+            results.emailsDispatched += 1;
+          } catch (emailErr) {
+            console.error(`[EMAIL DELIVERY FAILURE for user ${reminder.user.email}]:`, emailErr.message);
+          }
+        }
+
+        // Push Notification
+        const pushAllowed =
+          reminder.user.preferences?.pushNotificationsEnabled !== false &&
+          (channel === 'PUSH' || reminder.user.preferences?.pushNotificationsEnabled);
+
+        if (pushAllowed) {
+          try {
+            const pushResult = await pushService.sendPushToUser(reminder.userId, {
+              title: reminderTitle,
+              body: reminderMessage,
+              url: reminder.linkedTaskId ? '/app/tasks' : reminder.linkedScheduleBlockId ? '/app/schedule' : '/app/reminders',
+              type: reminder.type || 'REMINDER',
+              notificationId: notifRecord?.id || null,
+            });
+
+            if (pushResult && pushResult.sent > 0) {
+              results.pushDispatched += pushResult.sent;
+            }
+          } catch (pushErr) {
+            console.error(`[PUSH DELIVERY FAILURE for reminder ${reminder.id}]:`, pushErr.message);
+          }
+        }
+
+        // Mark as DELIVERED
+        await prisma.reminder.update({
+          where: { id: reminder.id },
+          data: {
+            status: isOneShot ? 'DELIVERED' : 'PENDING',
+            enabled: !isOneShot, // One-shot reminders disable upon delivery
+            completedAt: new Date(),
+          },
+        });
       }
     }
 

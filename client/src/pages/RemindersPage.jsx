@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/common/PageHeader';
 import { EmptyState } from '../components/common/EmptyState';
 import {
@@ -12,12 +11,20 @@ import {
   Edit2,
   Calendar,
   Layers,
-  Briefcase,
   X,
   Loader2,
   Globe,
+  PhoneCall,
+  Mail,
+  MessageSquare,
+  ShieldCheck,
+  Moon,
+  Smartphone,
+  Check,
+  AlertTriangle,
 } from 'lucide-react';
 import { reminderService } from '../services/reminderService';
+import { contactService } from '../services/contactService';
 import { pushNotificationService } from '../services/pushNotificationService';
 import { useAuthStore } from '../store/authStore';
 import {
@@ -27,47 +34,33 @@ import {
   detectBrowserTimezone,
 } from '../utils/timezones';
 import { TimezonePickerModal } from '../components/common/TimezonePickerModal';
-
-const CATEGORIES = [
-  { id: 'ALL', label: 'All Reminders' },
-  { id: 'DAILY', label: 'Daily Reviews' },
-  { id: 'WEEKLY', label: 'Weekly Reviews' },
-  { id: 'OPPORTUNITY', label: 'Opportunities' },
-  { id: 'CUSTOM', label: 'Custom' },
-];
+import ReminderConfigModal from '../components/reminders/ReminderConfigModal';
+import SnoozeModal from '../components/reminders/SnoozeModal';
+import ReminderSettingsTab from '../components/reminders/ReminderSettingsTab';
 
 export const RemindersPage = () => {
   const { user } = useAuthStore();
   const userTimezone = user?.profile?.timezone || detectBrowserTimezone() || 'Asia/Kolkata';
 
+  // Navigation tab state: 'UPCOMING' | 'HISTORY' | 'SETTINGS'
+  const [activeTab, setActiveTab] = useState('UPCOMING');
+
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [showTzPicker, setShowTzPicker] = useState(false);
-  const [editingReminder, setEditingReminder] = useState(null);
   const [actionError, setActionError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
+
+  // Modals state
+  const [configModalOpen, setConfigModalOpen] = useState(false);
+  const [editingReminder, setEditingReminder] = useState(null);
+  const [snoozeModalOpen, setSnoozeModalOpen] = useState(false);
+  const [snoozeTarget, setSnoozeTarget] = useState(null);
+  const [showTzPicker, setShowTzPicker] = useState(false);
+
   const [isPushSubscribed, setIsPushSubscribed] = useState(false);
 
   useEffect(() => {
     pushNotificationService.isSubscribedOnThisDevice().then(setIsPushSubscribed);
-  }, []);
-
-  // New/Edit form state
-  const [formData, setFormData] = useState({
-    title: '',
-    message: '',
-    type: 'DAILY_CAREEROS_REVIEW',
-    time: '20:00',
-    dayOfWeek: null,
-    recurrence: 'DAILY',
-    channel: 'IN_APP',
-    timezone: userTimezone,
-    enabled: true,
-  });
-
-  useEffect(() => {
     loadReminders();
   }, []);
 
@@ -77,7 +70,7 @@ export const RemindersPage = () => {
       const data = await reminderService.listReminders();
       setReminders(data.reminders || []);
     } catch (err) {
-      setActionError('Failed to load reminders from server');
+      showFeedback('Failed to load reminders from server', true);
     } finally {
       setLoading(false);
     }
@@ -93,470 +86,539 @@ export const RemindersPage = () => {
     }
   };
 
-  const handleToggle = async (id, currentEnabled) => {
+  const handleCancelReminder = async (id) => {
+    if (!window.confirm('Are you sure you want to cancel this reminder?')) return;
     try {
-      const updated = await reminderService.toggleReminder(id, !currentEnabled);
-      setReminders(
-        reminders.map((r) => (r.id === id ? { ...r, enabled: updated.reminder.enabled } : r))
-      );
-      showFeedback(`Reminder ${!currentEnabled ? 'enabled' : 'disabled'}`);
+      await reminderService.cancelReminder(id);
+      showFeedback('Reminder cancelled');
+      loadReminders();
     } catch (err) {
-      showFeedback('Failed to update reminder status', true);
+      showFeedback('Failed to cancel reminder', true);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this reminder?')) {
-      try {
-        await reminderService.deleteReminder(id);
-        setReminders(reminders.filter((r) => r.id !== id));
-        showFeedback('Reminder deleted');
-      } catch (err) {
-        showFeedback('Failed to delete reminder', true);
-      }
+  const handleDeleteReminder = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this reminder permanently?')) return;
+    try {
+      await reminderService.deleteReminder(id);
+      showFeedback('Reminder deleted');
+      loadReminders();
+    } catch (err) {
+      showFeedback('Failed to delete reminder', true);
     }
   };
 
-  const handleOpenCreate = () => {
-    setEditingReminder(null);
-    setFormData({
-      title: '',
-      message: '',
-      type: 'DAILY_CAREEROS_REVIEW',
-      time: '20:00',
-      dayOfWeek: null,
-      recurrence: 'DAILY',
-      channel: 'IN_APP',
-      timezone: user?.profile?.timezone || detectBrowserTimezone() || 'Asia/Kolkata',
-      enabled: true,
-    });
-    setModalOpen(true);
+  const openSnooze = (reminder) => {
+    setSnoozeTarget(reminder);
+    setSnoozeModalOpen(true);
   };
 
-  const handleOpenEdit = (reminder) => {
+  const openEdit = (reminder) => {
     setEditingReminder(reminder);
-    setFormData({
-      title: reminder.title,
-      message: reminder.message || '',
-      type: reminder.type,
-      time: reminder.time,
-      dayOfWeek: reminder.dayOfWeek,
-      recurrence: reminder.recurrence || 'DAILY',
-      channel: reminder.channel || reminder.notificationChannel || 'IN_APP',
-      timezone: reminder.timezone || user?.profile?.timezone || 'UTC',
-      enabled: reminder.enabled,
-    });
-    setModalOpen(true);
+    setConfigModalOpen(true);
   };
 
-  const handleSaveModal = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingReminder) {
-        const updated = await reminderService.updateReminder(editingReminder.id, formData);
-        setReminders(
-          reminders.map((r) => (r.id === editingReminder.id ? updated.reminder : r))
-        );
-        showFeedback('Reminder updated');
-      } else {
-        const created = await reminderService.createReminder(formData);
-        setReminders([created.reminder, ...reminders]);
-        showFeedback('New reminder created');
-      }
-      setModalOpen(false);
-    } catch (err) {
-      showFeedback(err.response?.data?.message || 'Failed to save reminder', true);
-    }
-  };
+  // Group upcoming reminders: Today, Tomorrow, Later
+  const upcomingReminders = reminders.filter(
+    (r) => r.enabled && ['PENDING', 'SNOOZED', 'PROCESSING'].includes(r.status)
+  );
 
-  // Category filtering
-  const filteredReminders = reminders.filter((rem) => {
-    if (selectedCategory === 'ALL') return true;
-    if (selectedCategory === 'DAILY') {
-      return (
-        rem.type === 'DAILY_CAREEROS_REVIEW' ||
-        rem.type === 'DAILY_CAREER_REVIEW' ||
-        rem.type === 'DAILY_SHUTDOWN'
-      );
+  const historyReminders = reminders.filter(
+    (r) => !r.enabled || ['DELIVERED', 'ANSWERED', 'MISSED', 'FAILED', 'CANCELLED'].includes(r.status)
+  );
+
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+  const todayGroup = [];
+  const tomorrowGroup = [];
+  const laterGroup = [];
+
+  upcomingReminders.forEach((r) => {
+    const triggerDate = r.nextTriggerAt ? new Date(r.nextTriggerAt) : r.scheduledAt ? new Date(r.scheduledAt) : null;
+    if (!triggerDate || isNaN(triggerDate.getTime())) {
+      todayGroup.push(r);
+      return;
     }
-    if (selectedCategory === 'WEEKLY') {
-      return rem.type === 'WEEKLY_CAREER_REVIEW' || rem.type === 'WEEKLY_REVIEW';
+    const dStr = triggerDate.toISOString().split('T')[0];
+    if (dStr === todayStr) {
+      todayGroup.push(r);
+    } else if (dStr === tomorrowStr) {
+      tomorrowGroup.push(r);
+    } else {
+      laterGroup.push(r);
     }
-    if (selectedCategory === 'OPPORTUNITY') {
-      return (
-        rem.type === 'OPPORTUNITY_FOLLOW_UP' ||
-        rem.type === 'FREELANCE_FOLLOW_UP' ||
-        rem.type === 'INTERVIEW'
-      );
-    }
-    if (selectedCategory === 'CUSTOM') {
-      return rem.type === 'CUSTOM' || rem.type === 'TASK_DUE';
-    }
-    return true;
   });
 
-  const getDayName = (dayNum) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[dayNum] || '';
+  const renderChannelIcon = (channel) => {
+    switch (channel) {
+      case 'VOICE':
+        return <PhoneCall className="w-3.5 h-3.5 text-emerald-500" />;
+      case 'EMAIL':
+        return <Mail className="w-3.5 h-3.5 text-blue-500" />;
+      case 'PUSH':
+        return <MessageSquare className="w-3.5 h-3.5 text-purple-500" />;
+      default:
+        return <Bell className="w-3.5 h-3.5 text-primary" />;
+    }
   };
 
-  const activeCount = reminders.filter((r) => r.enabled).length;
-  const dailyCount = reminders.filter((r) => r.recurrence === 'DAILY').length;
-  const emailCount = reminders.filter(
-    (r) => r.channel === 'EMAIL' || r.notificationChannel === 'EMAIL'
-  ).length;
+  const renderSourceBadge = (sourceType) => {
+    const colors = {
+      TASK: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+      SCHEDULE: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+      HEALTH: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
+      COMMUNICATION: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+      GOAL: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+      CUSTOM: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+    };
+    return (
+      <span
+        className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md border ${
+          colors[sourceType] || colors.CUSTOM
+        }`}
+      >
+        {sourceType}
+      </span>
+    );
+  };
+
+  const renderStatusBadge = (status) => {
+    switch (status) {
+      case 'ANSWERED':
+      case 'DELIVERED':
+        return (
+          <span className="px-2 py-0.5 text-[11px] font-medium rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+            {status === 'ANSWERED' ? 'Answered' : 'Delivered'}
+          </span>
+        );
+      case 'MISSED':
+        return (
+          <span className="px-2 py-0.5 text-[11px] font-medium rounded-md bg-amber-500/10 text-amber-500 border border-amber-500/20">
+            Missed
+          </span>
+        );
+      case 'FAILED':
+        return (
+          <span className="px-2 py-0.5 text-[11px] font-medium rounded-md bg-rose-500/10 text-rose-500 border border-rose-500/20">
+            Failed
+          </span>
+        );
+      case 'SNOOZED':
+        return (
+          <span className="px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-500/10 text-blue-500 border border-blue-500/20">
+            Snoozed
+          </span>
+        );
+      case 'CANCELLED':
+        return (
+          <span className="px-2 py-0.5 text-[11px] font-medium rounded-md bg-slate-500/10 text-muted-foreground border border-slate-500/20">
+            Cancelled
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2 py-0.5 text-[11px] font-medium rounded-md bg-primary/10 text-primary border border-primary/20">
+            Pending
+          </span>
+        );
+    }
+  };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
-      {/* Header */}
+    <div className="space-y-6 animate-fade-in pb-12">
+      {/* Top Header */}
       <PageHeader
-        icon={Bell}
-        title="Reminders"
-        subtitle="Stay aware without constantly checking EYTHU."
+        title="Reminder Center"
+        description="Centralized multi-channel alerts across tasks, schedule, health, communication, and custom routines."
         action={
-          <button
-            onClick={handleOpenCreate}
-            className="inline-flex items-center justify-center gap-2 h-10 px-4 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-all shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
-          >
-            <Plus size={15} />
-            <span>New Reminder</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowTzPicker(true)}
+              className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-muted/40 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>{getCityOrShortTz(userTimezone)}</span>
+            </button>
+            <button
+              onClick={() => {
+                setEditingReminder(null);
+                setConfigModalOpen(true);
+              }}
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-sm transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Reminder</span>
+            </button>
+          </div>
         }
       />
 
-      {/* Factual Summary Row */}
-      {!loading && reminders.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 sm:gap-4">
-          <div className="bg-white dark:bg-[#131A2A] border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] rounded-xl p-3.5 sm:p-4 shadow-xs">
-            <p className="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-[#94A3B8]">Active Reminders</p>
-            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#F8FAFC] mt-0.5">{activeCount}</p>
-          </div>
-          <div className="bg-white dark:bg-[#131A2A] border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] rounded-xl p-3.5 sm:p-4 shadow-xs">
-            <p className="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-[#94A3B8]">Daily Cadence</p>
-            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#F8FAFC] mt-0.5">{dailyCount}</p>
-          </div>
-          <div className="bg-white dark:bg-[#131A2A] border border-slate-200/80 dark:border-[rgba(148,163,184,0.14)] rounded-xl p-3.5 sm:p-4 shadow-xs">
-            <p className="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-[#94A3B8]">Email Enabled</p>
-            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#F8FAFC] mt-0.5">{emailCount}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Feedback Alerts */}
-      {actionSuccess && (
-        <div className="flex items-center gap-2.5 bg-emerald-50 dark:bg-[rgba(52,211,153,0.10)] border border-emerald-200 dark:border-[rgba(52,211,153,0.25)] text-emerald-800 dark:text-[#34D399] text-xs px-4 py-3 rounded-xl animate-in fade-in duration-150">
-          <CheckCircle2 size={16} className="text-emerald-600 dark:text-[#34D399] shrink-0" />
-          <span className="font-medium">{actionSuccess}</span>
-        </div>
-      )}
+      {/* Action Feedbacks */}
       {actionError && (
-        <div className="flex items-center gap-2.5 bg-rose-50 dark:bg-[rgba(251,113,133,0.10)] border border-rose-200 dark:border-[rgba(251,113,133,0.25)] text-rose-800 dark:text-[#FB7185] text-xs px-4 py-3 rounded-xl animate-in fade-in duration-150">
-          <AlertCircle size={16} className="text-rose-600 dark:text-[#FB7185] shrink-0" />
-          <span className="font-medium">{actionError}</span>
+        <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{actionError}</span>
+        </div>
+      )}
+      {actionSuccess && (
+        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs flex items-center space-x-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{actionSuccess}</span>
         </div>
       )}
 
-      {/* Top Filter Tabs */}
-      <div className="flex items-center gap-1.5 border-b border-slate-200/80 dark:border-[rgba(148,163,184,0.12)] pb-2 overflow-x-auto no-scrollbar">
-        {CATEGORIES.map((cat) => {
-          const isActive = selectedCategory === cat.id;
+      {/* Tabs Layout: [ Upcoming ] [ History ] [ Settings ] */}
+      <div className="flex items-center space-x-1 border-b border-border pb-1">
+        {[
+          { id: 'UPCOMING', label: 'Upcoming', count: upcomingReminders.length },
+          { id: 'HISTORY', label: 'History', count: historyReminders.length },
+          { id: 'SETTINGS', label: 'Settings', count: null },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
           return (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-[10px] text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all flex items-center space-x-2 ${
                 isActive
-                  ? 'text-[#2A7A3B] dark:text-[#4ADE80] bg-[#2A7A3B]/10 dark:bg-[rgba(42,122,59,0.18)] border border-[#2A7A3B]/20 dark:border-[rgba(42,122,59,0.30)] shadow-xs'
-                  : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#E2E8F0] hover:bg-slate-100 dark:hover:bg-[rgba(255,255,255,0.035)] border border-transparent'
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
               }`}
             >
-              {cat.label}
+              <span>{tab.label}</span>
+              {tab.count !== null && (
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                    isActive ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Reminders List */}
-      <div className="space-y-3">
-        {loading ? (
-          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-12 text-center text-slate-400 dark:text-[#94A3B8]">
-            <Loader2 className="animate-spin text-[#2A7A3B] mx-auto mb-2.5" size={24} />
-            <span className="text-xs font-medium">Loading scheduled reminders...</span>
-          </div>
-        ) : filteredReminders.length === 0 ? (
-          <EmptyState
-            icon={Clock}
-            title="No Reminders Found"
-            description="Create a reminder to build daily and weekly consistency without manual check-ins."
-            primaryAction={{
-              label: 'Create Reminder',
-              onClick: handleOpenCreate,
-            }}
-          />
-        ) : (
-          <div className="space-y-3">
-            {filteredReminders.map((rem) => (
-              <div
-                key={rem.id}
-                className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4 sm:p-5 shadow-xs hover:border-slate-300 dark:hover:border-[#33435C] transition-all duration-180 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-              >
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#F8FAFC] leading-snug">
-                      {rem.title}
-                    </h3>
-                    <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[rgba(255,255,255,0.05)] text-slate-600 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#263247]">
-                      {rem.channel || 'IN_APP'}
-                    </span>
-                    <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md bg-[#2A7A3B]/10 dark:bg-[rgba(42,122,59,0.18)] text-[#2A7A3B] dark:text-[#4ADE80] border border-[#2A7A3B]/20 dark:border-[rgba(42,122,59,0.30)]">
-                      {rem.recurrence || 'DAILY'}
-                    </span>
+      {/* TAB CONTENT */}
+
+      {/* 1. UPCOMING TAB */}
+      {activeTab === 'UPCOMING' && (
+        <div className="space-y-6">
+          {upcomingReminders.length === 0 ? (
+            <EmptyState
+              icon={Bell}
+              title="No upcoming reminders"
+              description="Stay on track with tasks, routine practice, and health reminders."
+              primaryAction={{
+                label: 'Create Reminder',
+                onClick: () => {
+                  setEditingReminder(null);
+                  setConfigModalOpen(true);
+                },
+              }}
+            />
+          ) : (
+            <>
+              {/* Today Section */}
+              {todayGroup.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center space-x-2">
+                    <Clock className="w-3.5 h-3.5 text-primary" />
+                    <span>Today</span>
+                    <span className="text-[11px] font-normal text-muted-foreground">({todayGroup.length})</span>
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {todayGroup.map((r) => (
+                      <ReminderCard
+                        key={r.id}
+                        reminder={r}
+                        onEdit={openEdit}
+                        onSnooze={openSnooze}
+                        onCancel={handleCancelReminder}
+                      />
+                    ))}
                   </div>
-
-                  {rem.message && (
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-[#94A3B8] leading-relaxed">
-                      {rem.message}
-                    </p>
-                  )}
-
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-[#64748B] pt-0.5">
-                    <span className="inline-flex items-center gap-1 text-[#2A7A3B] dark:text-[#4ADE80] font-medium">
-                      <Clock size={12} />
-                      <span>{formatReminderTime(rem.time)}</span>
-                    </span>
-                    {rem.dayOfWeek !== null && rem.dayOfWeek !== undefined && (
-                      <span>({getDayName(rem.dayOfWeek)})</span>
-                    )}
-                    {rem.timezone && rem.timezone !== userTimezone && (
-                      <>
-                        <span className="text-slate-300 dark:text-slate-700">•</span>
-                        <span className="text-slate-600 dark:text-[#CBD5E1] font-medium">
-                          {getCityOrShortTz(rem.timezone)}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
-                  <button
-                    onClick={() => handleToggle(rem.id, rem.enabled)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold tracking-wider transition-all min-h-[36px] min-w-[50px] flex items-center justify-center ${
-                      rem.enabled
-                        ? 'bg-emerald-50 dark:bg-[rgba(52,211,153,0.10)] text-emerald-700 dark:text-[#34D399] border border-emerald-200 dark:border-[rgba(52,211,153,0.25)] hover:bg-emerald-100 dark:hover:bg-[rgba(52,211,153,0.18)]'
-                        : 'bg-slate-100 dark:bg-[rgba(255,255,255,0.04)] text-slate-500 dark:text-[#64748B] border border-slate-200 dark:border-[rgba(148,163,184,0.10)] hover:bg-slate-200 dark:hover:bg-[rgba(255,255,255,0.08)]'
-                    }`}
-                  >
-                    {rem.enabled ? 'ON' : 'OFF'}
-                  </button>
-
-                  <button
-                    onClick={() => handleOpenEdit(rem)}
-                    title="Edit Reminder"
-                    className="h-9 w-9 flex items-center justify-center text-slate-400 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#192235] rounded-xl transition-colors"
-                  >
-                    <Edit2 size={15} />
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(rem.id)}
-                    title="Delete Reminder"
-                    className="h-9 w-9 flex items-center justify-center text-slate-400 dark:text-[#94A3B8] hover:text-rose-600 dark:hover:text-[#FB7185] hover:bg-rose-50 dark:hover:bg-[rgba(251,113,133,0.12)] rounded-xl transition-colors"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Modal: Create/Edit Reminder */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#111827] rounded-t-[24px] sm:rounded-2xl border border-slate-200 dark:border-[rgba(148,163,184,0.14)] shadow-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            {/* Mobile Grab Bar */}
-            <div className="sm:hidden -mt-1 pb-1 flex justify-center">
-              <div className="w-12 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-            </div>
-
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[rgba(148,163,184,0.14)] pb-3">
-              <h2 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">
-                {editingReminder ? 'Edit Reminder' : 'New Reminder'}
-              </h2>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#192235] transition"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveModal} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-                  Reminder Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Daily Growth Focus"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-                  Message (Optional)
-                </label>
-                <textarea
-                  rows="2"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="e.g. Take 15 minutes to review progress and select tomorrow's main focus."
-                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">Category</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                  >
-                    <option value="DAILY_CAREEROS_REVIEW">EYTHU Daily Check-in</option>
-                    <option value="DAILY_SHUTDOWN">Daily Shutdown</option>
-                    <option value="WEEKLY_CAREER_REVIEW">Weekly Review</option>
-                    <option value="TASK_DUE">Task Due</option>
-                    <option value="OPPORTUNITY_FOLLOW_UP">Opportunity Follow-up</option>
-                    <option value="CUSTOM">Custom</option>
-                  </select>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">Time</label>
-                    <span className="text-[11px] text-slate-500 dark:text-[#94A3B8] font-medium">
-                      {formatReminderTime(formData.time)}
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    placeholder="20:00"
-                    value={formData.time}
-                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">Recurrence</label>
-                  <select
-                    value={formData.recurrence}
-                    onChange={(e) => setFormData({ ...formData, recurrence: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                  >
-                    <option value="DAILY">Daily</option>
-                    <option value="WEEKLY">Weekly</option>
-                    <option value="ONCE">Once</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">Delivery Channel</label>
-                  <select
-                    value={formData.channel}
-                    onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                  >
-                    <option value="IN_APP">In App Only</option>
-                    <option value="EMAIL">In App + Email</option>
-                    <option value="PUSH" disabled={!isPushSubscribed}>
-                      {isPushSubscribed ? 'In App + Browser Push' : 'Push (Not enabled on device)'}
-                    </option>
-                  </select>
-                  {!isPushSubscribed && (
-                    <p className="text-[11px] text-slate-400 dark:text-[#94A3B8] mt-1">
-                      Push not enabled on this device.{' '}
-                      <Link to="/app/settings" className="text-[#2A7A3B] dark:text-[#4ADE80] font-semibold hover:underline">
-                        Enable in Settings
-                      </Link>
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Simplified Timezone display with custom searchable picker */}
-              <div className="p-3 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl flex items-center justify-between gap-2">
-                <div>
-                  <span className="block text-[11px] font-medium text-slate-500 dark:text-[#94A3B8]">
-                    Timezone
-                  </span>
-                  <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-[#F8FAFC]">
-                    {formatFriendlyTimezone(formData.timezone)}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowTzPicker(true)}
-                  className="text-xs font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline px-2 py-1 rounded-lg hover:bg-[#2A7A3B]/10 transition shrink-0 cursor-pointer"
-                >
-                  Change timezone
-                </button>
-              </div>
-
-              {formData.recurrence === 'WEEKLY' && (
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">Day of Week</label>
-                  <select
-                    value={formData.dayOfWeek !== null ? formData.dayOfWeek : 0}
-                    onChange={(e) => setFormData({ ...formData, dayOfWeek: parseInt(e.target.value, 10) })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2A7A3B]"
-                  >
-                    <option value="0">Sunday</option>
-                    <option value="1">Monday</option>
-                    <option value="2">Tuesday</option>
-                    <option value="3">Wednesday</option>
-                    <option value="4">Thursday</option>
-                    <option value="5">Friday</option>
-                    <option value="6">Saturday</option>
-                  </select>
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-[#263247]">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 border border-slate-200 dark:border-[#263247] rounded-xl text-xs font-semibold text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#161E2D] transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl text-xs font-semibold transition shadow-md shadow-[#2A7A3B]/20 cursor-pointer"
-                >
-                  Save Reminder
-                </button>
-              </div>
-            </form>
-          </div>
+              {/* Tomorrow Section */}
+              {tomorrowGroup.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center space-x-2">
+                    <Calendar className="w-3.5 h-3.5 text-primary" />
+                    <span>Tomorrow</span>
+                    <span className="text-[11px] font-normal text-muted-foreground">({tomorrowGroup.length})</span>
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {tomorrowGroup.map((r) => (
+                      <ReminderCard
+                        key={r.id}
+                        reminder={r}
+                        onEdit={openEdit}
+                        onSnooze={openSnooze}
+                        onCancel={handleCancelReminder}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Later Section */}
+              {laterGroup.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center space-x-2">
+                    <Layers className="w-3.5 h-3.5 text-primary" />
+                    <span>Upcoming Later</span>
+                    <span className="text-[11px] font-normal text-muted-foreground">({laterGroup.length})</span>
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {laterGroup.map((r) => (
+                      <ReminderCard
+                        key={r.id}
+                        reminder={r}
+                        onEdit={openEdit}
+                        onSnooze={openSnooze}
+                        onCancel={handleCancelReminder}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
 
-      {/* Timezone Searchable Picker */}
-      <TimezonePickerModal
-        isOpen={showTzPicker}
-        onClose={() => setShowTzPicker(false)}
-        selectedTimezone={formData.timezone}
-        onSelect={(newTz) => setFormData({ ...formData, timezone: newTz })}
-      />
+      {/* 2. HISTORY TAB */}
+      {activeTab === 'HISTORY' && (
+        <div className="space-y-4">
+          {historyReminders.length === 0 ? (
+            <EmptyState
+              icon={Clock}
+              title="No reminder history yet"
+              description="Past dispatched and answered alerts will appear here."
+            />
+          ) : (
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/30 text-muted-foreground uppercase text-[10px] tracking-wider border-b border-border">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold">Reminder</th>
+                      <th className="px-4 py-3 font-semibold">Source</th>
+                      <th className="px-4 py-3 font-semibold">Scheduled Time</th>
+                      <th className="px-4 py-3 font-semibold">Channel</th>
+                      <th className="px-4 py-3 font-semibold">Result</th>
+                      <th className="px-4 py-3 font-semibold text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {historyReminders.map((r) => {
+                      const execDate = r.completedAt || r.lastAttemptAt || r.nextTriggerAt || r.scheduledAt;
+                      const dateDisplay = execDate
+                        ? new Date(execDate).toLocaleString([], {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                          })
+                        : '—';
+
+                      return (
+                        <tr key={r.id} className="hover:bg-muted/20 transition-colors">
+                          <td className="px-4 py-3 font-medium text-foreground">
+                            <div>
+                              <p className="font-semibold text-foreground">{r.title}</p>
+                              {r.statusReason && (
+                                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                                  {r.statusReason}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">{renderSourceBadge(r.sourceType || 'CUSTOM')}</td>
+                          <td className="px-4 py-3 text-muted-foreground font-mono">{dateDisplay}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center space-x-1.5 text-foreground">
+                              {renderChannelIcon(r.channel)}
+                              <span>
+                                {r.channel === 'VOICE'
+                                  ? 'Voice Call'
+                                  : r.channel === 'EMAIL'
+                                  ? 'Email'
+                                  : r.channel === 'PUSH'
+                                  ? 'Push'
+                                  : 'In App'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">{renderStatusBadge(r.status)}</td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              onClick={() => handleDeleteReminder(r.id)}
+                              className="p-1.5 text-muted-foreground hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+                              title="Delete log"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 3. SETTINGS TAB */}
+      {activeTab === 'SETTINGS' && (
+        <div className="max-w-2xl">
+          <ReminderSettingsTab onFeedback={showFeedback} />
+        </div>
+      )}
+
+      {/* MODALS */}
+      {configModalOpen && (
+        <ReminderConfigModal
+          isOpen={configModalOpen}
+          initialData={editingReminder || {}}
+          onClose={() => {
+            setConfigModalOpen(false);
+            setEditingReminder(null);
+          }}
+          onSaved={() => {
+            loadReminders();
+            showFeedback('Reminder saved successfully');
+          }}
+        />
+      )}
+
+      {snoozeModalOpen && snoozeTarget && (
+        <SnoozeModal
+          isOpen={snoozeModalOpen}
+          reminder={snoozeTarget}
+          onClose={() => {
+            setSnoozeModalOpen(false);
+            setSnoozeTarget(null);
+          }}
+          onSnoozed={() => {
+            loadReminders();
+            showFeedback('Reminder snoozed');
+          }}
+        />
+      )}
+
+      {showTzPicker && (
+        <TimezonePickerModal
+          isOpen={showTzPicker}
+          onClose={() => setShowTzPicker(false)}
+          currentTimezone={userTimezone}
+          onSave={() => {
+            setShowTzPicker(false);
+            showFeedback('Timezone updated');
+          }}
+        />
+      )}
     </div>
   );
 };
+
+// Reminder Card Sub-component
+function ReminderCard({ reminder, onEdit, onSnooze, onCancel }) {
+  const triggerDate = reminder.nextTriggerAt ? new Date(reminder.nextTriggerAt) : reminder.scheduledAt ? new Date(reminder.scheduledAt) : null;
+  const timeDisplay = triggerDate && !isNaN(triggerDate.getTime())
+    ? triggerDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    : reminder.time || '—';
+
+  const isVoice = reminder.channel === 'VOICE';
+
+  return (
+    <div className="p-4 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all shadow-xs space-y-3 flex flex-col justify-between">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2">
+            <span className="font-mono text-sm font-bold text-foreground">{timeDisplay}</span>
+            {reminder.offsetMinutes > 0 && (
+              <span className="text-[11px] text-muted-foreground font-medium">
+                ({reminder.offsetMinutes}m before)
+              </span>
+            )}
+          </div>
+          <span
+            className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md border ${
+              reminder.sourceType === 'HEALTH'
+                ? 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                : reminder.sourceType === 'COMMUNICATION'
+                ? 'bg-purple-500/10 text-purple-500 border-purple-500/20'
+                : reminder.sourceType === 'TASK'
+                ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                : reminder.sourceType === 'SCHEDULE'
+                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                : 'bg-primary/10 text-primary border-primary/20'
+            }`}
+          >
+            {reminder.sourceType || 'CUSTOM'}
+          </span>
+        </div>
+
+        <div>
+          <h4 className="text-xs font-bold text-foreground line-clamp-1">{reminder.title}</h4>
+          {reminder.message && (
+            <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{reminder.message}</p>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-2 text-[11px]">
+          <span className="inline-flex items-center space-x-1 text-muted-foreground">
+            {isVoice ? (
+              <PhoneCall className="w-3.5 h-3.5 text-emerald-500" />
+            ) : reminder.channel === 'EMAIL' ? (
+              <Mail className="w-3.5 h-3.5 text-blue-500" />
+            ) : (
+              <Bell className="w-3.5 h-3.5 text-primary" />
+            )}
+            <span>{isVoice ? 'Voice Call' : reminder.channel === 'EMAIL' ? 'Email' : 'In App'}</span>
+          </span>
+
+          {reminder.status === 'SNOOZED' && (
+            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-blue-500/10 text-blue-500 font-medium">
+              Snoozed
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="pt-2 border-t border-border flex items-center justify-end space-x-2 text-xs">
+        <button
+          type="button"
+          onClick={() => onEdit(reminder)}
+          className="px-2.5 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/40 font-medium transition-colors"
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          onClick={() => onSnooze(reminder)}
+          className="px-2.5 py-1 rounded-lg text-primary hover:bg-primary/10 font-medium transition-colors"
+        >
+          Snooze
+        </button>
+        <button
+          type="button"
+          onClick={() => onCancel(reminder.id)}
+          className="px-2.5 py-1 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 font-medium transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}

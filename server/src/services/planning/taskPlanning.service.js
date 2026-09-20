@@ -269,6 +269,18 @@ class TaskPlanningService {
         project: { select: { id: true, title: true } },
         projectMilestone: { select: { id: true, title: true } },
         learningModule: { select: { id: true, title: true } },
+        reminders: {
+          where: { enabled: true, status: { in: ['PENDING', 'SNOOZED'] } },
+          select: {
+            id: true,
+            scheduledAt: true,
+            nextTriggerAt: true,
+            offsetMinutes: true,
+            channel: true,
+            status: true,
+            title: true,
+          },
+        },
       },
     });
   }
@@ -285,6 +297,18 @@ class TaskPlanningService {
         skill: { select: { id: true, name: true, category: true } },
         scheduleBlocks: {
           select: { id: true, date: true, startTime: true, endTime: true, category: true },
+        },
+        reminders: {
+          where: { enabled: true, status: { in: ['PENDING', 'SNOOZED'] } },
+          select: {
+            id: true,
+            scheduledAt: true,
+            nextTriggerAt: true,
+            offsetMinutes: true,
+            channel: true,
+            status: true,
+            title: true,
+          },
         },
       },
     });
@@ -426,6 +450,26 @@ class TaskPlanningService {
       return created;
     });
 
+    if (data.reminderOffsetMinutes !== undefined && data.reminderOffsetMinutes !== null && data.reminderOffsetMinutes !== '') {
+      try {
+        const reminderService = require('../reminders/reminder.service');
+        const offset = parseInt(data.reminderOffsetMinutes, 10);
+        await reminderService.createReminder(userId, {
+          title: title.trim(),
+          sourceType: 'TASK',
+          sourceId: task.id,
+          linkedTaskId: task.id,
+          scheduledAt: parsedDueDate || null,
+          offsetMinutes: isNaN(offset) ? 0 : offset,
+          channel: data.reminderChannel || 'IN_APP',
+          fallbackToInApp: data.fallbackToInApp !== false,
+          phoneContactId: data.phoneContactId || null,
+        });
+      } catch (err) {
+        console.error('Failed to create reminder for task:', err);
+      }
+    }
+
     return task;
   }
 
@@ -545,6 +589,52 @@ class TaskPlanningService {
       return result;
     });
 
+    // If task is completed, cancel/complete active reminders
+    if (data.status === 'COMPLETED') {
+      try {
+        await prisma.reminder.updateMany({
+          where: {
+            userId,
+            linkedTaskId: taskId,
+            status: { in: ['PENDING', 'SNOOZED'] },
+          },
+          data: {
+            status: 'CANCELLED',
+            enabled: false,
+            statusReason: 'Task completed',
+          },
+        });
+      } catch (err) {
+        console.error('Failed to cancel reminders for completed task:', err);
+      }
+    } else if (data.dueDate && parsedDueDate) {
+      // If dueDate changed, recalculate pending reminders for this task
+      try {
+        const pendingReminders = await prisma.reminder.findMany({
+          where: {
+            userId,
+            linkedTaskId: taskId,
+            status: { in: ['PENDING', 'SNOOZED'] },
+          },
+        });
+        for (const r of pendingReminders) {
+          const offset = r.offsetMinutes || 0;
+          const nextTrigger = new Date(parsedDueDate.getTime() - offset * 60000);
+          await prisma.reminder.update({
+            where: { id: r.id },
+            data: {
+              scheduledAt: parsedDueDate,
+              scheduledFor: parsedDueDate,
+              nextTriggerAt: nextTrigger,
+              status: 'PENDING',
+            },
+          });
+        }
+      } catch (err) {
+        console.error('Failed to update reminders for task with new dueDate:', err);
+      }
+    }
+
     return updated;
   }
 
@@ -574,6 +664,24 @@ class TaskPlanningService {
       const error = new Error('Task not found');
       error.statusCode = 404;
       throw error;
+    }
+
+    // Cancel pending reminders linked to this task
+    try {
+      await prisma.reminder.updateMany({
+        where: {
+          userId,
+          linkedTaskId: taskId,
+          status: { in: ['PENDING', 'SNOOZED'] },
+        },
+        data: {
+          status: 'CANCELLED',
+          enabled: false,
+          statusReason: 'Associated task was deleted',
+        },
+      });
+    } catch (err) {
+      console.error('Failed to cancel linked reminders for deleted task:', err);
     }
 
     await prisma.$transaction(async (tx) => {

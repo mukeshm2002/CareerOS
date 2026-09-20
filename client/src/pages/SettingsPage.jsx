@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Settings,
   User,
@@ -32,11 +33,13 @@ import { formatFriendlyTimezone, detectBrowserTimezone } from '../utils/timezone
 import { TimezonePickerModal } from '../components/common/TimezonePickerModal';
 import { PageHeader } from '../components/common/PageHeader';
 import { EythuBrand } from '../components/common/VazhariLogo';
+import { ReminderSettingsTab } from '../components/reminders/ReminderSettingsTab';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'preferences', label: 'Preferences', icon: Sliders },
   { id: 'schedule', label: 'Schedule Routine', icon: Calendar },
+  { id: 'reminders', label: 'Reminders', icon: Bell },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security & Auth', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Palette },
@@ -45,7 +48,9 @@ const TABS = [
 ];
 
 export const SettingsPage = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState('');
@@ -667,7 +672,40 @@ export const SettingsPage = () => {
             </div>
           )}
 
-          {/* TAB 4: NOTIFICATIONS */}
+          {/* TAB 4: REMINDERS */}
+          {activeTab === 'reminders' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#243044] pb-2">
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
+                    Reminder Settings & Channels
+                  </h2>
+                  <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
+                    Configure default reminder offsets, notification channels, verified voice calls, and quiet hours.
+                  </p>
+                </div>
+                <Link
+                  to="/app/reminders"
+                  className="px-3 py-1.5 rounded-xl bg-brand-soft hover:bg-[#2A7A3B]/20 text-[#2A7A3B] dark:text-[#4ADE80] text-xs font-semibold transition shrink-0"
+                >
+                  Open Reminder Center →
+                </Link>
+              </div>
+              <ReminderSettingsTab
+                onFeedback={(msg, isErr) => {
+                  if (isErr) {
+                    setSaveError(msg);
+                    setTimeout(() => setSaveError(''), 4000);
+                  } else {
+                    setSaveSuccess(msg);
+                    setTimeout(() => setSaveSuccess(''), 4000);
+                  }
+                }}
+              />
+            </div>
+          )}
+
+          {/* TAB 5: NOTIFICATIONS */}
           {activeTab === 'notifications' && (
             <form onSubmit={handleSaveNotifications} className="space-y-5">
               <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">

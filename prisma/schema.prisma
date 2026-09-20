@@ -376,6 +376,33 @@ enum NotificationChannel {
   IN_APP
   EMAIL
   PUSH
+  VOICE
+}
+
+enum ReminderStatus {
+  PENDING
+  PROCESSING
+  SENT
+  DELIVERED
+  ANSWERED
+  MISSED
+  FAILED
+  SNOOZED
+  CANCELLED
+}
+
+enum ReminderSourceType {
+  TASK
+  SCHEDULE
+  GOAL
+  HEALTH
+  COMMUNICATION
+  CUSTOM
+}
+
+enum ContactType {
+  PHONE
+  EMAIL
 }
 
 enum DailyPlanStatus {
@@ -449,6 +476,7 @@ model User {
   focusSessions       FocusSession[]
   skillAssessmentHistory UserSkillAssessmentHistory[]
   pushSubscriptions   PushSubscription[]
+  contacts            UserContact[]
 
   @@map("users")
 }
@@ -737,6 +765,8 @@ model ScheduleBlock {
   goal         Goal?            @relation(fields: [goalId], references: [id], onDelete: SetNull)
   linkedTaskId String?
   linkedGoalId String?
+
+  reminders    Reminder[]
 
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -1254,9 +1284,25 @@ model WeeklyReview {
   @@map("weekly_reviews")
 }
 
-// -------------------------------------------------------------
-// REMINDERS & FOCUS SESSIONS
-// -------------------------------------------------------------
+model UserContact {
+  id               String       @id @default(uuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type             ContactType  @default(PHONE)
+  normalizedValue  String       // E.164 format e.g. +919876543210
+  maskedValue      String       // e.g. +91 ••••• ••210
+  verified         Boolean      @default(false)
+  verifiedAt       DateTime?
+  verificationCode String?
+  codeExpiresAt    DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  reminders        Reminder[]
+
+  @@index([userId])
+  @@map("user_contacts")
+}
 
 model Reminder {
   id                            String                @id @default(uuid())
@@ -1265,17 +1311,30 @@ model Reminder {
   title                         String
   message                       String?               @db.Text
   type                          ReminderType          @default(DAILY_CAREEROS_REVIEW)
+  sourceType                    ReminderSourceType    @default(CUSTOM)
+  sourceId                      String?
+  status                        ReminderStatus        @default(PENDING)
   time                          String                // e.g. "20:00"
   dayOfWeek                     Int?                  // 0 (Sun) - 6 (Sat), null if daily
   scheduledFor                  DateTime?
+  scheduledAt                   DateTime?
+  offsetMinutes                 Int?                  @default(0)
   timezone                      String?               @default("UTC")
   recurrence                    String?               @default("DAILY") // DAILY, WEEKLY, ONCE, CUSTOM
   enabled                       Boolean               @default(true)
   notificationChannel           NotificationChannel   @default(IN_APP)
   channel                       NotificationChannel   @default(IN_APP)
+  fallbackToInApp               Boolean               @default(true)
+  statusReason                  String?               @db.Text
+  providerReference             String?
+  attemptCount                  Int                   @default(0)
+  lastAttemptAt                 DateTime?
+  completedAt                   DateTime?
 
   linkedTaskId                  String?
   linkedTask                    Task?                 @relation(fields: [linkedTaskId], references: [id], onDelete: SetNull)
+  linkedScheduleBlockId         String?
+  linkedScheduleBlock           ScheduleBlock?        @relation(fields: [linkedScheduleBlockId], references: [id], onDelete: SetNull)
   linkedGoalId                  String?
   linkedGoal                    Goal?                 @relation(fields: [linkedGoalId], references: [id], onDelete: SetNull)
   linkedJobOpportunityId        String?
@@ -1285,6 +1344,9 @@ model Reminder {
   linkedInternshipOpportunityId String?
   linkedInternshipOpportunity   InternshipOpportunity? @relation(fields: [linkedInternshipOpportunityId], references: [id], onDelete: SetNull)
 
+  phoneContactId                String?
+  phoneContact                  UserContact?          @relation(fields: [phoneContactId], references: [id], onDelete: SetNull)
+
   lastTriggeredAt               DateTime?
   nextTriggerAt                 DateTime?
 
@@ -1292,7 +1354,10 @@ model Reminder {
   updatedAt                     DateTime              @updatedAt
 
   @@index([userId])
+  @@index([userId, status])
   @@index([userId, enabled, nextTriggerAt])
+  @@index([linkedTaskId])
+  @@index([linkedScheduleBlockId])
   @@map("reminders")
 }
 
@@ -1327,6 +1392,13 @@ model UserPreference {
 
   opportunityFollowUpReminderEnabled Boolean  @default(true)
   taskDueReminderEnabled             Boolean  @default(true)
+
+  defaultTaskReminderOffset          Int?     @default(10)
+  defaultScheduleReminderOffset      Int?     @default(0)
+  voiceRemindersEnabled              Boolean  @default(false)
+  quietHoursStart                    String?  @default("22:00")
+  quietHoursEnd                      String?  @default("07:00")
+  fallbackNotificationEnabled        Boolean  @default(true)
 
   theme                              String?  @default("SYSTEM") // LIGHT, DARK, SYSTEM
 

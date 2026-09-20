@@ -40,6 +40,8 @@ const settingsRoutes = require('./routes/settings.routes');
 const accountRoutes = require('./routes/account.routes');
 const workLogRoutes = require('./routes/workLog.routes');
 const pushRoutes = require('./routes/push.routes');
+const contactRoutes = require('./routes/contact.routes');
+const webhookRoutes = require('./routes/webhook.routes');
 
 const reminderSchedulerService = require('./services/reminders/reminderScheduler.service');
 
@@ -166,6 +168,8 @@ app.use('/api/reminders', reminderRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/work-logs', workLogRoutes);
 app.use('/api/push', pushRoutes);
+app.use('/api/contacts', contactRoutes);
+app.use('/api/webhooks', webhookRoutes);
 
 // 8. 404 & Error Handlers
 app.use(notFoundHandler);

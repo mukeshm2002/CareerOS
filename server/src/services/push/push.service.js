@@ -227,7 +227,7 @@ class PushService {
     }
 
     const payloadString = JSON.stringify({
-      title: payload.title || 'VAZHARI Reminder',
+      title: payload.title || 'EYTHU Reminder',
       body: payload.body || 'Time for your planned growth session.',
       url: payload.url || '/app/today',
       type: payload.type || 'REMINDER',

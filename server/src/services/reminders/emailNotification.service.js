@@ -97,7 +97,7 @@ class EmailNotificationService {
 
       default:
         res = {
-          subject: data.subject || 'VAZHARI Reminder',
+          subject: data.subject || 'EYTHU Reminder',
           text: data.message || 'You have a scheduled reminder in VAZHARI.',
           html: `<p>${data.message || 'You have a scheduled reminder in VAZHARI.'}</p>`,
         };
