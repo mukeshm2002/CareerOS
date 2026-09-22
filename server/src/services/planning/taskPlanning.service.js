@@ -1,4 +1,5 @@
 const prisma = require('../../config/db');
+const taskTransitionService = require('./taskTransition.service');
 
 class TaskPlanningService {
   /**
@@ -172,23 +173,8 @@ class TaskPlanningService {
   /**
    * Recalculate milestone progress from tasks if milestone exists
    */
-  async updateMilestoneTaskProgress(milestoneId, tx = prisma) {
-    if (!milestoneId) return;
-
-    const tasks = await tx.task.findMany({
-      where: { milestoneId },
-      select: { status: true },
-    });
-
-    if (tasks.length === 0) return;
-
-    const completed = tasks.filter((t) => t.status === 'COMPLETED').length;
-    const progress = Math.round((completed / tasks.length) * 100);
-
-    await tx.roadmapMilestone.update({
-      where: { id: milestoneId },
-      data: { progress },
-    });
+  async updateMilestoneTaskProgress(milestoneId, tx = prisma, userId = null) {
+    return taskTransitionService.updateMilestoneTaskProgress(milestoneId, tx, userId);
   }
 
   /**
@@ -446,6 +432,14 @@ class TaskPlanningService {
       if (milestoneId) {
         await this.updateMilestoneTaskProgress(milestoneId, tx);
       }
+      if (resolvedGoalId) {
+        try {
+          const goalService = require('../goal.service');
+          await goalService.recalculateGoalProgress(resolvedGoalId, tx);
+        } catch (goalErr) {
+          console.warn('Failed to recalculate goal progress for new task:', goalErr.message);
+        }
+      }
 
       return created;
     });
@@ -642,14 +636,7 @@ class TaskPlanningService {
    * Update task status (TODO, IN_PROGRESS, COMPLETED, BLOCKED, SKIPPED)
    */
   async updateTaskStatus(userId, taskId, status) {
-    const validStatuses = ['TODO', 'IN_PROGRESS', 'COMPLETED', 'BLOCKED', 'SKIPPED'];
-    if (!validStatuses.includes(status)) {
-      const error = new Error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
-      error.statusCode = 400;
-      throw error;
-    }
-
-    return this.updateTask(userId, taskId, { status });
+    return taskTransitionService.transitionTaskStatus(userId, taskId, status);
   }
 
   /**
@@ -690,7 +677,15 @@ class TaskPlanningService {
       });
 
       if (existing.milestoneId) {
-        await this.updateMilestoneTaskProgress(existing.milestoneId, tx);
+        await this.updateMilestoneTaskProgress(existing.milestoneId, tx, userId);
+      }
+      if (existing.goalId) {
+        try {
+          const goalService = require('../goal.service');
+          await goalService.recalculateGoalProgress(existing.goalId, tx);
+        } catch (goalErr) {
+          console.warn('Failed to recalculate goal progress for deleted task:', goalErr.message);
+        }
       }
     });
 

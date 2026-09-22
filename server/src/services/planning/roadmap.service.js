@@ -28,12 +28,19 @@ class RoadmapService {
       data: { progress: calculatedProgress },
     });
 
-    // Synchronize parent goal progress with active roadmap progress
-    if (roadmap.status === 'ACTIVE' && roadmap.goalId) {
-      await tx.goal.update({
-        where: { id: roadmap.goalId },
-        data: { progress: calculatedProgress },
-      });
+    // Synchronize parent goal progress with authoritative calculation
+    if (roadmap.goalId) {
+      try {
+        const goalService = require('../goal.service');
+        await goalService.recalculateGoalProgress(roadmap.goalId, tx);
+      } catch (err) {
+        if (roadmap.status === 'ACTIVE') {
+          await tx.goal.update({
+            where: { id: roadmap.goalId },
+            data: { progress: calculatedProgress },
+          });
+        }
+      }
     }
 
     return calculatedProgress;

@@ -116,10 +116,26 @@ enum Priority {
 
 enum ItemStatus {
   DRAFT
+  PLANNED
   ACTIVE
   PAUSED
   COMPLETED
+  ABANDONED
   ARCHIVED
+}
+
+enum TrackingMethod {
+  MILESTONES
+  TASKS
+  NUMBER_TARGET
+  ROUTINE
+  MANUAL
+}
+
+enum GoalConfidence {
+  ON_TRACK
+  NEEDS_ATTENTION
+  AT_RISK
 }
 
 enum MilestoneStatus {
@@ -477,6 +493,8 @@ model User {
   skillAssessmentHistory UserSkillAssessmentHistory[]
   pushSubscriptions   PushSubscription[]
   contacts            UserContact[]
+  goalSuccessCriteria GoalSuccessCriterion[]
+  goalCheckIns        GoalCheckIn[]
 
   @@map("users")
 }
@@ -547,6 +565,35 @@ model Goal {
   notes          String?       @db.Text
   growthArea     GrowthArea    @default(CAREER)
   metadata       Json?
+
+  // Core V1 Flexible Goal Fields
+  why               String?                 @db.Text
+  desiredOutcome    String?                 @db.Text
+  trackingMethod    TrackingMethod          @default(MILESTONES)
+  area              String?                 @default("CAREER")
+  customArea        String?
+  
+  // Tracking Method: NUMBER_TARGET
+  startValue        Float?                  @default(0)
+  currentValue      Float?                  @default(0)
+  targetValue       Float?
+  unit              String?
+  
+  // Tracking Method: ROUTINE
+  routineFrequency  Int?
+  routinePeriod     String?
+  
+  // Tracking Method: MANUAL
+  manualProgress    Int?                    @default(0)
+  
+  // Lifecycle tracking
+  pauseReason       String?                 @db.Text
+  resumeDate        DateTime?
+  abandonReason     String?                 @db.Text
+  completedAt       DateTime?
+  reflection        String?                 @db.Text
+  learnings         String?                 @db.Text
+
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -559,10 +606,50 @@ model Goal {
   projects                Project[]
   learningPaths           LearningPath[]
   reminders               Reminder[]
+  successCriteria         GoalSuccessCriterion[]
+  checkIns                GoalCheckIn[]
 
   @@index([userId])
   @@index([userId, growthArea])
   @@map("goals")
+}
+
+model GoalSuccessCriterion {
+  id          String    @id @default(uuid())
+  goalId      String
+  goal        Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([goalId])
+  @@index([userId])
+  @@map("goal_success_criteria")
+}
+
+model GoalCheckIn {
+  id                 String         @id @default(uuid())
+  goalId             String
+  goal               Goal           @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  confidence         GoalConfidence @default(ON_TRACK)
+  progress           Int?
+  whatIsGoingWell    String?        @db.Text
+  whatIsGettingInWay String?        @db.Text
+  planAdjustments    String?        @db.Text
+  adjustmentsNeeded  String?        @db.Text
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([goalId])
+  @@index([userId])
+  @@map("goal_check_ins")
 }
 
 model Roadmap {

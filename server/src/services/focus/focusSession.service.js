@@ -1,4 +1,5 @@
 const prisma = require('../../config/db');
+const taskTransitionService = require('../planning/taskTransition.service');
 
 class FocusSessionService {
   /**
@@ -84,10 +85,7 @@ class FocusSessionService {
 
       // If task is TODO, move to IN_PROGRESS
       if (task && task.status === 'TODO') {
-        await tx.task.update({
-          where: { id: task.id },
-          data: { status: 'IN_PROGRESS' },
-        });
+        await taskTransitionService.transitionTaskStatus(userId, task.id, 'IN_PROGRESS', { tx });
       }
 
       return session;
@@ -239,21 +237,23 @@ class FocusSessionService {
 
         const totalTaskActualMinutes = allCompletedSessions.reduce((sum, s) => sum + (s.actualMinutes || 0), 0);
 
-        const taskUpdateData = {
-          actualMinutes: totalTaskActualMinutes,
-        };
-
         if (taskOutcome === 'COMPLETED') {
-          taskUpdateData.status = 'COMPLETED';
-          taskUpdateData.completedAt = endedAt;
+          await taskTransitionService.transitionTaskStatus(userId, session.taskId, 'COMPLETED', {
+            tx,
+            completedAt: endedAt,
+            additionalTaskData: { actualMinutes: totalTaskActualMinutes },
+          });
         } else if (taskOutcome === 'BLOCKED') {
-          taskUpdateData.status = 'BLOCKED';
+          await taskTransitionService.transitionTaskStatus(userId, session.taskId, 'BLOCKED', {
+            tx,
+            additionalTaskData: { actualMinutes: totalTaskActualMinutes },
+          });
+        } else {
+          await tx.task.update({
+            where: { id: session.taskId },
+            data: { actualMinutes: totalTaskActualMinutes },
+          });
         }
-
-        await tx.task.update({
-          where: { id: session.taskId },
-          data: taskUpdateData,
-        });
       }
 
       return updatedSession;
