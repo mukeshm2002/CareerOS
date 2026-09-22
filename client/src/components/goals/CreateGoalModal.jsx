@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Target,
-  Flag,
-  Calendar,
-  CheckCircle2,
-  TrendingUp,
-  ListTodo,
   Milestone,
+  ListTodo,
+  TrendingUp,
   RotateCw,
   Sliders,
-  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Check,
+  Calendar,
 } from 'lucide-react';
 
 const AREAS = [
@@ -33,43 +34,48 @@ const TRACKING_METHODS = [
   {
     id: 'MILESTONES',
     label: 'Milestones',
-    desc: 'Break goal into phases & roadmap milestones',
     icon: Milestone,
+    explanation: 'Break this goal into meaningful stages and roadmaps.',
   },
   {
     id: 'TASKS',
     label: 'Tasks',
-    desc: 'Progress updates automatically as tasks are completed',
     icon: ListTodo,
+    explanation: 'Progress updates automatically as linked tasks are completed.',
   },
   {
     id: 'NUMBER_TARGET',
-    label: 'Number / Target',
-    desc: 'Track a numeric target (e.g., ₹1,00,000, 24 books, 100 km)',
+    label: 'Target',
     icon: TrendingUp,
+    explanation: 'Track progress toward a measurable number (amount, distance, count).',
   },
   {
     id: 'ROUTINE',
-    label: 'Routine / Consistency',
-    desc: 'Track recurring frequency (e.g. 4 days every week)',
+    label: 'Routine',
     icon: RotateCw,
+    explanation: 'Track repeated actions and consistency over time.',
   },
   {
     id: 'MANUAL',
-    label: 'Manual Progress',
-    desc: 'Manually adjust progress percentage (0–100%)',
+    label: 'Manual',
     icon: Sliders,
+    explanation: 'Update your progress percentage yourself whenever you like.',
   },
 ];
 
-const COMMON_UNITS = ['₹', '$', 'books', 'hours', 'km', 'kg', 'pages', 'sessions', 'applications'];
+const COMMON_UNITS = ['₹', '$', 'books', 'hours', 'km', 'kg', 'pages', 'sessions'];
 
 export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoalCreated }) => {
   const [title, setTitle] = useState('');
   const [area, setArea] = useState(initialArea);
   const [customArea, setCustomArea] = useState('');
+  
+  // Progressive disclosure for purpose & success
+  const [showDetails, setShowDetails] = useState(false);
   const [why, setWhy] = useState('');
   const [desiredOutcome, setDesiredOutcome] = useState('');
+
+  // Tracking method
   const [trackingMethod, setTrackingMethod] = useState('MILESTONES');
 
   // Conditional fields for NUMBER_TARGET
@@ -96,10 +102,11 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
     return d.toISOString().split('T')[0];
   });
   const [priority, setPriority] = useState('MEDIUM');
-  const [status, setStatus] = useState('ACTIVE');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const titleInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -108,8 +115,22 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
         const found = AREAS.find((a) => a.id === initialArea || a.id.toLowerCase() === initialArea.toLowerCase());
         setArea(found ? found.id : 'CAREER');
       }
+      setTimeout(() => {
+        titleInputRef.current?.focus();
+      }, 50);
     }
   }, [isOpen, initialArea]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -118,12 +139,23 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
     setError(null);
 
     if (!title.trim()) {
-      setError('Please specify what you want to achieve.');
+      setError('Enter a goal title.');
+      titleInputRef.current?.focus();
+      return;
+    }
+
+    if (!area) {
+      setError('Choose an area.');
       return;
     }
 
     if (area === 'OTHER' && !customArea.trim()) {
-      setError('Please specify your custom area.');
+      setError('Enter your custom area.');
+      return;
+    }
+
+    if (!trackingMethod) {
+      setError('Choose how you want to track progress.');
       return;
     }
 
@@ -137,18 +169,18 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
       startDate: startDate || undefined,
       targetDate: hasTargetDate && targetDate ? targetDate : null,
       priority,
-      status,
+      status: 'ACTIVE',
     };
 
     if (trackingMethod === 'NUMBER_TARGET') {
       const parsedTarget = Number(targetValue);
       if (targetValue === '' || isNaN(parsedTarget)) {
-        setError('Please enter a valid numeric target value.');
+        setError('Enter a valid target number.');
         return;
       }
       const selectedUnit = isCustomUnit ? customUnit.trim() : unit;
       if (!selectedUnit) {
-        setError('Please select or specify a unit of measurement.');
+        setError('Choose or specify a unit of measurement.');
         return;
       }
       payload.startValue = Number(startValue) || 0;
@@ -173,62 +205,79 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
     }
   };
 
+  const selectedMethodObj = TRACKING_METHODS.find((m) => m.id === trackingMethod);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-[#263247] shadow-xl overflow-hidden my-8">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#1E293B]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-xs overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-goal-title"
+    >
+      <div className="relative w-full max-w-[680px] bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-[#263247] shadow-xl overflow-hidden my-6 flex flex-col max-h-[90vh]">
+        {/* COMPACT HEADER */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#1E293B] shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#2A7A3B]/10 text-[#2A7A3B] dark:text-[#4ADE80]">
-              <Target size={18} />
+            <div className="p-1.5 rounded-lg bg-[#2A7A3B]/10 text-[#2A7A3B] dark:text-[#4ADE80]">
+              <Target size={16} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">Create a Goal</h2>
-              <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Simple by default. Powerful when needed.</p>
+              <h2 id="create-goal-title" className="text-sm sm:text-base font-bold text-slate-900 dark:text-[#F8FAFC]">
+                Create a Goal
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
+                Start simple. You can add details later.
+              </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-[#F8FAFC] rounded-lg transition-colors cursor-pointer"
+            aria-label="Close dialog"
+            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-[#F8FAFC] rounded-lg transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Error message */}
+        {/* ERROR BANNER */}
         {error && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-[#F87171] text-xs">
+          <div className="mx-6 mt-4 p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-[#F87171] text-xs shrink-0">
             {error}
           </div>
         )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-          {/* Goal Title */}
+        {/* SCROLLABLE FORM CONTENT */}
+        <form id="create-goal-form" onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1 text-xs">
+          {/* 1. PRIMARY GOAL FIELD */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1.5">
+            <label htmlFor="goal-title-input" className="block font-semibold text-slate-800 dark:text-[#F8FAFC] mb-1.5 text-xs">
               What do you want to achieve? <span className="text-red-500">*</span>
             </label>
             <input
+              id="goal-title-input"
+              ref={titleInputRef}
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g., Improve English communication, Save ₹1,00,000, Learn React"
-              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B] focus:ring-1 focus:ring-[#2A7A3B]"
-              autoFocus
+              placeholder="e.g. Improve my English communication"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] placeholder:text-slate-400 focus:outline-none focus:border-[#2A7A3B] focus:ring-1 focus:ring-[#2A7A3B]"
             />
           </div>
 
-          {/* Area Selection */}
+          {/* 2. AREA FIELD */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1.5">
-              Which area does this goal belong to? <span className="text-red-500">*</span>
+            <label htmlFor="goal-area-select" className="block font-semibold text-slate-800 dark:text-[#F8FAFC] mb-1 text-xs">
+              Area <span className="text-red-500">*</span>
             </label>
+            <p className="text-[11px] text-slate-500 dark:text-[#94A3B8] mb-1.5">
+              Choose where this goal belongs.
+            </p>
             <select
+              id="goal-area-select"
               value={area}
               onChange={(e) => setArea(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
             >
               {AREAS.map((a) => (
                 <option key={a.id} value={a.id}>
@@ -244,48 +293,64 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
                   value={customArea}
                   onChange={(e) => setCustomArea(e.target.value)}
                   placeholder="Specify custom area..."
-                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
                 />
               </div>
             )}
           </div>
 
-          {/* Why it matters (Optional) */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-              Why does this matter to you? <span className="text-slate-400 font-normal">(Optional)</span>
-            </label>
-            <p className="text-[11px] text-slate-400 mb-1.5">What makes this goal important?</p>
-            <textarea
-              rows={2}
-              value={why}
-              onChange={(e) => setWhy(e.target.value)}
-              placeholder="e.g., I want to communicate confidently in professional and everyday situations."
-              className="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
-            />
+          {/* 3. PROGRESSIVE DISCLOSURE: PURPOSE & SUCCESS */}
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => setShowDetails(!showDetails)}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline cursor-pointer"
+            >
+              {showDetails ? <ChevronUp size={14} /> : <Plus size={14} />}
+              <span>{showDetails ? 'Hide purpose & success details' : 'Add purpose & success details'}</span>
+            </button>
+
+            {showDetails && (
+              <div className="mt-3 p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#161E2D]/60 border border-slate-200/80 dark:border-[#263247] space-y-3">
+                <div>
+                  <label htmlFor="goal-why-input" className="block font-semibold text-slate-700 dark:text-[#CBD5E1] mb-0.5 text-xs">
+                    Why does this matter?
+                  </label>
+                  <span className="text-[11px] text-slate-500 block mb-1.5">What makes this goal important?</span>
+                  <textarea
+                    id="goal-why-input"
+                    rows={2}
+                    value={why}
+                    onChange={(e) => setWhy(e.target.value)}
+                    placeholder="e.g. I want to communicate confidently in professional and everyday situations."
+                    className="w-full px-3 py-2 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="goal-outcome-input" className="block font-semibold text-slate-700 dark:text-[#CBD5E1] mb-0.5 text-xs">
+                    What would success look like?
+                  </label>
+                  <span className="text-[11px] text-slate-500 block mb-1.5">Describe the outcome you want to reach.</span>
+                  <input
+                    id="goal-outcome-input"
+                    type="text"
+                    value={desiredOutcome}
+                    onChange={(e) => setDesiredOutcome(e.target.value)}
+                    placeholder="e.g. I can hold a 20-minute conversation in English with ease."
+                    className="w-full px-3 py-2 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* What would success look like? (Optional) */}
+          {/* 4. TRACKING METHOD (COMPACT SELECTABLE PILLS) */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-              What would success look like? <span className="text-slate-400 font-normal">(Optional)</span>
+            <label className="block font-semibold text-slate-800 dark:text-[#F8FAFC] mb-2 text-xs">
+              How do you want to track progress? <span className="text-red-500">*</span>
             </label>
-            <p className="text-[11px] text-slate-400 mb-1.5">Describe your desired outcome</p>
-            <input
-              type="text"
-              value={desiredOutcome}
-              onChange={(e) => setDesiredOutcome(e.target.value)}
-              placeholder="e.g., I can confidently hold a 20-minute conversation in English."
-              className="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] focus:outline-none focus:border-[#2A7A3B]"
-            />
-          </div>
-
-          {/* Tracking Method */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-2">
-              How will you track progress? <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
               {TRACKING_METHODS.map((method) => {
                 const Icon = method.icon;
                 const isSelected = trackingMethod === method.id;
@@ -294,59 +359,59 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
                     key={method.id}
                     type="button"
                     onClick={() => setTrackingMethod(method.id)}
-                    className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-[#2A7A3B] bg-emerald-50/50 dark:bg-[#2A7A3B]/10 text-slate-900 dark:text-[#F8FAFC]'
-                        : 'border-slate-200 dark:border-[#263247] hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-[#94A3B8]'
+                        ? 'border-[#2A7A3B] bg-[#2A7A3B]/10 text-[#2A7A3B] dark:text-[#4ADE80] font-bold shadow-xs'
+                        : 'border-slate-200 dark:border-[#263247] bg-white dark:bg-[#161E2D] text-slate-600 dark:text-[#94A3B8] hover:border-slate-300 dark:hover:border-slate-600'
                     }`}
                   >
-                    <div
-                      className={`p-1.5 rounded-lg mt-0.5 ${
-                        isSelected
-                          ? 'bg-[#2A7A3B] text-white'
-                          : 'bg-slate-100 dark:bg-[#161E2D] text-slate-500'
-                      }`}
-                    >
-                      <Icon size={14} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold leading-tight">{method.label}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-[#94A3B8] leading-normal mt-0.5">
-                        {method.desc}
-                      </div>
-                    </div>
+                    <Icon size={14} className={isSelected ? 'text-[#2A7A3B] dark:text-[#4ADE80]' : 'text-slate-400'} />
+                    <span>{method.label}</span>
                   </button>
                 );
               })}
             </div>
+
+            {/* ONE CONTEXTUAL EXPLANATION */}
+            {selectedMethodObj && (
+              <div className="text-[11px] text-slate-500 dark:text-[#94A3B8] mt-2 px-1">
+                <span className="font-semibold text-slate-700 dark:text-[#CBD5E1]">{selectedMethodObj.label}: </span>
+                {selectedMethodObj.explanation}
+              </div>
+            )}
           </div>
 
-          {/* Conditional Tracking Fields */}
+          {/* 5. CONDITIONAL TRACKING FIELDS */}
+          {trackingMethod === 'MILESTONES' && (
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#161E2D]/50 border border-slate-200/60 dark:border-[#263247] text-[11px] text-slate-500">
+              You can build your roadmap after creating the goal.
+            </div>
+          )}
+
+          {trackingMethod === 'TASKS' && (
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#161E2D]/50 border border-slate-200/60 dark:border-[#263247] text-[11px] text-slate-500">
+              Link tasks after creating the goal.
+            </div>
+          )}
+
           {trackingMethod === 'NUMBER_TARGET' && (
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] space-y-3">
-              <div className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Numeric Target Settings</div>
-              <div className="grid grid-cols-3 gap-2.5">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] space-y-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-500 mb-1">Starting</label>
+                  <label className="block text-[11px] font-medium text-slate-500 mb-1">Starting value</label>
                   <input
                     type="number"
                     value={startValue}
-                    onChange={(e) => setStartValue(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-lg text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-500 mb-1">Current</label>
-                  <input
-                    type="number"
-                    value={currentValue}
-                    onChange={(e) => setCurrentValue(e.target.value)}
+                    onChange={(e) => {
+                      setStartValue(e.target.value);
+                      if (currentValue === startValue) setCurrentValue(e.target.value);
+                    }}
                     className="w-full px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-lg text-xs"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-medium text-slate-500 mb-1">
-                    Target <span className="text-red-500">*</span>
+                    Target value <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -356,58 +421,54 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
                     className="w-full px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-lg text-xs font-semibold"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-medium text-slate-500 mb-1">
-                  Unit <span className="text-red-500">*</span>
-                </label>
-                <div className="flex flex-wrap items-center gap-1.5 mb-2">
-                  {COMMON_UNITS.map((u) => (
-                    <button
-                      key={u}
-                      type="button"
-                      onClick={() => {
-                        setUnit(u);
-                        setIsCustomUnit(false);
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                    Unit <span className="text-red-500">*</span>
+                  </label>
+                  {isCustomUnit ? (
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={customUnit}
+                        onChange={(e) => setCustomUnit(e.target.value)}
+                        placeholder="Unit name"
+                        className="w-full px-2 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-lg text-xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomUnit(false)}
+                        className="px-2 py-1 text-[10px] text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={unit}
+                      onChange={(e) => {
+                        if (e.target.value === 'CUSTOM') {
+                          setIsCustomUnit(true);
+                        } else {
+                          setUnit(e.target.value);
+                        }
                       }}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                        !isCustomUnit && unit === u
-                          ? 'bg-[#2A7A3B] text-white'
-                          : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
-                      }`}
+                      className="w-full px-2.5 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-lg text-xs"
                     >
-                      {u}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setIsCustomUnit(true)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                      isCustomUnit
-                        ? 'bg-[#2A7A3B] text-white'
-                        : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-[#263247]'
-                    }`}
-                  >
-                    Custom
-                  </button>
+                      {COMMON_UNITS.map((u) => (
+                        <option key={u} value={u}>
+                          {u}
+                        </option>
+                      ))}
+                      <option value="CUSTOM">+ Custom unit</option>
+                    </select>
+                  )}
                 </div>
-                {isCustomUnit && (
-                  <input
-                    type="text"
-                    value={customUnit}
-                    onChange={(e) => setCustomUnit(e.target.value)}
-                    placeholder="e.g., articles, pull-ups, leads"
-                    className="w-full px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-lg text-xs"
-                  />
-                )}
               </div>
             </div>
           )}
 
           {trackingMethod === 'ROUTINE' && (
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] space-y-2">
-              <div className="text-xs font-bold text-slate-800 dark:text-[#F8FAFC]">Routine Frequency</div>
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247]">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-600 dark:text-[#94A3B8]">Repeat</span>
                 <input
@@ -433,9 +494,9 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
           )}
 
           {trackingMethod === 'MANUAL' && (
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] space-y-2">
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-800 dark:text-[#F8FAFC]">Initial Progress</span>
+                <span className="font-medium text-slate-700 dark:text-[#CBD5E1]">Starting progress</span>
                 <span className="font-bold text-[#2A7A3B]">{manualProgress}%</span>
               </div>
               <input
@@ -449,26 +510,27 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
             </div>
           )}
 
-          {/* Dates & Timeline */}
+          {/* 6. DATES (START + TARGET SIDE BY SIDE) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-                Start Date
+              <label htmlFor="goal-start-date" className="block font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1 text-xs">
+                Start date
               </label>
               <input
+                id="goal-start-date"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC]"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC]"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">
-                  Target Date
+                <label htmlFor="goal-target-date" className="font-semibold text-slate-700 dark:text-[#CBD5E1] text-xs">
+                  Target date
                 </label>
-                <label className="flex items-center gap-1.5 text-[11px] text-slate-500 cursor-pointer">
+                <label className="flex items-center gap-1.5 text-[11px] text-slate-500 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={!hasTargetDate}
@@ -480,69 +542,69 @@ export const CreateGoalModal = ({ isOpen, onClose, initialArea = 'CAREER', onGoa
               </div>
               {hasTargetDate ? (
                 <input
+                  id="goal-target-date"
                   type="date"
                   value={targetDate}
                   onChange={(e) => setTargetDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-800 dark:text-[#F8FAFC]"
                 />
               ) : (
                 <div className="px-3 py-2 bg-slate-100 dark:bg-[#161E2D]/50 border border-dashed border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-400">
-                  Open-ended / No target date
+                  No deadline
                 </div>
               )}
             </div>
           </div>
 
-          {/* Priority & Status */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-                Priority
-              </label>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs"
-              >
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-              </select>
+          {/* 7. PRIORITY SEGMENTED CONTROL */}
+          <div>
+            <label className="block font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1.5 text-xs">
+              Priority
+            </label>
+            <div className="inline-flex p-1 bg-slate-100 dark:bg-[#161E2D] rounded-xl border border-slate-200/60 dark:border-[#263247]">
+              {[
+                { id: 'LOW', label: 'Low' },
+                { id: 'MEDIUM', label: 'Medium' },
+                { id: 'HIGH', label: 'High' },
+              ].map((p) => {
+                const isSelected = priority === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setPriority(p.id)}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-white dark:bg-[#111827] text-slate-900 dark:text-[#F8FAFC] shadow-xs'
+                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-[#CBD5E1]'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#CBD5E1] mb-1">
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-xl text-xs"
-              >
-                <option value="ACTIVE">Active</option>
-                <option value="PLANNED">Planned</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-[#1E293B]">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-[#161E2D] rounded-xl transition-colors cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center gap-1.5 px-5 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 disabled:opacity-50 cursor-pointer"
-            >
-              {loading ? 'Creating...' : 'Create Goal'}
-            </button>
           </div>
         </form>
+
+        {/* STICKY FOOTER (ALWAYS VISIBLE) */}
+        <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-[#1E293B] bg-slate-50/80 dark:bg-[#111827]/80 backdrop-blur-xs shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-[#161E2D] rounded-xl transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="create-goal-form"
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-5 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 disabled:opacity-50 cursor-pointer"
+          >
+            {loading ? 'Creating...' : 'Create Goal'}
+          </button>
+        </div>
       </div>
     </div>
   );
