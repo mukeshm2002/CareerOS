@@ -442,7 +442,7 @@ class TaskPlanningService {
       }
 
       return created;
-    });
+    }, { maxWait: 10000, timeout: 15000 });
 
     if (data.reminderOffsetMinutes !== undefined && data.reminderOffsetMinutes !== null && data.reminderOffsetMinutes !== '') {
       try {
@@ -581,7 +581,7 @@ class TaskPlanningService {
       }
 
       return result;
-    });
+    }, { maxWait: 10000, timeout: 15000 });
 
     // If task is completed, cancel/complete active reminders
     if (data.status === 'COMPLETED') {
@@ -687,7 +687,7 @@ class TaskPlanningService {
           console.warn('Failed to recalculate goal progress for deleted task:', goalErr.message);
         }
       }
-    });
+    }, { maxWait: 10000, timeout: 15000 });
 
     return { success: true, message: 'Task deleted successfully' };
   }

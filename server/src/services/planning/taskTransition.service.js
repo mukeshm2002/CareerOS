@@ -136,9 +136,12 @@ class TaskTransitionService {
       return await executeTransition(options.tx);
     }
 
-    return await prisma.$transaction(async (tx) => {
-      return await executeTransition(tx);
-    });
+    return await prisma.$transaction(
+      async (tx) => {
+        return await executeTransition(tx);
+      },
+      { maxWait: 10000, timeout: 15000 }
+    );
   }
 }
 

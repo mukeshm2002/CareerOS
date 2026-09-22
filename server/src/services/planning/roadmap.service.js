@@ -177,7 +177,7 @@ class RoadmapService {
       }
 
       return roadmap;
-    });
+    }, { maxWait: 10000, timeout: 15000 });
 
     return this.getRoadmapById(userId, created.id);
   }
@@ -468,7 +468,7 @@ class RoadmapService {
           data: { sequence: idx + 1 },
         });
       }
-    });
+    }, { maxWait: 10000, timeout: 15000 });
 
     return this.getRoadmapById(userId, roadmapId);
   }

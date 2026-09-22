@@ -27,8 +27,9 @@ class FocusSessionService {
    * Enforces at most 1 active session per user (Section 17 & 52)
    */
   async startSession(userId, { taskId, plannedMinutes, dailyPlanId, startedAt }) {
-    return await prisma.$transaction(async (tx) => {
-      // Transaction-scoped lock per user to eliminate race conditions on simultaneous starts
+    return await prisma.$transaction(
+      async (tx) => {
+        // Transaction-scoped lock per user to eliminate race conditions on simultaneous starts
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${userId}))`;
 
       // Check for existing active or paused session
@@ -89,7 +90,7 @@ class FocusSessionService {
       }
 
       return session;
-    });
+    }, { maxWait: 10000, timeout: 15000 });
   }
 
   /**
@@ -257,7 +258,7 @@ class FocusSessionService {
       }
 
       return updatedSession;
-    });
+    }, { maxWait: 10000, timeout: 15000 });
   }
 
   /**
