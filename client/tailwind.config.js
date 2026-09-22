@@ -68,9 +68,34 @@ export default {
           warning: 'var(--warning, #F59E0B)',
           danger: 'var(--danger, #EF4444)',
         },
+        eythu: {
+          bg: 'var(--eythu-bg, #080B08)',
+          surface: {
+            1: 'var(--eythu-surface-1, #0D120D)',
+            2: 'var(--eythu-surface-2, #121912)',
+            3: 'var(--eythu-surface-3, #172017)',
+            interactive: 'var(--eythu-surface-interactive, #1B261B)',
+          },
+          text: {
+            primary: 'var(--eythu-text-primary, #F5F7F5)',
+            secondary: 'var(--eythu-text-secondary, #A8B2A8)',
+            muted: 'var(--eythu-text-muted, #727D72)',
+          },
+          border: {
+            subtle: 'var(--eythu-border-subtle, rgba(255, 255, 255, 0.07))',
+            strong: 'var(--eythu-border-strong, rgba(255, 255, 255, 0.11))',
+          },
+          green: {
+            DEFAULT: 'var(--eythu-green, #2A7A3B)',
+            energy: 'var(--eythu-green-energy, #A3E635)',
+            soft: 'var(--eythu-green-soft, rgba(163, 230, 53, 0.10))',
+          },
+        },
       },
       borderRadius: {
         'card': '12px',
+        'eythu-card': '16px',
+        'eythu-focal': '20px',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
@@ -79,6 +104,9 @@ export default {
         'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
         'card': '0 4px 20px rgba(17, 24, 39, 0.05)',
         'elevated': '0 12px 36px -4px rgba(0, 0, 0, 0.25)',
+        'eythu-sm': 'var(--eythu-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.25))',
+        'eythu-md': 'var(--eythu-shadow-md, 0 4px 20px rgba(0, 0, 0, 0.35))',
+        'eythu-energy': 'var(--eythu-shadow-energy, 0 0 20px rgba(163, 230, 53, 0.20))',
       },
     },
   },

@@ -64,7 +64,7 @@ export const BottomNav = () => {
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0B0F17] border-t border-[#E5E7EB] dark:border-[#253044] pb-[env(safe-area-inset-bottom,0px)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#080B08] border-t border-[#E5E7EB] dark:border-[rgba(255,255,255,0.06)] pb-[env(safe-area-inset-bottom,0px)]"
     >
       <div className="grid grid-cols-5 h-[64px] items-center px-1">
         {navItems.map((item) => {
@@ -78,20 +78,20 @@ export const BottomNav = () => {
               aria-current={active ? 'page' : undefined}
               className={`flex flex-col items-center justify-center h-full py-1 transition-colors select-none ${
                 active
-                  ? 'text-[#2A7A3B]'
-                  : 'text-[#64748B] dark:text-[#94A3B8] hover:text-[#111827] dark:hover:text-[#F8FAFC]'
+                  ? 'text-[#2A7A3B] dark:text-[#A3E635]'
+                  : 'text-[#64748B] dark:text-[#727D72] hover:text-[#111827] dark:hover:text-[#F5F7F5]'
               }`}
             >
               <div className="relative flex items-center justify-center h-6 w-6">
                 <Icon
                   size={20}
                   strokeWidth={active ? 2.2 : 1.75}
-                  className={active ? 'text-[#2A7A3B]' : 'text-[#64748B] dark:text-[#94A3B8]'}
+                  className={active ? 'text-[#2A7A3B] dark:text-[#A3E635]' : 'text-[#64748B] dark:text-[#727D72]'}
                 />
               </div>
               <span
                 className={`text-[11px] tracking-tight mt-1 leading-none ${
-                  active ? 'font-semibold text-[#2A7A3B]' : 'font-medium text-[#64748B] dark:text-[#94A3B8]'
+                  active ? 'font-semibold text-[#2A7A3B] dark:text-[#A3E635]' : 'font-medium text-[#64748B] dark:text-[#727D72]'
                 }`}
               >
                 {item.label}
@@ -99,7 +99,7 @@ export const BottomNav = () => {
               {/* Subtle active indicator dot */}
               <span
                 className={`h-1 w-1 rounded-full mt-1 transition-all ${
-                  active ? 'bg-[#2A7A3B] opacity-100' : 'bg-transparent opacity-0'
+                  active ? 'bg-[#2A7A3B] dark:bg-[#A3E635] opacity-100 shadow-[0_0_8px_rgba(163,230,53,0.5)]' : 'bg-transparent opacity-0'
                 }`}
               />
             </NavLink>

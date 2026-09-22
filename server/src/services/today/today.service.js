@@ -1,5 +1,5 @@
 const prisma = require('../../config/db');
-const { getUserLocalDate, getUserYesterdayDate, parseLocalDateToUtcDate } = require('../../utils/timezone');
+const { getUserLocalDate, getUserYesterdayDate, parseLocalDateToUtcDate, localDateTimeToUtc } = require('../../utils/timezone');
 const recommendationService = require('./recommendation.service');
 const skillGapService = require('../planning/skillGap.service');
 
@@ -27,6 +27,10 @@ class TodayService {
     const localDate = parseLocalDateToUtcDate(localDateStr);
     const yesterdayDateStr = getUserYesterdayDate(timezone, localDateStr);
     const yesterdayDate = parseLocalDateToUtcDate(yesterdayDateStr);
+
+    const [y, m, d] = localDateStr.split('-').map(Number);
+    const localDayStartUtc = localDateTimeToUtc(y, m, d, 0, 0, timezone);
+    const localDayEndUtc = new Date(localDayStartUtc.getTime() + 86400000);
 
     const availableCareerMinutes = user.profile?.availableCareerMinutes || 120;
 
@@ -130,8 +134,8 @@ class TodayService {
         growthArea: 'COMMUNICATION',
         status: 'COMPLETED',
         completedAt: {
-          gte: localDate,
-          lt: new Date(localDate.getTime() + 86400000),
+          gte: localDayStartUtc,
+          lt: localDayEndUtc,
         },
       },
       include: { goal: true },
@@ -167,8 +171,8 @@ class TodayService {
         growthArea: 'HEALTH',
         status: 'COMPLETED',
         completedAt: {
-          gte: localDate,
-          lt: new Date(localDate.getTime() + 86400000),
+          gte: localDayStartUtc,
+          lt: localDayEndUtc,
         },
       },
       include: { goal: true },
@@ -203,8 +207,8 @@ class TodayService {
         userId,
         status: 'COMPLETED',
         completedAt: {
-          gte: localDate,
-          lt: new Date(localDate.getTime() + 86400000),
+          gte: localDayStartUtc,
+          lt: localDayEndUtc,
         },
       },
       select: { id: true, title: true, actualMinutes: true, completedAt: true },
@@ -215,8 +219,8 @@ class TodayService {
       where: {
         userId,
         startedAt: {
-          gte: localDate,
-          lt: new Date(localDate.getTime() + 86400000),
+          gte: localDayStartUtc,
+          lt: localDayEndUtc,
         },
       },
       select: {

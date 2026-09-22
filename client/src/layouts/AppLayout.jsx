@@ -220,16 +220,16 @@ export const AppLayout = () => {
   const displayRole = user?.profile?.currentRole || user?.profile?.targetRole || 'Member';
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0B0F17] border-r border-[#E5E7EB] dark:border-[#253044] select-none">
+    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#080B08] border-r border-[#E5E7EB] dark:border-[rgba(255,255,255,0.06)] select-none">
       {/* Desktop Brand Header: [EYTHU symbol] EYTHU / Personal Growth System */}
-      <div className="h-20 px-5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between shrink-0">
+      <div className="h-20 px-5 border-b border-[#E5E7EB] dark:border-[rgba(255,255,255,0.06)] flex items-center justify-between shrink-0">
         <NavLink to="/app/today" className="flex items-center min-w-0">
           <BrandLogo size="md" variant="icon-wordmark" showTagline={true} taglineText="Personal Growth System" />
         </NavLink>
         {mobileMenuOpen && (
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#151D2B]"
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-[#727D72] dark:hover:text-[#F5F7F5] hover:bg-slate-100 dark:hover:bg-[#121912]"
           >
             <X size={18} />
           </button>
@@ -241,7 +241,7 @@ export const AppLayout = () => {
         {navigationGroups.map((group, idx) => (
           <div key={idx} className="space-y-1">
             {group.title && (
-              <p className="px-3 text-[10px] font-bold tracking-[0.08em] text-[#64748B] uppercase mb-1.5">
+              <p className="px-3 text-[10px] font-bold tracking-[0.08em] text-[#64748B] dark:text-[#727D72] uppercase mb-1.5">
                 {group.title}
               </p>
             )}
@@ -254,24 +254,28 @@ export const AppLayout = () => {
                   end={item.end}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+                    `group relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                       isActive
-                        ? 'bg-slate-100 dark:bg-[#151D2B] text-slate-900 dark:text-[#F8FAFC] font-semibold'
-                        : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-slate-50 dark:hover:bg-[#151D2B]/60'
+                        ? 'bg-slate-100 dark:bg-[#121912] text-slate-900 dark:text-[#F5F7F5] font-semibold border border-transparent dark:border-[#A3E635]/20 shadow-xs'
+                        : 'text-slate-600 dark:text-[#A8B2A8] hover:text-slate-900 dark:hover:text-[#F5F7F5] hover:bg-slate-50 dark:hover:bg-[#121912]/60'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
+                      {/* Subtle active indicator pill */}
+                      {isActive && (
+                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-3.5 rounded-full bg-[#2A7A3B] dark:bg-[#A3E635]" />
+                      )}
                       <Icon
                         size={17}
                         className={`shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#2A7A3B] dark:text-[#34A854]'
-                            : 'text-[#64748B] dark:text-[#94A3B8]'
+                            ? 'text-[#2A7A3B] dark:text-[#A3E635] pl-1'
+                            : 'text-[#64748B] dark:text-[#727D72] group-hover:text-slate-900 dark:group-hover:text-[#F5F7F5]'
                         }`}
                       />
-                      <span>{item.name}</span>
+                      <span className={isActive ? 'pl-0.5' : ''}>{item.name}</span>
                     </>
                   )}
                 </NavLink>
@@ -282,21 +286,21 @@ export const AppLayout = () => {
       </div>
 
       {/* Bottom User Profile Card */}
-      <div className="p-3 border-t border-[#E5E7EB] dark:border-[#253044] bg-[#F8FAFC] dark:bg-[#0B0F17]">
-        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#253044]">
+      <div className="p-3 border-t border-[#E5E7EB] dark:border-[rgba(255,255,255,0.06)] bg-[#F8FAFC] dark:bg-[#080B08]">
+        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#0D120D] border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.07)]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="h-7 w-7 rounded-lg bg-[#2A7A3B] text-white font-bold text-xs flex items-center justify-center shrink-0">
+            <div className="h-7 w-7 rounded-lg bg-[#2A7A3B] dark:bg-[#162E1A] text-white dark:text-[#A3E635] font-bold text-xs flex items-center justify-center shrink-0 border border-transparent dark:border-[#A3E635]/20">
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-slate-800 dark:text-[#F8FAFC] truncate">{displayName}</p>
-              <p className="text-[10px] text-slate-400 dark:text-[#94A3B8] truncate">{displayRole}</p>
+              <p className="text-xs font-semibold text-slate-800 dark:text-[#F5F7F5] truncate">{displayName}</p>
+              <p className="text-[10px] text-slate-400 dark:text-[#727D72] truncate">{displayRole}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
             title="Log out"
-            className="p-1.5 text-slate-400 dark:text-[#94A3B8] hover:text-red-600 dark:hover:text-[#F87171] hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 dark:text-[#727D72] hover:text-red-600 dark:hover:text-[#EF4444] hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut size={15} />
           </button>
@@ -304,7 +308,7 @@ export const AppLayout = () => {
 
         {/* Desktop Footer */}
         <div className="pt-2 text-center select-none">
-          <p className="text-[10px] text-slate-400 dark:text-[#64748B]">
+          <p className="text-[10px] text-slate-400 dark:text-[#727D72]">
             © 2026 TamZode Technology. All rights reserved.
           </p>
         </div>
@@ -313,7 +317,7 @@ export const AppLayout = () => {
   );
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#0B0F17]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#080B08]">
       {/* Desktop Persistent Sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col shrink-0 overflow-hidden">
         {sidebarContent}
@@ -323,10 +327,10 @@ export const AppLayout = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div
-            className="fixed inset-0 bg-slate-900/40 dark:bg-[#090D16]/80 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-slate-900/40 dark:bg-[#080B08]/80 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative flex w-72 flex-1 flex-col bg-white dark:bg-[#0D121C]">
+          <div className="relative flex w-72 flex-1 flex-col bg-white dark:bg-[#080B08]">
             {sidebarContent}
           </div>
         </div>
@@ -338,20 +342,20 @@ export const AppLayout = () => {
         <MobileHeader />
 
         {/* Desktop Top Header (hidden md:flex) */}
-        <header className="hidden md:flex h-16 bg-white dark:bg-[#0B0F17] border-b border-[#E5E7EB] dark:border-[#253044] items-center justify-between px-6 lg:px-8 shrink-0 z-10">
+        <header className="hidden md:flex h-16 bg-white dark:bg-[#080B08] border-b border-[#E5E7EB] dark:border-[rgba(255,255,255,0.06)] items-center justify-between px-6 lg:px-8 shrink-0 z-10">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#151D2B]"
+              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#121912]"
             >
               <Menu size={20} />
             </button>
 
             {/* Breadcrumb / Title */}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-[#64748B] font-semibold hidden sm:inline">EYTHU</span>
-              <ChevronRight size={14} className="text-[#64748B] hidden sm:inline" />
-              <span className="text-slate-900 dark:text-[#F8FAFC] font-bold text-base">{getPageTitle()}</span>
+              <span className="text-[#64748B] dark:text-[#727D72] font-semibold hidden sm:inline">EYTHU</span>
+              <ChevronRight size={14} className="text-[#64748B] dark:text-[#727D72] hidden sm:inline" />
+              <span className="text-slate-900 dark:text-[#F5F7F5] font-bold text-base">{getPageTitle()}</span>
             </div>
           </div>
 
@@ -359,21 +363,21 @@ export const AppLayout = () => {
           <div className="flex items-center gap-3 md:gap-5">
             {/* Greeting & Date */}
             <div className="hidden lg:flex flex-col text-right">
-              <span className="text-xs font-semibold text-slate-800 dark:text-[#F8FAFC]">
+              <span className="text-xs font-semibold text-slate-800 dark:text-[#F5F7F5]">
                 {getGreeting()}, {displayName.split(' ')[0]}
               </span>
-              <span className="text-[11px] text-slate-400 dark:text-[#94A3B8]">{todayFormatted}</span>
+              <span className="text-[11px] text-slate-400 dark:text-[#727D72]">{todayFormatted}</span>
             </div>
 
             {/* Search Input */}
             <div className="relative hidden sm:block w-48 lg:w-64">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#64748B]" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#727D72]" />
               <input
                 type="text"
                 placeholder="Search EYTHU..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-100/70 dark:bg-[rgba(255,255,255,0.035)] border border-[#E5E7EB] dark:border-[#253044] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B] focus:border-[#2A7A3B] transition-all"
+                className="w-full bg-slate-100/70 dark:bg-[#0D120D] border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.07)] text-xs rounded-xl pl-9 pr-3 py-2 text-slate-800 dark:text-[#F5F7F5] placeholder-slate-400 dark:placeholder-[#727D72] focus:outline-none focus:ring-1 focus:ring-[#2A7A3B] dark:focus:ring-[#A3E635] focus:border-[#2A7A3B] dark:focus:border-[#A3E635] transition-all"
               />
             </div>
 
@@ -383,15 +387,15 @@ export const AppLayout = () => {
                 onClick={() => setNotificationOpen((prev) => !prev)}
                 className={`relative h-10 w-10 flex items-center justify-center rounded-xl transition-colors ${
                   notificationOpen
-                    ? 'bg-[rgba(42,122,59,0.12)] text-[#2A7A3B]'
-                    : 'text-slate-500 dark:text-[#CBD5E1] hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)]'
+                    ? 'bg-[rgba(42,122,59,0.12)] dark:bg-[rgba(163,230,53,0.12)] text-[#2A7A3B] dark:text-[#A3E635]'
+                    : 'text-slate-500 dark:text-[#A8B2A8] hover:text-slate-800 dark:hover:text-[#F5F7F5] hover:bg-slate-100/70 dark:hover:bg-[#121912]'
                 }`}
                 title="Notifications"
                 aria-label="Notifications"
               >
                 <Bell size={18} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#2A7A3B] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#0B0F17] shadow-xs">
+                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#2A7A3B] dark:bg-[#A3E635] text-white dark:text-[#080B08] text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-[#080B08] shadow-xs">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -399,12 +403,12 @@ export const AppLayout = () => {
 
               {/* Notification Popover */}
               {notificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-white dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#253044] shadow-2xl shadow-slate-900/15 z-50 overflow-hidden animate-in fade-in-50 duration-150">
-                  <div className="p-3.5 border-b border-[#E5E7EB] dark:border-[#253044] flex items-center justify-between bg-slate-50/50 dark:bg-[#151D2B]">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-white dark:bg-[#0D120D] border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] shadow-2xl shadow-black/40 z-50 overflow-hidden animate-in fade-in-50 duration-150">
+                  <div className="p-3.5 border-b border-[#E5E7EB] dark:border-[rgba(255,255,255,0.07)] flex items-center justify-between bg-slate-50/50 dark:bg-[#121912]">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-[#F8FAFC]">Notifications</span>
+                      <span className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-[#F5F7F5]">Notifications</span>
                       {unreadCount > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-[rgba(42,122,59,0.14)] text-[#2A7A3B] text-[10px] font-semibold">
+                        <span className="px-2 py-0.5 rounded-full bg-[rgba(42,122,59,0.14)] dark:bg-[rgba(163,230,53,0.14)] text-[#2A7A3B] dark:text-[#A3E635] text-[10px] font-semibold">
                           {unreadCount} new
                         </span>
                       )}
@@ -413,7 +417,7 @@ export const AppLayout = () => {
                       <button
                         onClick={() => markAllReadMutation.mutate()}
                         disabled={markAllReadMutation.isPending}
-                        className="text-[11px] font-semibold text-[#2A7A3B] hover:text-[#22653A] flex items-center gap-1 transition-colors"
+                        className="text-[11px] font-semibold text-[#2A7A3B] dark:text-[#A3E635] hover:text-[#22653A] dark:hover:brightness-110 flex items-center gap-1 transition-colors"
                       >
                         <CheckCheck size={13} />
                         Mark all read
@@ -421,34 +425,34 @@ export const AppLayout = () => {
                     )}
                   </div>
 
-                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#263247]">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[rgba(255,255,255,0.06)]">
                     {notificationsLoading ? (
-                      <div className="p-6 text-center text-xs text-slate-400 dark:text-[#94A3B8]">Loading notifications...</div>
+                      <div className="p-6 text-center text-xs text-slate-400 dark:text-[#727D72]">Loading notifications...</div>
                     ) : recentNotifications.length === 0 ? (
                       <div className="p-8 text-center">
-                        <div className="h-10 w-10 mx-auto rounded-full bg-slate-100 dark:bg-[#161E2D] text-slate-400 dark:text-[#94A3B8] flex items-center justify-center mb-2">
+                        <div className="h-10 w-10 mx-auto rounded-full bg-slate-100 dark:bg-[#121912] text-slate-400 dark:text-[#727D72] flex items-center justify-center mb-2">
                           <Bell size={18} />
                         </div>
-                        <p className="text-xs font-semibold text-slate-700 dark:text-[#CBD5E1]">All caught up!</p>
-                        <p className="text-[11px] text-slate-400 dark:text-[#94A3B8] mt-0.5">No notifications right now.</p>
+                        <p className="text-xs font-semibold text-slate-700 dark:text-[#A8B2A8]">All caught up!</p>
+                        <p className="text-[11px] text-slate-400 dark:text-[#727D72] mt-0.5">No notifications right now.</p>
                       </div>
                     ) : (
                       recentNotifications.map((notif) => (
                         <div
                           key={notif.id}
                           className={`p-3.5 transition-colors flex items-start justify-between gap-3 ${
-                            !notif.readAt ? 'bg-[rgba(42,122,59,0.06)] dark:bg-[rgba(42,122,59,0.10)] hover:bg-[rgba(42,122,59,0.12)]' : 'hover:bg-slate-50 dark:hover:bg-[#161E2D]'
+                            !notif.readAt ? 'bg-[rgba(42,122,59,0.06)] dark:bg-[rgba(163,230,53,0.06)] hover:bg-[rgba(42,122,59,0.12)] dark:hover:bg-[rgba(163,230,53,0.10)]' : 'hover:bg-slate-50 dark:hover:bg-[#121912]'
                           }`}
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5 mb-1">
                               {!notif.readAt && (
-                                <span className="h-2 w-2 rounded-full bg-[#2A7A3B] shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-[#2A7A3B] dark:bg-[#A3E635] shrink-0" />
                               )}
-                              <p className="text-xs font-semibold text-slate-800 dark:text-[#F8FAFC] truncate">{notif.title}</p>
+                              <p className="text-xs font-semibold text-slate-800 dark:text-[#F5F7F5] truncate">{notif.title}</p>
                             </div>
-                            <p className="text-[11px] text-slate-500 dark:text-[#CBD5E1] line-clamp-2 leading-relaxed">{notif.message}</p>
-                            <span className="text-[10px] text-slate-400 dark:text-[#94A3B8] mt-1 inline-block">
+                            <p className="text-[11px] text-slate-500 dark:text-[#A8B2A8] line-clamp-2 leading-relaxed">{notif.message}</p>
+                            <span className="text-[10px] text-slate-400 dark:text-[#727D72] mt-1 inline-block">
                               {new Date(notif.createdAt).toLocaleDateString(undefined, {
                                 month: 'short',
                                 day: 'numeric',
@@ -462,7 +466,7 @@ export const AppLayout = () => {
                             <button
                               onClick={() => markReadMutation.mutate(notif.id)}
                               title="Mark as read"
-                              className="p-1 rounded-lg text-slate-400 hover:text-[#2A7A3B] hover:bg-white dark:hover:bg-[#161E2D] transition-colors shrink-0 cursor-pointer"
+                              className="p-1 rounded-lg text-slate-400 hover:text-[#2A7A3B] dark:hover:text-[#A3E635] hover:bg-white dark:hover:bg-[#121912] transition-colors shrink-0 cursor-pointer"
                             >
                               <Check size={14} />
                             </button>
@@ -472,11 +476,11 @@ export const AppLayout = () => {
                     )}
                   </div>
 
-                  <div className="p-2.5 border-t border-[#E5E7EB] dark:border-[#263247] bg-slate-50/50 dark:bg-[#161E2D] flex items-center justify-between text-xs">
+                  <div className="p-2.5 border-t border-[#E5E7EB] dark:border-[rgba(255,255,255,0.07)] bg-slate-50/50 dark:bg-[#121912] flex items-center justify-between text-xs">
                     <NavLink
                       to="/app/reminders"
                       onClick={() => setNotificationOpen(false)}
-                      className="text-[11px] font-semibold text-[#2A7A3B] hover:text-[#22653A] flex items-center gap-1 transition-colors"
+                      className="text-[11px] font-semibold text-[#2A7A3B] dark:text-[#A3E635] hover:text-[#22653A] flex items-center gap-1 transition-colors"
                     >
                       Reminders & Schedule
                       <ChevronRight size={13} />
@@ -484,7 +488,7 @@ export const AppLayout = () => {
                     <NavLink
                       to="/app/settings"
                       onClick={() => setNotificationOpen(false)}
-                      className="text-[11px] text-slate-400 dark:text-[#94A3B8] hover:text-slate-600 dark:hover:text-[#CBD5E1]"
+                      className="text-[11px] text-slate-400 dark:text-[#727D72] hover:text-slate-600 dark:hover:text-[#F5F7F5]"
                     >
                       Preferences
                     </NavLink>
@@ -496,33 +500,33 @@ export const AppLayout = () => {
             {/* Quick Profile Link */}
             <NavLink
               to="/app/settings"
-              className="h-10 flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-xl border border-[#E5E7EB] dark:border-[#263247] hover:bg-slate-100/70 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+              className="h-10 flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-xl border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.07)] bg-transparent dark:bg-[#0D120D] hover:bg-slate-100/70 dark:hover:bg-[#121912] transition-colors"
             >
-              <div className="h-6 w-6 rounded-md bg-[#2A7A3B] text-white text-[11px] font-bold flex items-center justify-center">
+              <div className="h-6 w-6 rounded-md bg-[#2A7A3B] dark:bg-[#162E1A] text-white dark:text-[#A3E635] text-[11px] font-bold flex items-center justify-center border border-transparent dark:border-[#A3E635]/20">
                 {displayName.charAt(0).toUpperCase()}
               </div>
-              <span className="text-xs font-medium text-slate-700 dark:text-[#CBD5E1] hidden md:inline">{displayName.split(' ')[0]}</span>
+              <span className="text-xs font-medium text-slate-700 dark:text-[#F5F7F5] hidden md:inline">{displayName.split(' ')[0]}</span>
             </NavLink>
           </div>
         </header>
 
         {/* Scrollable Page Body */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 pb-24 md:pb-8">
-          <div className="max-w-[1320px] mx-auto">
+          <div className="max-w-[1360px] mx-auto">
             <Outlet />
           </div>
         </main>
 
         {/* Subtle PWA Update Banner */}
         {hasUpdate && (
-          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#111827] border border-[#2A7A3B]/40 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
+          <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 bg-[#111827] dark:bg-[#0D120D] border border-[#2A7A3B]/40 dark:border-[#A3E635]/30 rounded-2xl p-3 sm:px-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#2A7A3B] animate-pulse" />
-              <span className="text-xs font-semibold text-slate-200">EYTHU update available</span>
+              <span className="h-2 w-2 rounded-full bg-[#2A7A3B] dark:bg-[#A3E635] animate-pulse" />
+              <span className="text-xs font-semibold text-slate-200 dark:text-[#F5F7F5]">EYTHU update available</span>
             </div>
             <button
               onClick={() => pwaService.updateApp()}
-              className="h-8 px-3 rounded-xl bg-[#2A7A3B] hover:bg-[#22653A] text-white text-xs font-bold transition shadow-xs cursor-pointer"
+              className="h-8 px-3 rounded-xl bg-[#2A7A3B] dark:bg-[#A3E635] hover:bg-[#22653A] dark:hover:brightness-105 text-white dark:text-[#080B08] text-xs font-bold transition shadow-xs cursor-pointer"
             >
               Update
             </button>
