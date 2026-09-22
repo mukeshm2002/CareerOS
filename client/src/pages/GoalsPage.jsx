@@ -13,7 +13,6 @@ import {
   X,
   MoreHorizontal,
   AlertCircle,
-  RotateCcw,
 } from 'lucide-react';
 
 const STATUS_TABS = [
@@ -141,27 +140,49 @@ export const GoalsPage = () => {
     switch (goal.trackingMethod) {
       case 'NUMBER_TARGET': {
         const prefix = goal.unit === '₹' || goal.unit === '$' ? goal.unit : '';
-        const suffix = goal.unit !== '₹' && goal.unit !== '$' ? ` ${goal.unit || ''}` : '';
-        return `${prefix}${goal.currentValue ?? goal.startValue ?? 0} / ${prefix}${goal.targetValue || 0}${suffix}`;
+        const suffix = goal.unit !== '₹' && goal.unit !== '$' && goal.unit ? ` ${goal.unit}` : '';
+        const current = Number(goal.currentValue ?? goal.startValue ?? 0).toLocaleString();
+        const target = Number(goal.targetValue || 0).toLocaleString();
+        return `${prefix}${current} / ${prefix}${target}${suffix}`;
       }
-      case 'ROUTINE':
-        return `${goal.routineFrequency || 1} of ${goal.routinePeriod?.toLowerCase() || 'week'}`;
+      case 'ROUTINE': {
+        if (goal.routineCompletedCount !== undefined && goal.routineFrequency) {
+          return `${goal.routineCompletedCount} of ${goal.routineFrequency} this ${goal.routinePeriod?.toLowerCase() || 'week'}`;
+        }
+        if (goal.routineFrequency) {
+          return `${goal.routineFrequency} times per ${goal.routinePeriod?.toLowerCase() || 'week'}`;
+        }
+        return 'Routine tracking';
+      }
       case 'TASKS': {
         const totalTasks = goal.tasks?.length ?? goal._count?.tasks ?? 0;
+        if (totalTasks === 0) {
+          return 'No tasks linked yet';
+        }
         const doneTasks = goal.tasks?.filter((t) => t.status === 'COMPLETED').length;
-        if (totalTasks > 0 && doneTasks !== undefined) {
+        if (doneTasks !== undefined && totalTasks > 0) {
           return `${doneTasks} of ${totalTasks} tasks`;
         }
-        return `${totalTasks} linked task${totalTasks === 1 ? '' : 's'}`;
+        const completedFromProgress = Math.round(((goal.progress || 0) / 100) * totalTasks);
+        return `${completedFromProgress} of ${totalTasks} task${totalTasks === 1 ? '' : 's'}`;
       }
       case 'MILESTONES': {
-        const criteriaCount = goal.successCriteria?.length || 0;
-        if (criteriaCount > 0) {
+        if (goal.successCriteria && goal.successCriteria.length > 0) {
           const done = goal.successCriteria.filter((c) => c.isCompleted).length;
-          return `${done} of ${criteriaCount} milestones`;
+          return `${done} of ${goal.successCriteria.length} milestones`;
         }
-        const mCount = goal._count?.roadmaps || 0;
-        return mCount > 0 ? 'Milestones linked' : '0 milestones';
+        const roadmap = goal.roadmaps?.[0];
+        if (roadmap && roadmap.milestones && roadmap.milestones.length > 0) {
+          const done = roadmap.milestones.filter((m) => m.status === 'COMPLETED').length;
+          return `${done} of ${roadmap.milestones.length} milestones`;
+        }
+        if (roadmap && (!roadmap.milestones || roadmap.milestones.length === 0)) {
+          return 'Roadmap has no milestones yet';
+        }
+        if ((goal._count?.roadmaps || 0) > 0) {
+          return 'Roadmap has no milestones yet';
+        }
+        return 'Roadmap not started';
       }
       case 'MANUAL':
       default:
@@ -171,7 +192,7 @@ export const GoalsPage = () => {
 
   return (
     <div
-      className="space-y-4 max-w-6xl mx-auto pb-12"
+      className="space-y-3.5 max-w-6xl mx-auto pb-12"
       onClick={() => setOpenCardMenuId(null)}
     >
       {/* 1. CLEAN RESTRAINED HEADER */}
@@ -219,7 +240,7 @@ export const GoalsPage = () => {
       </div>
 
       {/* 3. STATUS TABS & SEARCH / FILTER TOOLBAR */}
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         {/* Calm Status Navigation Tabs */}
         <div className="flex items-center gap-1 border-b border-slate-200/70 dark:border-[#263247] overflow-x-auto pb-px text-xs">
           {STATUS_TABS.map((tab) => {
@@ -229,7 +250,7 @@ export const GoalsPage = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveStatusTab(tab.id)}
-                className={`px-3 py-2 font-medium whitespace-nowrap transition-colors border-b-2 -mb-px cursor-pointer ${
+                className={`px-3 py-1.5 font-medium whitespace-nowrap transition-colors border-b-2 -mb-px cursor-pointer ${
                   isActive
                     ? 'border-[#2A7A3B] text-[#2A7A3B] dark:text-[#4ADE80] font-semibold'
                     : 'border-transparent text-slate-500 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-[#F8FAFC]'
@@ -241,18 +262,21 @@ export const GoalsPage = () => {
           })}
         </div>
 
-        {/* Search & Progressive Filter Toolbar */}
-        <div className="space-y-2">
+        {/* Search & Progressive Filter Toolbar with Fixed Alignment */}
+        <div className="space-y-1.5">
           <div className="relative flex items-center gap-2" ref={filterRef}>
-            {/* Search Input */}
+            {/* Search Input with Clean Left Icon Alignment */}
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search
+                size={14}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search goals..."
-                className="w-full pl-8.5 pr-8 py-1.5 bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] placeholder:text-slate-400 focus:outline-none focus:border-[#2A7A3B] transition-colors"
+                className="w-full h-9 pl-10 pr-8 bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] placeholder:text-slate-400 focus:outline-none focus:border-[#2A7A3B] transition-colors"
               />
               {searchQuery && (
                 <button
@@ -266,11 +290,11 @@ export const GoalsPage = () => {
               )}
             </div>
 
-            {/* Filters Trigger Button */}
+            {/* Filters Trigger Button Sharing Exact Height & Border Weight */}
             <button
               type="button"
               onClick={() => setIsFilterOpen((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
+              className={`h-9 inline-flex items-center gap-1.5 px-3 rounded-xl border text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
                 activeFilterCount > 0 || isFilterOpen
                   ? 'bg-slate-100 dark:bg-[#161E2D] border-[#2A7A3B]/40 text-[#2A7A3B] dark:text-[#4ADE80]'
                   : 'bg-white dark:bg-[#111827] border-slate-200/80 dark:border-[#263247] text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#161E2D]'
@@ -386,7 +410,7 @@ export const GoalsPage = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedArea('ALL')}
-                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer ml-0.5"
                     aria-label="Remove area filter"
                   >
                     <X size={11} />
@@ -400,7 +424,7 @@ export const GoalsPage = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedPriority('ALL')}
-                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer ml-0.5"
                     aria-label="Remove priority filter"
                   >
                     <X size={11} />
@@ -414,7 +438,7 @@ export const GoalsPage = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedTracking('ALL')}
-                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer ml-0.5"
                     aria-label="Remove tracking filter"
                   >
                     <X size={11} />
@@ -428,7 +452,7 @@ export const GoalsPage = () => {
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer ml-0.5"
                     aria-label="Clear search"
                   >
                     <X size={11} />
@@ -502,13 +526,13 @@ export const GoalsPage = () => {
         </div>
       )}
 
-      {/* 6. GOALS GRID (1 OR 2 COLUMNS WITH SENSIBLE DENSITY) */}
+      {/* 6. GOALS GRID (1 OR 2 COLUMNS WITH REDUCED EXCESSIVE HEIGHT) */}
       {!isLoading && goals.length > 0 && (
         <div
           className={
             goals.length === 1
               ? 'max-w-xl'
-              : 'grid grid-cols-1 lg:grid-cols-2 gap-4'
+              : 'grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4'
           }
         >
           {goals.map((goal) => {
@@ -525,11 +549,11 @@ export const GoalsPage = () => {
             return (
               <div
                 key={goal.id}
-                className="group/card bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/70 dark:border-[#263247] p-5 shadow-xs hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all flex flex-col justify-between relative"
+                className="group/card bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/70 dark:border-[#263247] p-4.5 sm:p-5 shadow-xs hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all flex flex-col justify-between relative"
               >
                 <div>
                   {/* Top Metadata Row: Area + Priority + Optional Status + Menu */}
-                  <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 flex-wrap min-w-0">
                       <span className="text-[11px] font-semibold tracking-wider uppercase text-slate-500 dark:text-[#94A3B8]">
                         {getAreaLabel(goal)}
@@ -558,7 +582,7 @@ export const GoalsPage = () => {
                           setOpenCardMenuId(isMenuOpen ? null : goal.id);
                         }}
                         aria-label="Goal options"
-                        className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-[#F8FAFC] rounded-lg cursor-pointer"
+                        className="p-1 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-[#F8FAFC] rounded-lg cursor-pointer"
                       >
                         <MoreHorizontal size={15} />
                       </button>
@@ -619,18 +643,18 @@ export const GoalsPage = () => {
 
                   {/* Subtle Desired Outcome / Purpose */}
                   {goal.desiredOutcome && (
-                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] line-clamp-2 mt-0.5 leading-relaxed">
                       {goal.desiredOutcome}
                     </p>
                   )}
 
                   {/* Unified Progress Visualization */}
-                  <div className="space-y-1.5 my-3.5">
+                  <div className="space-y-1 my-2.5">
                     <div className="flex items-baseline justify-between text-xs">
-                      <span className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
+                      <span className="text-xs font-bold text-slate-900 dark:text-[#F8FAFC]">
                         {goal.progress || 0}%
                       </span>
-                      <span className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                      <span className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
                         {getTrackingDetail(goal)}
                       </span>
                     </div>
@@ -643,17 +667,17 @@ export const GoalsPage = () => {
                     </div>
                   </div>
 
-                  {/* Contextual Next Action */}
+                  {/* Contextual Next Action with Clean Action-Oriented Styling */}
                   {nextTask && (
                     <Link
                       to={`/app/goals/${goal.id}`}
-                      className="group/next flex items-center justify-between py-2 px-2.5 -mx-1 rounded-lg hover:bg-slate-50 dark:hover:bg-[#161E2D] transition-colors text-xs my-2 border border-transparent hover:border-slate-200/60 dark:hover:border-[#263247]"
+                      className="group/next flex items-center justify-between py-1.5 px-2 -mx-1 rounded-lg hover:bg-slate-50 dark:hover:bg-[#161E2D] transition-colors text-xs my-1.5 border border-transparent hover:border-slate-200/50 dark:hover:border-[#263247]"
                     >
                       <div className="min-w-0 pr-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-0.5">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                           NEXT
                         </div>
-                        <div className="font-medium text-slate-800 dark:text-[#F8FAFC] truncate">
+                        <div className="font-semibold text-slate-800 dark:text-[#F8FAFC] truncate mt-0.5">
                           {nextTask.title}
                         </div>
                       </div>
@@ -666,7 +690,7 @@ export const GoalsPage = () => {
                 </div>
 
                 {/* Card Footer: Quiet Deadline + Text Continue Action */}
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-[#263247] text-xs mt-1">
+                <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-[#263247] text-xs mt-1">
                   <span className="text-[11px] text-slate-400 dark:text-slate-500">
                     Target · {formattedTarget}
                   </span>
