@@ -19,6 +19,7 @@ export const PageHeader = ({
   subtitle,
   action,
   className = '',
+  iconContainer = true,
 }) => {
   return (
     <div
@@ -27,9 +28,13 @@ export const PageHeader = ({
       <div className="space-y-1 min-w-0">
         <div className="flex items-center gap-2.5">
           {Icon && (
-            <div className="w-8 h-8 rounded-lg bg-brand-soft border border-[#2A7A3B]/20 text-[#2A7A3B] flex items-center justify-center shrink-0">
-              <Icon size={18} strokeWidth={2} />
-            </div>
+            iconContainer ? (
+              <div className="w-8 h-8 rounded-lg bg-brand-soft border border-[#2A7A3B]/20 text-[#2A7A3B] flex items-center justify-center shrink-0">
+                <Icon size={18} strokeWidth={2} />
+              </div>
+            ) : (
+              <Icon size={22} className="text-[#2A7A3B] dark:text-[#4ADE80] shrink-0" strokeWidth={2} />
+            )
           )}
           <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-slate-900 dark:text-[#F8FAFC] leading-tight truncate">
             {title}

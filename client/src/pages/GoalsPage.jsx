@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalService } from '../features/goals/services/goalService';
@@ -8,16 +8,11 @@ import {
   Target,
   Plus,
   ArrowRight,
-  CheckCircle2,
-  Calendar,
-  PauseCircle,
-  PlayCircle,
-  Archive,
-  AlertCircle,
   Search,
+  SlidersHorizontal,
+  X,
   MoreHorizontal,
-  Clock,
-  AlertTriangle,
+  AlertCircle,
   RotateCcw,
 } from 'lucide-react';
 
@@ -47,6 +42,15 @@ const AREA_FILTERS = [
   { id: 'OTHER', label: 'Other' },
 ];
 
+const TRACKING_LABELS = {
+  ALL: 'All Tracking Methods',
+  MILESTONES: 'Milestones',
+  TASKS: 'Tasks',
+  NUMBER_TARGET: 'Target',
+  ROUTINE: 'Routine',
+  MANUAL: 'Manual',
+};
+
 export const GoalsPage = () => {
   const [activeStatusTab, setActiveStatusTab] = useState('ACTIVE');
   const [selectedArea, setSelectedArea] = useState('ALL');
@@ -54,15 +58,33 @@ export const GoalsPage = () => {
   const [selectedTracking, setSelectedTracking] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [openCardMenuId, setOpenCardMenuId] = useState(null);
 
+  const filterRef = useRef(null);
   const queryClient = useQueryClient();
+
+  // Close filter popover on click outside
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setIsFilterOpen(false);
+      }
+    };
+    if (isFilterOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [isFilterOpen]);
+
+  const activeFilterCount =
+    (selectedArea !== 'ALL' ? 1 : 0) +
+    (selectedPriority !== 'ALL' ? 1 : 0) +
+    (selectedTracking !== 'ALL' ? 1 : 0);
 
   const isFiltered =
     activeStatusTab !== 'ACTIVE' ||
-    selectedArea !== 'ALL' ||
-    selectedPriority !== 'ALL' ||
-    selectedTracking !== 'ALL' ||
+    activeFilterCount > 0 ||
     Boolean(searchQuery.trim());
 
   const handleClearFilters = () => {
@@ -123,19 +145,23 @@ export const GoalsPage = () => {
         return `${prefix}${goal.currentValue ?? goal.startValue ?? 0} / ${prefix}${goal.targetValue || 0}${suffix}`;
       }
       case 'ROUTINE':
-        return `${goal.routineFrequency || 1}x / ${goal.routinePeriod?.toLowerCase() || 'week'}`;
+        return `${goal.routineFrequency || 1} of ${goal.routinePeriod?.toLowerCase() || 'week'}`;
       case 'TASKS': {
-        const count = goal._count?.tasks || 0;
-        return `${count} linked task${count === 1 ? '' : 's'}`;
+        const totalTasks = goal.tasks?.length ?? goal._count?.tasks ?? 0;
+        const doneTasks = goal.tasks?.filter((t) => t.status === 'COMPLETED').length;
+        if (totalTasks > 0 && doneTasks !== undefined) {
+          return `${doneTasks} of ${totalTasks} tasks`;
+        }
+        return `${totalTasks} linked task${totalTasks === 1 ? '' : 's'}`;
       }
       case 'MILESTONES': {
         const criteriaCount = goal.successCriteria?.length || 0;
         if (criteriaCount > 0) {
           const done = goal.successCriteria.filter((c) => c.isCompleted).length;
-          return `${done} of ${criteriaCount} criteria met`;
+          return `${done} of ${criteriaCount} milestones`;
         }
         const mCount = goal._count?.roadmaps || 0;
-        return mCount > 0 ? 'Milestones linked' : 'Milestones';
+        return mCount > 0 ? 'Milestones linked' : '0 milestones';
       }
       case 'MANUAL':
       default:
@@ -144,12 +170,16 @@ export const GoalsPage = () => {
   };
 
   return (
-    <div className="space-y-5 max-w-6xl mx-auto pb-12" onClick={() => setOpenCardMenuId(null)}>
-      {/* 1. CLEAN HEADER */}
+    <div
+      className="space-y-4 max-w-6xl mx-auto pb-12"
+      onClick={() => setOpenCardMenuId(null)}
+    >
+      {/* 1. CLEAN RESTRAINED HEADER */}
       <PageHeader
         icon={Target}
+        iconContainer={false}
         title="Goals"
-        subtitle="Turn what matters to you into clear, achievable progress."
+        subtitle="Turn meaningful goals into measurable progress."
         action={
           <button
             type="button"
@@ -157,50 +187,41 @@ export const GoalsPage = () => {
               e.stopPropagation();
               setIsModalOpen(true);
             }}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs transition-colors shadow-sm shadow-[#2A7A3B]/25 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#2A7A3B] hover:bg-[#22653A] active:bg-[#1A5030] text-white rounded-xl font-semibold text-xs transition-colors shadow-xs cursor-pointer"
           >
             <Plus size={15} />
-            <span>Add Goal</span>
+            <span>New Goal</span>
           </button>
         }
       />
 
-      {/* 2. COMPACT SUMMARY METRICS */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div className="px-4 py-3 bg-white dark:bg-[#111827] rounded-xl border border-slate-200/80 dark:border-[#263247] shadow-xs flex items-center justify-between">
-          <span className="text-xs text-slate-500 dark:text-[#94A3B8] font-medium">Active</span>
-          <span className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.active}</span>
+      {/* 2. SINGLE LIGHTWEIGHT SUMMARY STRIP */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 py-2 px-3.5 bg-white dark:bg-[#111827] rounded-xl border border-slate-200/70 dark:border-[#263247] text-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.active}</span>
+          <span className="text-slate-500 dark:text-[#94A3B8]">Active</span>
         </div>
-
-        <div className="px-4 py-3 bg-white dark:bg-[#111827] rounded-xl border border-slate-200/80 dark:border-[#263247] shadow-xs flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8] font-medium">
-            <Clock size={13} className="text-amber-500" />
-            <span>Due Soon</span>
-          </div>
-          <span className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.dueSoon}</span>
+        <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">·</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.dueSoon}</span>
+          <span className="text-slate-500 dark:text-[#94A3B8]">Due soon</span>
         </div>
-
-        <div className="px-4 py-3 bg-white dark:bg-[#111827] rounded-xl border border-slate-200/80 dark:border-[#263247] shadow-xs flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8] font-medium">
-            <AlertTriangle size={13} className="text-rose-500" />
-            <span>Needs Attention</span>
-          </div>
-          <span className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.needsAttention}</span>
+        <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">·</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.needsAttention}</span>
+          <span className="text-slate-500 dark:text-[#94A3B8]">Needs attention</span>
         </div>
-
-        <div className="px-4 py-3 bg-white dark:bg-[#111827] rounded-xl border border-slate-200/80 dark:border-[#263247] shadow-xs flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8] font-medium">
-            <CheckCircle2 size={13} className="text-[#2A7A3B]" />
-            <span>Completed</span>
-          </div>
-          <span className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.completed}</span>
+        <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">·</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold text-slate-900 dark:text-[#F8FAFC]">{metrics.completed}</span>
+          <span className="text-slate-500 dark:text-[#94A3B8]">Completed</span>
         </div>
       </div>
 
-      {/* 3. STATUS NAVIGATION TABS & COMPACT FILTERS */}
+      {/* 3. STATUS TABS & SEARCH / FILTER TOOLBAR */}
       <div className="space-y-2.5">
-        {/* Status Tabs */}
-        <div className="flex items-center gap-1 border-b border-slate-200 dark:border-[#263247] overflow-x-auto pb-1 text-xs">
+        {/* Calm Status Navigation Tabs */}
+        <div className="flex items-center gap-1 border-b border-slate-200/70 dark:border-[#263247] overflow-x-auto pb-px text-xs">
           {STATUS_TABS.map((tab) => {
             const isActive = activeStatusTab === tab.id;
             return (
@@ -208,10 +229,10 @@ export const GoalsPage = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveStatusTab(tab.id)}
-                className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-3 py-2 font-medium whitespace-nowrap transition-colors border-b-2 -mb-px cursor-pointer ${
                   isActive
-                    ? 'bg-[#2A7A3B]/10 text-[#2A7A3B] dark:text-[#4ADE80] font-bold'
-                    : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-[#F8FAFC] hover:bg-slate-100 dark:hover:bg-[#161E2D]'
+                    ? 'border-[#2A7A3B] text-[#2A7A3B] dark:text-[#4ADE80] font-semibold'
+                    : 'border-transparent text-slate-500 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-[#F8FAFC]'
                 }`}
               >
                 {tab.label}
@@ -220,64 +241,209 @@ export const GoalsPage = () => {
           })}
         </div>
 
-        {/* Search & Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search goals..."
-              className="w-full pl-8 pr-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] placeholder:text-slate-400 focus:outline-none focus:border-[#2A7A3B]"
-            />
-          </div>
+        {/* Search & Progressive Filter Toolbar */}
+        <div className="space-y-2">
+          <div className="relative flex items-center gap-2" ref={filterRef}>
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search goals..."
+                className="w-full pl-8.5 pr-8 py-1.5 bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#263247] rounded-xl text-xs text-slate-900 dark:text-[#F8FAFC] placeholder:text-slate-400 focus:outline-none focus:border-[#2A7A3B] transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  aria-label="Clear search"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </div>
 
-          <select
-            value={selectedArea}
-            onChange={(e) => setSelectedArea(e.target.value)}
-            className="px-2.5 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-700 dark:text-[#CBD5E1] focus:outline-none focus:border-[#2A7A3B]"
-          >
-            {AREA_FILTERS.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedPriority}
-            onChange={(e) => setSelectedPriority(e.target.value)}
-            className="px-2.5 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-700 dark:text-[#CBD5E1] focus:outline-none focus:border-[#2A7A3B]"
-          >
-            <option value="ALL">All Priorities</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
-          </select>
-
-          <select
-            value={selectedTracking}
-            onChange={(e) => setSelectedTracking(e.target.value)}
-            className="px-2.5 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#263247] rounded-xl text-xs text-slate-700 dark:text-[#CBD5E1] focus:outline-none focus:border-[#2A7A3B]"
-          >
-            <option value="ALL">All Tracking</option>
-            <option value="MILESTONES">Milestones</option>
-            <option value="TASKS">Tasks</option>
-            <option value="NUMBER_TARGET">Target</option>
-            <option value="ROUTINE">Routine</option>
-            <option value="MANUAL">Manual</option>
-          </select>
-
-          {isFiltered && (
+            {/* Filters Trigger Button */}
             <button
               type="button"
-              onClick={handleClearFilters}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-[#F8FAFC] rounded-lg hover:bg-slate-100 dark:hover:bg-[#161E2D] cursor-pointer"
+              onClick={() => setIsFilterOpen((prev) => !prev)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
+                activeFilterCount > 0 || isFilterOpen
+                  ? 'bg-slate-100 dark:bg-[#161E2D] border-[#2A7A3B]/40 text-[#2A7A3B] dark:text-[#4ADE80]'
+                  : 'bg-white dark:bg-[#111827] border-slate-200/80 dark:border-[#263247] text-slate-700 dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#161E2D]'
+              }`}
             >
-              <RotateCcw size={12} />
-              <span>Clear filters</span>
+              <SlidersHorizontal size={13} />
+              <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="w-4 h-4 rounded-full bg-[#2A7A3B] text-white text-[10px] font-bold flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
+
+            {/* Filter Popover Dropdown */}
+            {isFilterOpen && (
+              <div
+                className="absolute right-0 top-full mt-1.5 w-72 sm:w-80 p-4 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/90 dark:border-[#263247] shadow-xl shadow-slate-900/10 dark:shadow-black/40 z-30 space-y-3"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#263247]">
+                  <span className="text-xs font-bold text-slate-900 dark:text-[#F8FAFC]">
+                    Filter Goals
+                  </span>
+                  {activeFilterCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedArea('ALL');
+                        setSelectedPriority('ALL');
+                        setSelectedTracking('ALL');
+                      }}
+                      className="text-[11px] font-medium text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                    >
+                      Reset all
+                    </button>
+                  )}
+                </div>
+
+                {/* Area Filter */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-slate-500 dark:text-[#94A3B8]">
+                    Area
+                  </label>
+                  <select
+                    value={selectedArea}
+                    onChange={(e) => setSelectedArea(e.target.value)}
+                    className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-lg text-xs text-slate-800 dark:text-[#CBD5E1] focus:outline-none focus:border-[#2A7A3B]"
+                  >
+                    {AREA_FILTERS.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Priority Filter */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-slate-500 dark:text-[#94A3B8]">
+                    Priority
+                  </label>
+                  <select
+                    value={selectedPriority}
+                    onChange={(e) => setSelectedPriority(e.target.value)}
+                    className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-lg text-xs text-slate-800 dark:text-[#CBD5E1] focus:outline-none focus:border-[#2A7A3B]"
+                  >
+                    <option value="ALL">All Priorities</option>
+                    <option value="HIGH">High Priority</option>
+                    <option value="MEDIUM">Medium Priority</option>
+                    <option value="LOW">Low Priority</option>
+                  </select>
+                </div>
+
+                {/* Tracking Method Filter */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-slate-500 dark:text-[#94A3B8]">
+                    Tracking Method
+                  </label>
+                  <select
+                    value={selectedTracking}
+                    onChange={(e) => setSelectedTracking(e.target.value)}
+                    className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-[#161E2D] border border-slate-200 dark:border-[#263247] rounded-lg text-xs text-slate-800 dark:text-[#CBD5E1] focus:outline-none focus:border-[#2A7A3B]"
+                  >
+                    <option value="ALL">All Tracking Methods</option>
+                    <option value="MILESTONES">Milestones</option>
+                    <option value="TASKS">Tasks</option>
+                    <option value="NUMBER_TARGET">Target</option>
+                    <option value="ROUTINE">Routine</option>
+                    <option value="MANUAL">Manual</option>
+                  </select>
+                </div>
+
+                <div className="pt-1 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsFilterOpen(false)}
+                    className="px-3.5 py-1.5 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-lg text-xs font-semibold cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Active Filter Chips */}
+          {(activeFilterCount > 0 || searchQuery.trim()) && (
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+              {selectedArea !== 'ALL' && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1] text-[11px] font-medium border border-slate-200/50 dark:border-[#263247]">
+                  <span>{AREA_FILTERS.find((a) => a.id === selectedArea)?.label || selectedArea}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedArea('ALL')}
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    aria-label="Remove area filter"
+                  >
+                    <X size={11} />
+                  </button>
+                </span>
+              )}
+
+              {selectedPriority !== 'ALL' && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1] text-[11px] font-medium border border-slate-200/50 dark:border-[#263247]">
+                  <span>{selectedPriority.charAt(0) + selectedPriority.slice(1).toLowerCase()} Priority</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPriority('ALL')}
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    aria-label="Remove priority filter"
+                  >
+                    <X size={11} />
+                  </button>
+                </span>
+              )}
+
+              {selectedTracking !== 'ALL' && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1] text-[11px] font-medium border border-slate-200/50 dark:border-[#263247]">
+                  <span>{TRACKING_LABELS[selectedTracking] || selectedTracking}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTracking('ALL')}
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    aria-label="Remove tracking filter"
+                  >
+                    <X size={11} />
+                  </button>
+                </span>
+              )}
+
+              {searchQuery.trim() && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1] text-[11px] font-medium border border-slate-200/50 dark:border-[#263247]">
+                  <span>"{searchQuery.trim()}"</span>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    aria-label="Clear search"
+                  >
+                    <X size={11} />
+                  </button>
+                </span>
+              )}
+
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="text-[11px] text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 underline ml-1 cursor-pointer"
+              >
+                Clear all
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -296,31 +462,32 @@ export const GoalsPage = () => {
         </div>
       )}
 
-      {/* 5. EMPTY STATES */}
+      {/* 5. CALM EMPTY STATES */}
       {!isLoading && !isError && goals.length === 0 && (
         <div className="py-16 text-center max-w-sm mx-auto">
-          <div className="inline-flex p-2.5 rounded-xl bg-slate-100 dark:bg-[#161E2D] text-slate-400 mb-2.5">
-            <Target size={20} />
-          </div>
           {isFiltered ? (
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">No goals match these filters</h3>
-              <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 mb-4">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
+                No goals match these filters
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 mb-4 leading-relaxed">
                 Try loosening your search or filter criteria.
               </p>
               <button
                 type="button"
                 onClick={handleClearFilters}
-                className="px-3.5 py-1.5 bg-slate-100 dark:bg-[#161E2D] hover:bg-slate-200 text-xs font-semibold rounded-lg cursor-pointer"
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#161E2D] dark:hover:bg-[#1D2738] text-xs font-semibold rounded-lg text-slate-700 dark:text-[#CBD5E1] transition-colors cursor-pointer"
               >
                 Clear filters
               </button>
             </div>
           ) : (
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">Goals</h3>
-              <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 mb-4">
-                Set a goal for something that matters to you and turn it into actionable progress.
+              <h3 className="text-base font-bold text-slate-900 dark:text-[#F8FAFC]">
+                Goals
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 mb-4 leading-relaxed max-w-xs mx-auto">
+                Turn something important into clear, measurable progress.
               </p>
               <button
                 type="button"
@@ -328,16 +495,22 @@ export const GoalsPage = () => {
                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2A7A3B] hover:bg-[#22653A] text-white rounded-xl font-semibold text-xs shadow-xs cursor-pointer"
               >
                 <Plus size={14} />
-                <span>Create your first goal</span>
+                <span>New Goal</span>
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* 6. GOAL CARDS GRID */}
+      {/* 6. GOALS GRID (1 OR 2 COLUMNS WITH SENSIBLE DENSITY) */}
       {!isLoading && goals.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div
+          className={
+            goals.length === 1
+              ? 'max-w-xl'
+              : 'grid grid-cols-1 lg:grid-cols-2 gap-4'
+          }
+        >
           {goals.map((goal) => {
             const formattedTarget = goal.targetDate
               ? new Date(goal.targetDate).toLocaleDateString('en-US', {
@@ -352,29 +525,31 @@ export const GoalsPage = () => {
             return (
               <div
                 key={goal.id}
-                className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-[#263247] p-4.5 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between relative"
+                className="group/card bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/70 dark:border-[#263247] p-5 shadow-xs hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all flex flex-col justify-between relative"
               >
                 <div>
-                  {/* Top Badges & Overflow Menu */}
+                  {/* Top Metadata Row: Area + Priority + Optional Status + Menu */}
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#161E2D] text-slate-700 dark:text-[#CBD5E1] border border-slate-200/50">
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <span className="text-[11px] font-semibold tracking-wider uppercase text-slate-500 dark:text-[#94A3B8]">
                         {getAreaLabel(goal)}
                       </span>
-                      <span
-                        className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md ${
-                          goal.priority === 'HIGH'
-                            ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200/50'
-                            : 'bg-slate-100 dark:bg-[#161E2D] text-slate-500 border border-slate-200/50'
-                        }`}
-                      >
-                        {goal.priority}
-                      </span>
-                      <span className="text-[10px] font-medium text-slate-400">
-                        {goal.status}
-                      </span>
+
+                      {goal.priority === 'HIGH' && (
+                        <span className="text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200/50">
+                          High
+                        </span>
+                      )}
+
+                      {/* Avoid redundant ACTIVE status badge when in Active tab */}
+                      {(activeStatusTab === 'ALL' || goal.status !== 'ACTIVE') && (
+                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
+                          {goal.status}
+                        </span>
+                      )}
                     </div>
 
+                    {/* Kebab Action Menu */}
                     <div className="relative">
                       <button
                         type="button"
@@ -388,7 +563,6 @@ export const GoalsPage = () => {
                         <MoreHorizontal size={15} />
                       </button>
 
-                      {/* Dropdown Menu */}
                       {isMenuOpen && (
                         <div
                           className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-[#263247] shadow-lg py-1 z-20 text-xs"
@@ -435,60 +609,77 @@ export const GoalsPage = () => {
                     </div>
                   </div>
 
-                  {/* Title & Desired Outcome */}
+                  {/* Goal Title */}
                   <Link
                     to={`/app/goals/${goal.id}`}
-                    className="block font-bold text-slate-900 dark:text-[#F8FAFC] text-sm hover:text-[#2A7A3B] dark:hover:text-[#4ADE80] transition-colors mb-1"
+                    className="block font-semibold text-[17px] text-slate-900 dark:text-[#F8FAFC] hover:text-[#2A7A3B] dark:hover:text-[#4ADE80] transition-colors leading-snug line-clamp-2"
                   >
                     {goal.title}
                   </Link>
 
+                  {/* Subtle Desired Outcome / Purpose */}
                   {goal.desiredOutcome && (
-                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] line-clamp-2 mb-2.5 leading-relaxed">
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">
                       {goal.desiredOutcome}
                     </p>
                   )}
 
-                  {/* Progress Bar & Percentage */}
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-slate-700 dark:text-[#CBD5E1]">
-                      {getTrackingDetail(goal)}
-                    </span>
-                    <span className="font-bold text-[#2A7A3B] dark:text-[#4ADE80]">
-                      {goal.progress || 0}%
-                    </span>
-                  </div>
-
-                  <div className="w-full bg-slate-100 dark:bg-[#161E2D] h-1.5 rounded-full overflow-hidden mb-3">
-                    <div
-                      className="bg-[#2A7A3B] dark:bg-[#4ADE80] h-full rounded-full transition-all duration-300"
-                      style={{ width: `${goal.progress || 0}%` }}
-                    />
-                  </div>
-
-                  {/* Next Action Snippet */}
-                  {nextTask && (
-                    <div className="p-2 bg-slate-50 dark:bg-[#161E2D] rounded-xl border border-slate-200/50 dark:border-[#263247] text-[11px] mb-3">
-                      <span className="text-slate-400 font-medium">Next: </span>
-                      <span className="font-semibold text-slate-800 dark:text-[#F8FAFC]">
-                        {nextTask.title}
+                  {/* Unified Progress Visualization */}
+                  <div className="space-y-1.5 my-3.5">
+                    <div className="flex items-baseline justify-between text-xs">
+                      <span className="text-sm font-bold text-slate-900 dark:text-[#F8FAFC]">
+                        {goal.progress || 0}%
+                      </span>
+                      <span className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                        {getTrackingDetail(goal)}
                       </span>
                     </div>
+
+                    <div className="w-full bg-slate-100 dark:bg-[#161E2D] h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-[#2A7A3B] dark:bg-[#4ADE80] h-full rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min(100, Math.max(0, goal.progress || 0))}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Contextual Next Action */}
+                  {nextTask && (
+                    <Link
+                      to={`/app/goals/${goal.id}`}
+                      className="group/next flex items-center justify-between py-2 px-2.5 -mx-1 rounded-lg hover:bg-slate-50 dark:hover:bg-[#161E2D] transition-colors text-xs my-2 border border-transparent hover:border-slate-200/60 dark:hover:border-[#263247]"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-0.5">
+                          NEXT
+                        </div>
+                        <div className="font-medium text-slate-800 dark:text-[#F8FAFC] truncate">
+                          {nextTask.title}
+                        </div>
+                      </div>
+                      <ArrowRight
+                        size={13}
+                        className="text-slate-400 group-hover/next:text-[#2A7A3B] group-hover/next:translate-x-0.5 transition-all shrink-0"
+                      />
+                    </Link>
                   )}
                 </div>
 
-                {/* Card Footer: Target Date + Primary "Continue" */}
-                <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-[#263247] text-xs">
-                  <span className="text-[11px] text-slate-400">
+                {/* Card Footer: Quiet Deadline + Text Continue Action */}
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-[#263247] text-xs mt-1">
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500">
                     Target · {formattedTarget}
                   </span>
 
                   <Link
                     to={`/app/goals/${goal.id}`}
-                    className="inline-flex items-center gap-1 font-semibold text-[#2A7A3B] dark:text-[#4ADE80] hover:underline cursor-pointer"
+                    className="group/btn inline-flex items-center gap-1 font-semibold text-xs text-[#2A7A3B] dark:text-[#4ADE80] hover:text-[#22653A] dark:hover:text-[#86EFAC] cursor-pointer"
                   >
                     <span>Continue</span>
-                    <ArrowRight size={13} />
+                    <ArrowRight
+                      size={13}
+                      className="group-hover/btn:translate-x-0.5 transition-transform"
+                    />
                   </Link>
                 </div>
               </div>
